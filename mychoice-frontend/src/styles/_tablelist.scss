@@ -1,0 +1,472 @@
+/*
+Copyright INRAE
+Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
+MyChoice is a web application supporting collective decision.
+See more on https://ico.iate.inra.fr/MyChoice
+This application is registered to the European organization for the
+protection of authors and publishers of digital creations with
+the following identifier: IDDN.FR.001.280002.000.R.P.2020.000.20900 
+
+This software is governed by the CeCILL-C license under French law and
+abiding by the rules of distribution of free software.  You can  use, 
+modify and/ or redistribute the software under the terms of the CeCILL-C
+license as circulated by CEA, CNRS and INRIA at the following URL
+"http://www.cecill.info". 
+As a counterpart to the access to the source code and  rights to copy,
+modify and redistribute granted by the license, users are provided only
+with a limited warranty  and the software's author,  the holder of the
+economic rights,  and the successive licensors  have only  limited
+liability. 
+In this respect, the user's attention is drawn to the risks associated
+with loading,  using,  modifying and/or developing or reproducing the
+software by the user in light of its specific status of free software,
+that may mean  that it is complicated to manipulate,  and  that  also
+therefore means  that it is reserved for developers  and  experienced
+professionals having in-depth computer knowledge. Users are therefore
+encouraged to load and test the software's suitability as regards their
+requirements in conditions enabling the security of their systems and/or 
+data to be ensured and,  more generally, to use and operate it in the 
+same conditions as regards security. 
+The fact that you are presently reading this means that you have had
+knowledge of the CeCILL-C license and that you accept its terms.
+*/
+$padding: 12px;
+$table-border-color: #E5E5E5;
+$table-border-radius: 6px;
+
+
+$tablelist-body: ".tablelist tbody";
+
+td.is-empty {
+    background-image: linear-gradient(45deg, #ffffff 46.15%, rgba(0, 0, 0, .1) 46.15%, rgba(0, 0, 0, .1) 50%, #ffffff 50%, #ffffff 96.15%, rgba(0, 0, 0, .1) 96.15%, rgba(0, 0, 0, .1) 100%);
+    background-size: 13.00px 13.00px;
+    background-repeat: repeat;
+}
+
+.tablelist-overflow {
+    overflow-x: auto;
+    margin: 6px 0;
+
+    &:after {
+        content: '';
+
+        display: block;
+        position: absolute;
+        width: 12px;
+        height: 100%;
+        top: 0;
+        right: 0;
+        z-index: 1;
+        background: linear-gradient(90deg, rgba(white, 0) 0%, rgba(white, 1) 100%);
+    }
+}
+
+.tablelist {
+    //width: calc(100% - 1px);
+    width: 100%;
+    border-spacing: 0;
+
+
+    tbody td {
+        vertical-align: top;
+    }
+}
+
+.tablelist {
+
+    [aim],
+    [criterion] {
+
+        //@debug #{selector-unify("td, ", &)};
+        @at-root #{selector-unify("th:not(.is-sticky-clone)", &)} {
+            //width: 10%;
+            //width: calc(100% - 90%);
+            // max-width: 20%;
+          min-width: 100px;
+            box-sizing: border-box;
+        }
+
+        // @at-root #{selector-unify("th:not(.is-sticky-clone), tbody td", &)} {
+        //     &:not([colspan]) {
+        //         //background-color: red;
+        //     }
+        // }   
+    }
+
+    [alternative] {
+        @at-root #{selector-unify("th:not(.is-sticky-clone)", &)} {
+            width: 40%;
+            //width:  calc(100% - 60%);
+            
+             min-width: 100px;
+            box-sizing: border-box;
+            //background-image: linear-gradient(135deg, rgba(13, 162, 188, 0.77), #c5d32c);   
+        }
+
+         @at-root #{selector-unify("tbody td", &)} {
+             &:not([colspan]) {
+                 width: 20% ;
+                 min-width: 200px;
+                 //background-image: linear-gradient(135deg, rgba(13, 162, 188, 0.77), #c5d32c);
+             }
+         }
+    }
+}
+
+
+.tablelist {
+    //margin: 6px 0;
+    
+    border-collapse: collapse;
+    // table-layout: fixed !important;
+    border: 0;
+    background-color: #fff;
+
+    td,
+    th {
+        border-color: $table-border-color !important;
+        padding: $padding;
+        border: 0 !important;
+        //width: 20%;
+    }
+
+    // td[alternative]{
+    //   //  width: 20% !important;
+    // }
+    // .is-sticky-reference th[alternative] {
+    //     //width: 40% !important;
+    // }
+    // td[criterion], .is-sticky-reference th[criterion] {
+    //   //  width: 10% !important;
+    // }
+    // td[aim], .is-sticky-reference th[aim] {
+    //   //  width: 10% !important;
+    // }
+
+}
+
+//   th[alternative], td[alternative] {
+//       //width: 100%;
+
+//   }
+
+thead th[criterion], tbody td[criterion],
+thead th[aim], tbody td[aim] {
+    position: sticky;
+    background: #fff;
+}
+thead th[criterion], thead th[aim] {
+    z-index: 3 !important;
+}
+tbody td[criterion], tbody td[aim] {
+    z-index: 2 !important;
+    
+}
+thead th[criterion], tbody td[criterion] {
+    left: 0;
+}
+
+thead th[aim], tbody td[aim] {
+    left: 200px;
+}
+tfoot [criterion-aim] {
+    left: 0;
+    position: sticky;
+    z-index: 4 !important;
+}
+
+tbody td[criterion],
+tbody td[aim],
+tbody td[alternative],
+tbody td[stakeholder] {
+    font-size: 14px;
+
+    border-right: 1px solid $table-border-color !important;
+    border-bottom: 1px solid $table-border-color !important;
+    min-width: 200px;
+}
+
+tbody tr td:last-of-type {
+    border-right: none !important;
+}
+
+.tablelist thead {
+    text-align: center;
+
+    th {
+        font-size: 12px;
+        position: sticky;
+        top: 0;
+        background-color: #fff;
+        z-index: 1;
+        tr {
+        }
+    }
+}
+
+.tablelist tfoot {
+    text-align: center;
+
+    th {
+        padding: 0;
+        position: sticky !important;
+        bottom: 0;
+        z-index: 3;
+    }
+}
+
+// .tablelist tfoot {
+//     th[alternative] {
+
+//         //border-left: 1px solid $table-border-color !important;
+//     }
+// }
+
+
+.is-sticky-clone {
+    //display: none;
+    position: fixed;
+    box-sizing: border-box;
+    //background-color: #fff;
+    z-index: 1;
+
+
+    //border: 1px solid red;
+
+    //border: 1px solid $table-border-color;
+    border-radius: 6px;
+
+    thead & {
+        padding-top: 3px;
+        padding-bottom: 3px;
+        transform: translateY(-6px);
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+
+
+        &::after {
+            content: '';
+            border-top: 1px solid $table-border-color;
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            top: 100%;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .05) 100%);
+        }
+    }
+
+    tfoot & {
+        th {
+
+            padding-top: 6px;
+            padding-bottom: 6px;
+        }
+        transform: translateY(calc(-100% + 6px));
+
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+
+        //border-bottom: 1px solid $table-border-color;
+        //background-color: #fff;
+
+        &::before {
+            border-bottom: 1px solid $table-border-color;
+            content: '';
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            bottom: 100%;
+            transform: translateY(0);
+            z-index: 0;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 100%);
+        }
+    }
+}
+
+.is-sticky-reference {
+    // background-color: red;
+    visibility: hidden;
+}
+
+.tablelist-container {
+    position: absolute;
+    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: auto;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+
+    & > .v-card {
+        
+    }
+}
+
+.properties-table {
+
+    th,
+    td {
+        padding: 12px !important;
+        vertical-align: top;
+    }
+}
+
+.tablelist thead {
+        position: relative;
+    
+    & th::after {
+        content: "";
+        display: block;
+        position: absolute;
+        
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 1px;
+        border-bottom: 1px solid $table-border-color;
+        z-index: 100;
+    }
+    & > tr {
+        //background-image: linear-gradient(to bottom, rgba(white, 0.95) 0%, white 25%);
+        background-color: #fff;
+        
+    }
+    
+    & > tr.is-sticky-clone::before {
+        content: '';
+        display: block;
+        position: absolute;
+        border-left: 1px solid $table-border-color;
+        left: 0;
+        top: $padding/2;
+        bottom: 0;
+        z-index: 2;
+        // top: -$padding/2;
+        // bottom: -$padding/2;
+    }
+}
+
+.tablelist tbody {
+position: relative;
+    &::before {
+        content: '';
+        display: block;
+        position: absolute;
+        border-left: 1px solid $table-border-color;
+        left: 0;
+        top: 0;
+        bottom: 48px;
+        
+    }
+    // &::after {
+    //     content: '';
+    //     display: block;
+    //     position: absolute;
+    //     border-right: 1px solid $table-border-color;
+    //     right: -1px;
+    //     top: 0;
+    //     bottom: 0;
+    //     z-index: 1;
+    // }
+}
+
+.tablelist tfoot {
+
+    & [alternative] {
+        
+        position: relative;
+        background-color: #fff;
+        &:not(:last-of-type) {
+
+            
+            
+        }
+        &::before {
+            content: '';
+            display: block;
+            position: absolute;
+            border-right: 1px solid $table-border-color;
+            right: -1px;
+            top: 0;
+            bottom: 0;
+            z-index: 1;
+            // top: -$padding/2;
+            // bottom: -$padding/2;
+        }
+        &::after {
+            content: '';
+            display: block;
+            position: absolute;
+            border-bottom: 1px solid $table-border-color;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+    }
+
+    & [aim],
+    & [criterion] {
+    }
+    
+    & [criterion-aim] {
+        background-color: #fafafa;
+        position: relative;
+        
+        &::before {
+            content: '';
+            display: block;
+            position: absolute;
+            border-top: 1px solid $table-border-color;
+            right: 0;
+            z-index: 1;
+            top: -1px;
+            left: 0;
+            right: 0;
+        }
+        &::after {
+            content: '';
+            display: block;
+            position: absolute;
+            border-right: 1px solid $table-border-color;
+            right: -1px;
+            z-index: 1;
+            top: 0;
+            bottom: 0;
+        }
+    }
+}
+
+
+.tablelist-x-shadow, .tablelist-y-shadow {
+    pointer-events: none;
+    position: fixed;
+    opacity: 0;
+    
+    transition: opacity ease 150ms;
+
+    &.is-pinned {
+        opacity: 1;
+    }
+}
+
+.tablelist-x-shadow {
+    top: 0;
+    background: linear-gradient(to left, transparent, rgba(0,0,0,0.1));
+    width: 6px; 
+    z-index: 2;
+}
+
+.tablelist-y-shadow {
+    background: linear-gradient(to top, transparent, rgba(0,0,0,0.1));
+    height: 6px;
+    
+    z-index: 3;
+    opacity: 0;
+
+}

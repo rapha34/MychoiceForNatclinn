@@ -1,0 +1,254 @@
+[
+
+	{
+		"id" : "2",
+		"assertion" : "Les protéines végétales sont de moins bonne qualité que les protéines animales",
+		"explication" : "Prises individuellement, les protéines végétales ont généralement un déficit en un ou plusieurs acides aminés",
+		"date" : "04/05/2019",	
+		"source" : "Valorial - Argumentaire protéine végétale, Powerpoint ,Rallou",
+		"auteur" : "Food innovation cluster",
+		"property" : "Amino acid provision",
+		"value" : "incomplete",
+		"favorable" : false,
+		"alternative" : "Vegetarian diet",
+		"criterion" : "Nutritional",
+		"aim" : "Consuming high quality proteins",
+		"contradiction":[21],
+		"confirmation" : []
+
+
+	},
+	{
+		"id" : "3",
+		"assertion" : "Les protéines végétales sont de moins bonne qualité que les protéines animales",
+		"explication" : "Prises individuellement, les protéines végétales ont généralement un déficit en un ou plusieurs acides aminés",
+		"date" : "04/04/2019",	
+		"source" : "Valorial - Argumentaire protéine végétale, Powerpoint ,Rallou",
+		"auteur" : "Food innovation cluster",
+		"property" : "Amino acid provision",
+		"value" : "incomplete",
+		"favorable" : false,
+		"alternative" : "Vegetarian diet",
+		"criterion" : "Nutritional",
+		"aim" : "Consuming high quality proteins",
+		"contradiction":[21],
+		"confirmation" : [100,95]
+
+	},
+
+
+
+	{
+		"id" : "21",
+		"assertion" : "Les protéines végétales ne sont pas de moins bonne qualité que les protéines animales",
+		"explication" : "Les protéines de soja, féverole, feuille de luzerne, pomme de terre, graine de chanvre (chčnevis), quinoa et canihua sont trčs bien équilibrées sur le plan des acides aminés",
+		"date" : "04/04/2019",	
+		"source" : "Valorial - Argumentaire protéine végétale, Powerpoint ,Rallou",
+		"auteur" : "Food innovation cluster",
+		"property" : "Amino acid provision",
+		"value" : "balanced",
+		"favorable" : true,
+		"alternative" : "Vegetarian diet",
+		"criterion" : "Nutritional",
+		"aim" : "Consuming high quality proteins",
+		"contradiction":[2,3],
+		"confirmation" : [85,4]
+
+	},
+	{
+		"id" : "4",
+		"assertion" : "Les protéines végétales sont de moins bonne qualité que les protéines animales",
+		"explication" : "Prises individuellement, les protéines végétales ont généralement un déficit en un ou plusieurs acides aminés",
+		"date" : "04/05/2019",	
+		"source" : "Valorial - Argumentaire protéine végétale, Powerpoint ,Rallou",
+		"auteur" : "philosopher",
+		"property" : "Amino acid provision",
+		"value" : "incomplete",
+		"favorable" : false,
+		"alternative" : "Vegetarian diet",
+		"criterion" : "Nutritional",
+		"aim" : "Consuming high quality proteins",
+		"contradiction":[21],
+		"confirmation" : [100,1,2]
+
+
+	},
+	{
+		"id" : "5",
+		"assertion" : "Les protéines végétales sont de moins bonne qualité que les protéines animales",
+		"explication" : "Prises individuellement, les protéines végétales ont généralement un déficit en un ou plusieurs acides aminés",
+		"date" : "04/04/2019",	
+		"source" : "Valorial - Argumentaire protéine végétale, Powerpoint ,Rallou",
+		"auteur" : "Journalist",
+		"property" : "Amino acid provision",
+		"value" : "incomplete",
+		"favorable" : false,
+		"alternative" : "Meat consumption",
+		"criterion" : "Nutritional",
+		"aim" : "Consuming high quality proteins",
+		"contradiction":[21],
+		"confirmation" : []
+
+	},
+	{
+		"id" : "22",
+		"assertion" : "Les protéines végétales ne sont pas de moins bonne qualité que les protéines animales",
+		"explication" : "Les protéines de soja, féverole, feuille de luzerne, pomme de terre, graine de chanvre (chčnevis), quinoa et canihua sont trčs bien équilibrées sur le plan des acides aminés",
+		"date" : "04/04/2019",	
+		"source" : "Valorial - Argumentaire protéine végétale, Powerpoint ,Rallou",
+		"auteur" : "Journalist",
+		"property" : "Amino acid provision",
+		"value" : "balanced",
+		"favorable" : true,
+		"alternative" : "Meat consumption",
+		"criterion" : "Nutritional",
+		"aim" : "Consuming high quality proteins",
+		"contradiction":[2,3],
+		"confirmation" : []
+
+	},
+{
+		"id" : "7",
+		"assertion" : "Les protéines végétales sont de moins bonne qualité que les protéines animales",
+		"explication" : "Prises individuellement, les protéines végétales ont généralement un déficit en un ou plusieurs acides aminés",
+		"date" : "04/05/2019",	
+		"source" : "Valorial - Argumentaire protéine végétale, Powerpoint ,Rallou",
+		"auteur" : "philosopher",
+		"property" : "Amino acid provision",
+		"value" : "incomplete",
+		"favorable" : false,
+		"alternative" : "Meat consumption",
+		"criterion" : "Nutritional",
+		"aim" : "Consuming high quality proteins",
+		"contradiction":[21],
+		"confirmation" : []
+
+
+	},
+	{
+		"id" : "8",
+		"assertion" : "Les protéines végétales sont de moins bonne qualité que les protéines animales",
+		"explication" : "Prises individuellement, les protéines végétales ont généralement un déficit en un ou plusieurs acides aminés",
+		"date" : "04/04/2019",	
+		"source" : "Valorial - Argumentaire protéine végétale, Powerpoint ,Rallou",
+		"auteur" : "philosopher",
+		"property" : "Amino acid provision",
+		"value" : "incomplete",
+		"favorable" : false,
+		"alternative" : "Meat consumption",
+		"criterion" : "Nutritional",
+		"aim" : "Consuming high quality proteins",
+		"contradiction":[21],
+		"confirmation" : []
+
+	},
+
+
+
+	{
+		"id" : "277",
+		"assertion" : "Les protéines végétales ne sont pas de moins bonne qualité que les protéines animales",
+		"explication" : "Les protéines de soja, féverole, feuille de luzerne, pomme de terre, graine de chanvre (chčnevis), quinoa et canihua sont trčs bien équilibrées sur le plan des acides aminés",
+		"date" : "04/04/2019",	
+		"source" : "Valorial - Argumentaire protéine végétale, Powerpoint ,Rallou",
+		"auteur" : "philosopher",
+		"property" : "Amino acid provision",
+		"value" : "balanced",
+		"favorable" : true,
+		"alternative" : "Meat consumption",
+		"criterion" : "Nutritional",
+		"aim" : "Consuming high quality proteins",
+		"contradiction":[2,3],
+		"confirmation" : []
+
+	},
+
+
+	{
+		"id" : "87",
+		"assertion" : "Vegetarian diet would reduce GreenHouse Gas (GHG) emissions",
+		"explication" : "Vegetarian diet would reduce GHG emissions per capita from food production by 55%",
+		"date" : "04/04/1046",	
+		"source" : "Tilman & Clark 2014, Scientific paper ,Top ten results on Google scholars on 25/09/17 for \"Vegetarian diet\"",
+		"auteur" : "Scientists",
+		"property" : "GHG emissions from food",
+		"value" : "high decrease, -55%",
+		"favorable" : true,
+		"alternative" : "Vegetarian diet",
+		"criterion" : "Environnemental",
+		"aim" : "Reducing GHG emissions",
+		"contradiction":[],
+		"confirmation" : [96]
+
+	},
+
+	{
+		"id" : "95",
+		"assertion" : "L'impact Environnemental légitime une réduction de la consommation de viande, d'śuf et de produits laitiers, mais il est insuffisant pour justifier une abstinence complčte",
+		"explication" : "Il est vrai que produire des végétaux pollue généralement moins que produire de la viande, cet argument ne justifie pas l'abstention complčte de la viande prescrite par le végétalisme",
+		"date" : "04/04/2019",	
+		"source" : "Les blogs du Huffingtonpost Québec - La faiblesse des arguments pour le véganisme, Blog post ,Top ten results in Google on 26/09/17 for \"Végétalisme argument\" ",
+		"auteur" : "philosopher",
+		"property" : "Pollution",
+		"value" : "insufficient decrease",
+		"favorable" : false,
+		"alternative" : "Vegetarian diet",
+		"criterion" : "Environnemental",
+		"aim" : "Reducing Environnemental inpact",
+		"contradiction":[2,3],
+		"confirmation" : [100,96]
+	},
+	{
+		"id" : "96",
+		"assertion" : "La production de viande emet trop de GES (Gaz ŕ effet de serre)",
+		"explication" : "L’élevage est responsable de 14,5% des Gaz ŕ Effet de Serre, selon le dernier rapport du GIEC, soit plus que les transports.",
+		"date" : "04/04/2019",	
+		"source" : "COP21 : 10 raisons d'ętre végétarien, Internet article ,Top ten results in Google on 26/09/17 for \"Végétalisme argument\"",
+		"auteur" : "Journalist",
+		"property" : "GHG emisions",
+		"value" : "high, 14,50%",
+		"favorable" : false,
+		"alternative" : "Meat consumption",
+		"criterion" : "Environnemental",
+		"aim" : "Reducing GHG emissions",
+		"contradiction":[1,2,100],
+		"confirmation" : [87,95]
+	},
+
+	{
+		"id" : "100",
+		"assertion" : "La production de viande emet trop de GES (Gaz ŕ effet de serre)",
+		"explication" : "L’industrie de la viande accentue également la déforestation. D’aprčs une enquęte de Greenpeace, il est responsable ŕ 80% de la destruction de la foręt amazonienne. Toute cette déforestation augmente de 6% les émissions de GES actuelles.",
+		"date" : "04/04/2019",	
+		"source" : "COP21 : 10 raisons d'ętre végétarien, Internet article ,Top ten results in Google on 26/09/17 for \"Végétalisme argument\" ",
+		"auteur" : "Journalist",
+		"property" : "GHG emissions from deforestation",
+		"value" : "high, 6%",
+		"favorable" : true,
+		"alternative" : "Vegetarian diet",
+		"criterion" : "Environnemental",
+		"aim" : "Reducing GHG emissions",
+		"contradiction":[1,2,3,21,87,95,96],
+		"confirmation" : []
+	},
+
+	{
+		"id" : "1",
+		"assertion" : "La consommation de viande consomme trop d'eau",
+		"explication" : "D’ici 2050, l’Homme devra passer au régime végétarien -ou au moins baisser sa consommation de protéines d’origine animales ŕ 5%- ŕ cause du manque d’eau. Tel est le résultat d’une étude publiée par l’Institut international de l’eau basé ŕ Stockholm. Sans cela, il sera impossible de nourrir les 2 milliards d’ętres humains supplémentaires",
+		"date" : "04/04/2019",	
+		"source" : "COP21 : 10 raisons d'ętre végétarien, Internet article ,Top ten results in Google on 26/09/17 for \"Végétalisme argument\"",
+		"auteur" : "Journalist",
+		"property" : "Water saving",
+		"value" : "high",
+		"favorable" : false,
+		"alternative" : "Meat consumption",
+		"criterion" : "Environnemental",
+		"aim" : "Reducing water consumption",
+		"contradiction":[],
+		"confirmation" : []
+	}
+
+
+	
+]

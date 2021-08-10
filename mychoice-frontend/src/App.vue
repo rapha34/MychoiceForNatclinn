@@ -1,0 +1,112 @@
+<template>
+  <v-app style="background-color: #fafafa;">
+    <AppBar></AppBar>
+
+    <Drawer></Drawer>
+
+    <v-content>
+      <router-view />
+    </v-content>
+
+    <v-dialog v-model="state.openDialog" max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class>
+            <v-icon class="mr-2">mdi-folder-open-outline</v-icon>Open project
+          </span>
+        </v-card-title>
+
+        <v-card-text>
+          <OpenDialog />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="state.aboutDialog" max-width="600px">
+      <About />
+    </v-dialog>
+
+    <v-overlay z-index="3" :value="state.overlay">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
+
+    <v-snackbar color="info" v-model="isNotification">
+      <v-icon align-center>mdi-information</v-icon>
+      <div>
+      <div v-for="(notification, index) in state.notifications" :key="index">
+      
+        {{ notification.message }}.
+
+        
+      </div>
+      </div>
+      <v-btn class="ml-3" color="white" small outlined
+          @click="refreshProject"
+        >
+          Refresh 
+        </v-btn>
+      
+    </v-snackbar>
+
+    <v-snackbar color="red" v-model="isError" :timeout="0">
+      
+      <div>
+      <div v-for="(key, index) in getErrors" :key="index">
+        <span v-html="getErrorMessage(key)"></span>.
+      </div>
+      </div>
+      <v-btn text @click="clearErrors()">Close</v-btn>
+    </v-snackbar>
+  </v-app>
+</template>
+
+<script>
+import AppBar from "@/components/AppBar.vue";
+import Drawer from "@/components/Drawer.vue";
+import OpenDialog from "@/components/OpenDialog.vue";
+import About from "@/views/About.vue";
+import { state, clearErrors, getErrors, getErrorMessage, refreshProject } from "@/store";
+export default {
+  data: () => ({
+    state
+  }),
+  components: {
+    Drawer,
+    OpenDialog,
+    AppBar,
+    About
+  },
+  methods: {
+    clearErrors,
+    getErrorMessage,
+    refreshProject
+  },
+  computed: {
+    getErrors,
+    isNotification: {
+      get() {
+        return state.notifications && state.notifications.length <= 0 ? false : true
+      },
+      set(value) {
+        if (value === false) {
+          state.notifications = []
+        }
+      }
+    },
+    isError: {
+      get() {
+        return Object.values(state.errors).some(error => error !== false);
+      },
+      set(value) {
+        if (value === false) {
+          clearErrors();
+        }
+      }
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+@import "@/styles/main.scss";
+</style>

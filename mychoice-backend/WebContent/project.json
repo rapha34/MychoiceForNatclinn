@@ -1,0 +1,170 @@
+{
+  "nameStakeholder": [
+    "Food innovation cluster",
+    "Multi-stakeholder organization (Industry and Research) promoting innovation in food systems",
+    "Scientists",
+    "American Dietetic Association",
+    "Jounalist pro-vegan",
+    "Blogger pro-vegan",
+    "BBC",
+    "Journalist",
+    "Philosopher",
+    "Website editor",
+    "Vegan website",
+    "Participatory encyclopedia",
+    "Vegetarian media",
+    "Internet debate with several Reddit users"
+  ],
+  "aim": [
+    "Consuming a balanced diet",
+    "Providing specific populations with balanced diets",
+    "Reaching satiety",
+    "Enjoying eating",
+    "Preventing allergies",
+    "Enabling proper digestion",
+    "Rationalizing the ratio protein/price ",
+    "Reducing greenhouse gas emissions",
+    "Improving health",
+    "Preventing suffering",
+    "Generating employment",
+    "Basing one's choices on reliable evidence",
+    "Pacifying human-animal relationship",
+    "Matching legal rights",
+    "Reducing environmental impact",
+    "Preserving biodiversity",
+    "Having easy access to food products",
+    "Following exemplary role models",
+    "Preserving resources",
+    "Protecting ecosystems",
+    "Investing in new markets",
+    "Improving soil fertility",
+    "Meeting human's natural needs",
+    "Assuming responsiblity for one's choices",
+    "Letting dietary habits adapt with the times",
+    "Reducing inequities",
+    "Reducing water consumption",
+    "Avoiding pollutants",
+    "Following the law of supply and demand",
+    "Resolving cognitive inconsistencies",
+    "Preventing pollution",
+    "Optimizing food conversion ratio",
+    "Controling the market of food products",
+    "Ensuring access to food for all humans"
+  ],
+  "nameCriterion": [
+    "Nutrition and health",
+    "Sensory",
+    "Safety",
+    "Economic",
+    "Environmental",
+    "Ethical",
+    "Social",
+    "Legal",
+    "Anthropological"
+  ],
+  "nameProject": "VITAMIN",
+  "description": "The VITAMIN project (VegetarIan Transition Argument ModellINg) aims to get a better understanding of factors influencing individuals in their transition to reduce their animal product consumption. We use comprehensive individual interviews, questionnaires as well as diverse modelling techniques (mainly SMA & argumentation systems) to collect and analyse this topic. Our final intent is to develop an agent-based model integrating individuals' argumentation networks about vegetarian transitions. More details on https://www.researchgate.net/project/VITAMIN-VegetarIan-Transition-Argument-ModellINg",
+  "image": "photoVITAMIN.jpg",
+  "alternatives": [
+    {
+      "nameAlternative": "Plant-based diet",
+      "description": null,
+      "imageAlternative": "salad-2655915_1920.jpg",
+      "iconAlternative": "carrot.svg"
+    },
+    {
+      "nameAlternative": "Animal-based diet",
+      "description": null,
+      "imageAlternative": "meat-3689568_1920.jpg",
+      "iconAlternative": "cow.svg"
+    }
+  ],
+  "hasExpertise": [
+    {
+      "nameStakeHolder": "Food innovation cluster",
+      "nameCriterion": "Nutrition and health"
+    },
+    {
+      "nameStakeHolder": "Food innovation cluster",
+      "nameCriterion": "Economic"
+    },
+    {
+      "nameStakeHolder": "Multi-stakeholder organization (Industry and Research) promoting innovation in food systems",
+      "nameCriterion": "Nutrition and health"
+    },
+    {
+      "nameStakeHolder": "Multi-stakeholder organization (Industry and Research) promoting innovation in food systems",
+      "nameCriterion": "Sensory"
+    },
+    {
+      "nameStakeHolder": "Multi-stakeholder organization (Industry and Research) promoting innovation in food systems",
+      "nameCriterion": "Environmental"
+    },
+    {
+      "nameStakeHolder": "Multi-stakeholder organization (Industry and Research) promoting innovation in food systems",
+      "nameCriterion": "Economic"
+    },
+    {
+      "nameStakeHolder": "Scientists",
+      "nameCriterion": "Nutrition and health"
+    },
+    {
+      "nameStakeHolder": "Scientists",
+      "nameCriterion": "Environmental"
+    },
+    {
+      "nameStakeHolder": "Philosopher",
+      "nameCriterion": "Ethical"
+    },
+    {
+      "nameStakeHolder": "American Dietetic Association",
+      "nameCriterion": "Nutrition and health"
+    }
+  ],
+  "typeSource": [
+    {
+      "nameTypeSource": "Newspaper",
+      "fiability": "2"
+    },
+    {
+      "nameTypeSource": "Slideshow",
+      "fiability": "2"
+    },
+    {
+      "nameTypeSource": "Scientific paper",
+      "fiability": "1"
+    },
+    {
+      "nameTypeSource": "Blog post",
+      "fiability": "3"
+    },
+    {
+      "nameTypeSource": "Internet article",
+      "fiability": "2"
+    },
+    {
+      "nameTypeSource": "Internet media",
+      "fiability": "3"
+    },
+    {
+      "nameTypeSource": "Vegan Web Directory",
+      "fiability": "3"
+    },
+    {
+      "nameTypeSource": "Post",
+      "fiability": "3"
+    },
+    {
+      "nameTypeSource": "Wikipedia",
+      "fiability": "2"
+    },
+    {
+      "nameTypeSource": "Reddit Forum",
+      "fiability": "3"
+    },
+    {
+      "nameTypeSource": "British Newspaper",
+      "fiability": "2"
+    }
+  ]
+}

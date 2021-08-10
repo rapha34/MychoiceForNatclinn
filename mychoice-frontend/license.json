@@ -1,0 +1,4 @@
+{
+"ignore": ["public", "**/*.md", "**/.*","**/*.svg","**/*.txt","**/*.pdf","**/*.mp4", "**/*.zip", "**/*.tar.gz","**/*.exe","**/*.vue"],
+"license" : "./license/header.txt"
+}
