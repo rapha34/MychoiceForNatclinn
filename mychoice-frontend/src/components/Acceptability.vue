@@ -30,24 +30,51 @@
   <!-- </span> -->
 </template>
 
-<script>
+<script lang="ts">
+import { NormalizedArgument } from "@/@types";
 import { getAcceptabilityFromProCon, pluralize } from "@/store";
+import { computed, defineComponent, PropType, toRefs } from "@vue/composition-api";
 import ScoreIcon from "./ScoreIcon.vue";
-export default {
+export default defineComponent({
+
+  props: {
+    items: {
+      type: Array as PropType<NormalizedArgument[]>
+    },
+    alternative: {
+      type: Number
+    },
+    icon: {
+      type: Boolean
+    }
+  },
+
+  setup(props) {
+
+    const {items, alternative, icon} = toRefs(props)
+
+    return {
+      
+
+      acceptability: computed(() => getAcceptabilityFromProCon(items.value)),
+
+      getAcceptabilityFromProCon,
+      pluralize
+    
+    }
+  },
+
   components: {
     ScoreIcon
   },
-  props: ["items", "alternative", "icon"],
+  // props: ["items", "alternative", "icon"],
   computed: {
-    acceptability: function() {
-      return getAcceptabilityFromProCon(this.items);
-    }
+    
   },
   methods: {
-    getAcceptabilityFromProCon,
-    pluralize
+    
   }
-};
+});
 </script>
 
 <style lang="scss"></style>

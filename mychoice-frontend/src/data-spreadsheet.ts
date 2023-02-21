@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -36,11 +36,11 @@ import {
   Project,
   Alternative,
   expertiseEntity,
-  SourceTypeEntity
+  SourceTypeEntity,
 } from "./@types";
 import { MyChoiceError, setError } from "./store/utils";
 
-var gsheets = require("gsheets");
+const gsheets = require("gsheets");
 
 const KEY = "1R0UaXut1IWLe4KKk9M5Nu7NHmE7SzajBWT1povyhIUE";
 
@@ -82,23 +82,63 @@ export type SpreadsheetWorksheet = {
     [key: string]: any;
   }[];
   title: string;
-  updated: string;
+  updated?: string;
+  index: number;
 };
 
-export const fetchSpreadsheetWorksheets = async (id: string) => {
+export const getSpreadsheet = async (spreadsheetId: string) => {
+  const response = await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?key=${process.env.VUE_APP_GSHEETS_API_KEY}`
+  );
+  const result = await response.json();
+
+  return result as {
+    sheets: {
+      properties: {
+        sheetId: number;
+        title: string;
+        index: number;
+        sheetType: "GRID";
+        gridProperties: {
+          rowCount: number;
+          columnCount: number;
+          frozenRowCount: number;
+        };
+      };
+    }[];
+  };
+};
+
+export const fetchSpreadsheetWorksheets = async (
+  id: string
+): Promise<SpreadsheetWorksheet[]> => {
+  // eslint-disable-next-line no-useless-catch
   try {
-    const json: GSheetsData = await gsheets.getSpreadsheet(id);
-    const worksheets = json.worksheets;
+    const json = await getSpreadsheet(id);
+    const worksheets = json.sheets;
 
     const promises: Promise<SpreadsheetWorksheet>[] = [];
 
-    worksheets.forEach(worksheet => {
-      promises.push(gsheets.getWorksheet(id, worksheet.title));
+    const refs = {} as { [key: number]: string };
+
+    worksheets.forEach((worksheet) => {
+      refs[worksheet.properties.index] = worksheet.properties.title;
+      promises.push(
+        gsheets.getWorksheet(
+          id,
+          worksheet.properties.title,
+          process.env.VUE_APP_GSHEETS_API_KEY
+        )
+      );
     });
 
     const response = await Promise.all(promises);
-
-    return response;
+    // console.log(response, "RESPONSE");
+    return response.map(({ data }, index) => ({
+      data,
+      title: refs[index],
+      index,
+    }));
   } catch (e) {
     throw e;
   }
@@ -162,12 +202,12 @@ export type SpreadsheetSourceType = {
 export const hasExpectedProperties = <T>(obj: T, props: string[]) => {
   return new Promise((resolve, reject) => {
     let lastTestedProp = null;
-    const hasAll = props.every(prop => {
+    const hasAll = props.every((prop) => {
       lastTestedProp = prop;
-      if (obj.hasOwnProperty(prop)) {
+      if (Object.prototype.hasOwnProperty.call(obj, prop)) {
         return true;
       } else {
-        console.log("reject");
+        // console.log("reject");
         return false;
         // return false;
       }
@@ -239,10 +279,10 @@ export const isValidWorkSheet = async (worksheet: SpreadsheetWorksheet) => {
       "nameSource",
       "aim",
       "nameTypeSource",
-      "isProspective"
+      "isProspective",
     ],
     project: ["nameProject"],
-    alternative: ["nameAlternative", "iconAlternative"]
+    alternative: ["nameAlternative", "iconAlternative"],
   };
 
   //@ts-ignore
@@ -250,9 +290,10 @@ export const isValidWorkSheet = async (worksheet: SpreadsheetWorksheet) => {
   const firstWorksheetItem = worksheet.data[0];
 
   if (firstWorksheetItem) {
+    // console.log(firstWorksheetItem, "FIRST");
     return await hasExpectedProperties(firstWorksheetItem, props).then(
-      result => result,
-      prop => {
+      (result) => result,
+      (prop) => {
         throw new MyChoiceError(
           "SPREADSHEET_ERROR",
           `On <b>${worksheet.title}</b> sheet, the <b>${prop}</b> column is missing or misspelled`
@@ -272,9 +313,9 @@ export const checkEmptyArguments = <T extends SpreadsheetWorksheet["data"][0]>({
   item,
   worksheet,
   line,
-  keys
+  keys,
 }: {
-  spreadsheetId: string;
+  spreadsheetId?: string;
   item: T;
   worksheet: SpreadsheetWorksheet;
   line: number;
@@ -302,7 +343,7 @@ export const checkUniqueAimsHasUniqueCriterions = (
 ) => {
   const aims: { [key: string]: string[] } = {};
 
-  items.forEach(item => {
+  items.forEach((item) => {
     if (aims[item.aim]) {
       if (!aims[item.aim].includes(item.nameCriterion)) {
         aims[item.aim].push(item.nameCriterion);
@@ -332,16 +373,17 @@ export const checkUniqueAimsHasUniqueCriterions = (
 };
 
 export const getRenamedSpreadsheetItems = async (
-  spreadsheetId: string,
-  worksheets: SpreadsheetWorksheet[]
+  worksheets: SpreadsheetWorksheet[],
+  spreadsheetId?: string
 ) => {
   const argumentWorksheet = worksheets.find(
-    worksheet => worksheet.title === "argument"
+    (worksheet) => worksheet.title === "argument"
   );
 
-  const rawSpreadsheetItems = argumentWorksheet!.data as SpreadsheetArgument[];
-  const spreadsheetItems = rawSpreadsheetItems.map(item => {
-    return Object.keys(item).reduce(function(result, key) {
+  const rawSpreadsheetItems = worksheets[argumentWorksheet.index]!
+    .data as SpreadsheetArgument[];
+  const spreadsheetItems = rawSpreadsheetItems.map((item) => {
+    return Object.keys(item).reduce(function (result, key) {
       try {
         //@ts-ignore
         result[key] = JSON.parse(item[key]);
@@ -389,8 +431,8 @@ export const getRenamedSpreadsheetItems = async (
         "nameAlternative",
         "nameCriterion",
         "aim",
-        "nameTypeSource"
-      ] as (keyof SpreadsheetArgument)[]
+        "nameTypeSource",
+      ] as (keyof SpreadsheetArgument)[],
     });
 
     const renamedItem = {
@@ -404,7 +446,7 @@ export const getRenamedSpreadsheetItems = async (
       sourceType: item["nameTypeSource"],
       value: item["value"],
       aim: item["aim"],
-      date: item["date"] ? item["date"].toString() : null
+      date: item["date"] ? item["date"].toString() : null,
     };
 
     delete item.idArgument;
@@ -419,7 +461,7 @@ export const getRenamedSpreadsheetItems = async (
     delete item["aim"];
     return <Argument>{
       ...item,
-      ...renamedItem
+      ...renamedItem,
     };
   });
 };
@@ -428,7 +470,7 @@ export const getRenamedSpreadsheetProject = async (
   worksheets: SpreadsheetWorksheet[]
 ) => {
   const projectWorksheet = worksheets.find(
-    worksheet => worksheet.title === "project"
+    (worksheet) => worksheet.title === "project"
   );
 
   // const projectItems = projectWorksheet!.data;
@@ -442,14 +484,14 @@ export const getRenamedSpreadsheetProject = async (
   const spreadsheetProject = projectWorksheet!.data[0] as SpreadsheetProject;
 
   const alternativeWorksheet = worksheets.find(
-    worksheet => worksheet.title === "alternative"
+    (worksheet) => worksheet.title === "alternative"
   );
 
   try {
     await isValidWorkSheet(alternativeWorksheet);
 
     alternativeWorksheet.data.forEach((item, index) => {
-      let line = index + 2;
+      const line = index + 2;
       if (item.iconAlternative === null) {
         throw new MyChoiceError(
           "SPREADSHEET_ERROR",
@@ -464,38 +506,39 @@ export const getRenamedSpreadsheetProject = async (
   const spreadsheetAlternatives = alternativeWorksheet!
     .data as SpreadsheetAlternative[];
 
-  const renamedAlternatives: Alternative[] = spreadsheetAlternatives.map(k => ({
-    name: k.nameAlternative,
-    description: k.description,
-    image: k.imageAlternative,
-    icon: k.iconAlternative
-  }));
+  const renamedAlternatives: Alternative[] = spreadsheetAlternatives.map(
+    (k) => ({
+      name: k.nameAlternative,
+      description: k.description,
+      image: k.imageAlternative,
+      icon: k.iconAlternative,
+    })
+  );
 
   const expertiseWorksheet = worksheets.find(
-    worksheet => worksheet.title === "hasexpertise"
+    (worksheet) => worksheet.title === "hasexpertise"
   );
   const spreadsheetExpertises = expertiseWorksheet!
     .data as SpreadsheetExpertise[];
 
   const renamedExpertiseEntities: expertiseEntity[] = spreadsheetExpertises.map(
-    k => ({
+    (k) => ({
       nameStakeHolder: k["nameStakeHolder"],
-      nameCriterion: k["nameCriterion"]
+      nameCriterion: k["nameCriterion"],
     })
   );
 
   const sourceTypeWorksheet = worksheets.find(
-    worksheet => worksheet.title === "typesource"
+    (worksheet) => worksheet.title === "typesource"
   );
   const spreadsheetSourceType = sourceTypeWorksheet!
     .data as SpreadsheetSourceType[];
 
-  const renamedSourceTypeEntities: SourceTypeEntity[] = spreadsheetSourceType.map(
-    k => ({
+  const renamedSourceTypeEntities: SourceTypeEntity[] =
+    spreadsheetSourceType.map((k) => ({
       fiability: k.fiability.toString(),
-      nameTypeSource: k.nameTypeSource
-    })
-  );
+      nameTypeSource: k.nameTypeSource,
+    }));
 
   const renamedProject: Project = {
     name: spreadsheetProject.nameProject,
@@ -503,7 +546,7 @@ export const getRenamedSpreadsheetProject = async (
     description: spreadsheetProject.description,
     alternatives: renamedAlternatives,
     expertiseEntities: renamedExpertiseEntities,
-    sourceTypeEntities: renamedSourceTypeEntities
+    sourceTypeEntities: renamedSourceTypeEntities,
   };
 
   return renamedProject;

@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -31,46 +31,44 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
 */
 import {
-  state,
   getSpreadsheetData,
-  spreadsheetIdRouteQuery,
-  projectNameRouteQuery,
   setError,
-  MyChoiceError
+  MyChoiceError,
+  getNextcloudDownloadUrlFromId,
+  getNextcloudDataFromUrl,
+  openXlsxFromFile,
 } from "@/store";
-import { getRenamedItems, getRenamedProject } from "@/data-renamed";
+import { PROJECT_TYPE_ROUTES } from "./routes";
 import {
-  getNormalizedData,
-  filterDataAsProspective,
-  filterDataAsInterplay,
-  filterDataAsReliability,
-  filterDataAsExpertise,
-  filterDataAsMultiStakeholder
-} from "@/data-parser";
-import {
-  clearAppDialogs,
-  clearErrors,
-  getProjectName,
-  getCurrentRoute,
-  clearAll,
-  clearAppDataAndProject
-} from "./state";
+  setData,
+  getIcoItemsData,
+  getIcoProjectData,
+  getIcoData,
+} from "./project";
+import { state, getProjectName, showOverlay, hideOverlay } from "./state";
 import dataJson from "../../public/data.json";
 import projectJson from "../../public/project.json";
-import { Data } from "@/@types";
-import Vue from "vue";
+
+import {
+  getProjectDataCacheFromRoute,
+  isProjectCached,
+  ProjectGroupNames,
+  saveToRecentProjects,
+  setProjectCache,
+} from "./cache";
+import { Route } from "vue-router";
 import router from "@/router";
 
-export const getApiUrl = () => {
+export const getIcoApiUrl = () => {
   const proxyUrl = process.env.BASE_URL + "api/";
   return process.env.NODE_ENV === "development"
     ? proxyUrl
     : process.env.VUE_APP_API_URL;
 };
 
-export const fetchData = async (projectId: string) => {
+export const fetchIcoData = async (projectId: string) => {
   let json = null;
-  const url = getApiUrl() + "arguments?project=" + projectId;
+  const url = getIcoApiUrl() + "arguments?project=" + projectId;
   try {
     if (!projectId) {
       throw Error();
@@ -87,9 +85,9 @@ export const fetchData = async (projectId: string) => {
   return json;
 };
 
-export const fetchProject = async (projectId: string) => {
+export const fetchIcoProject = async (projectId: string) => {
   let json = null;
-  const url = getApiUrl() + "project?name=" + projectId;
+  const url = getIcoApiUrl() + "project?name=" + projectId;
   try {
     if (!projectId) {
       throw Error();
@@ -117,296 +115,441 @@ export const fetchProject = async (projectId: string) => {
 //   // }
 // };
 
-export const saveToRecentProjectNames = (name: string) => {
-  if (!Object.keys(state.recentProjectNames).includes(name)) {
-    state.recentProjectNames = {
-      ...state.recentProjectNames,
-      [name]: {
-        name,
-        date: Date.now()
-      }
-    };
+// export const saveToRecentProjectNames = (name: string) => {
+//   if (!Object.keys(state.recentProjectNames).includes(name)) {
+//     state.recentProjectNames = {
+//       ...state.recentProjectNames,
+//       [name]: {
+//         name,
+//         date: Date.now()
+//       }
+//     };
+//   } else {
+//     state.recentProjectNames[name].date = Date.now();
+//   }
+//   localStorage.recentProjectNames = JSON.stringify(state.recentProjectNames);
+// };
+// export const saveToRecentProjectSpreadsheets = ({
+//   name,
+//   id
+// }: {
+//   name?: string;
+//   id: string;
+// }) => {
+//   if (!Object.keys(state.recentProjectSpreadsheets).includes(id)) {
+//     /* state.recentProjectSpreadsheets[name] = {
+//       name,
+//       id,
+//       date: Date.now()
+//     }; */
+//     state.recentProjectSpreadsheets = {
+//       ...state.recentProjectSpreadsheets,
+//       [id]: {
+//         name,
+//         id,
+//         date: Date.now()
+//       }
+//     };
+//   } else {
+//     if (name) {
+//       state.recentProjectSpreadsheets[id].name = name;
+//     }
+//     state.recentProjectSpreadsheets[id].date = Date.now();
+//   }
+//   localStorage.recentProjectSpreadsheets = JSON.stringify(
+//     state.recentProjectSpreadsheets
+//   );
+// };
+
+export const loadProject = () => {};
+
+// export const loadAll = async (route: any, clear?: boolean) => {
+//   showOverlay();
+//   try {
+//     const spreadsheetRouteParam = <string | null>(
+//       route.query[PROJECT_TYPE_ROUTES.GOOGLE_SPREADSHEET]
+//     );
+//     const nextcloudIdRouteParam = <string | null>(
+//       route.query[PROJECT_TYPE_ROUTES.NEXTCLOUD]
+//     );
+//     const xlsxFileRouteParam = <string | null>(
+//       route.query[PROJECT_TYPE_ROUTES.XLSX]
+//     );
+//     const icoRouteParam = <string | null>route.query[PROJECT_TYPE_ROUTES.ICO];
+//     if (spreadsheetRouteParam) {
+//       //setSpreadsheet(spreadsheetRouteParam);
+
+//       // saveToRecentProjectSpreadsheets({
+//       //   id: spreadsheetRouteParam
+//       // });
+//       saveToRecentProjects(ProjectGroupNames.GOOGLE_SPREADSHEET, {
+//         id: spreadsheetRouteParam
+//       });
+
+//       let data = null;
+//       console.log(isSpreadsheetCached(spreadsheetRouteParam), "cached?");
+//       if (isSpreadsheetCached(spreadsheetRouteParam)) {
+//         data = getSpreadsheetProjectDataFromCache(spreadsheetRouteParam);
+//         state.notifications.push({
+//           message: "Spreadsheet loaded from cache"
+//         });
+//       } else {
+//         data = await getSpreadsheetData(spreadsheetRouteParam);
+//       }
+//       // saveToRecentProjectSpreadsheets({
+//       //   name: data.project.name ? data.project.name : undefined,
+//       //   id: spreadsheetRouteParam
+//       // });
+//       saveToRecentProjects(ProjectGroupNames.GOOGLE_SPREADSHEET, {
+//         name: data.project && data.project.name ? data.project.name : undefined,
+//         id: spreadsheetRouteParam
+//       });
+
+//       try {
+//         setData(data.items, data.project, clear);
+//         setSpreadsheetProjectToCache(spreadsheetRouteParam, data);
+//         state.spreadsheet = spreadsheetRouteParam;
+//       } catch (e) {
+//         throw e;
+//       }
+//     } else if (icoRouteParam) {
+//       // const project = await loadProject(projectRouteParam);
+//       // const items = await loadItems(projectRouteParam);
+
+//       let data = null;
+//       if (localStorage.ico && localStorage.ico[icoRouteParam]) {
+//         data = getSpreadsheetProjectDataFromCache(icoRouteParam);
+//       } else {
+//         const [project, items] = await Promise.all([
+//           await getProjectData(icoRouteParam),
+//           await getItemsData(icoRouteParam)
+//         ]);
+//         data = { project, items };
+//       }
+
+//       if (data.project && data.project.name) {
+//         saveToRecentProjects(ProjectGroupNames.ICO, {
+//           name: data.project.name ? data.project.name : undefined,
+//           id: data.project.name
+//         });
+//         // saveToRecentProjectNames(data.project.name);
+//       }
+
+//       try {
+//         setData(data.items, data.project, clear);
+//         setIcoProjectToCache(data.project.name, data);
+//       } catch (e) {
+//         throw e;
+//       }
+//       //}
+//     } else if (route.query["demo"]) {
+//       console.log("DEMO !");
+//       //@ts-ignore
+//       setData(dataJson, projectJson, clear);
+//     } else if (xlsxFileRouteParam) {
+//       console.log("XLSX !");
+//       const file = state.dropFileInputRef.value.files[0];
+//       await openXlsxFromFile(file, clear);
+//     } else if (nextcloudIdRouteParam) {
+//       console.log("Nextcloud !");
+
+//       //https://icotest.iate.inra.fr/nextcloud/s/iiw6WomRsepyx78/download
+//       const nextcloudUrl = getNextcloudDownloadUrlFromId(nextcloudIdRouteParam);
+//       await openXlsxFromUrl(nextcloudUrl);
+//     } else {
+//       console.info("NOTHING TO LOAD");
+//     }
+//     if (route && route.path.includes("/project")) {
+//       document.title = getProjectName.value + " | My Choice";
+//     }
+
+//     hideOverlay();
+//   } catch (e) {
+//     hideOverlay();
+
+//     if (e instanceof MyChoiceError) {
+//       console.warn(e.name, "MYCHOICE ERROR");
+//       setError(e.name, e.message);
+//       throw Error(e.stack);
+//     } else {
+//       console.warn("ClassicError");
+//       //@ts-ignore
+//       setError(e.name, e.message);
+//       //@ts-ignore
+//       console.log(e.stack, "stack");
+//       throw e;
+//     }
+//   }
+// };
+
+export const getProjectTypeFromRoute = (route: Route) => {
+  if (
+    Object.prototype.hasOwnProperty.call(
+      route.query,
+      PROJECT_TYPE_ROUTES.GOOGLE_SPREADSHEET
+    )
+  ) {
+    return ProjectGroupNames.GOOGLE_SPREADSHEET;
+  } else if (
+    Object.prototype.hasOwnProperty.call(route.query, PROJECT_TYPE_ROUTES.ICO)
+  ) {
+    return ProjectGroupNames.ICO;
+  } else if (
+    Object.prototype.hasOwnProperty.call(route.query, PROJECT_TYPE_ROUTES.XLSX)
+  ) {
+    return ProjectGroupNames.XLSX;
+  } else if (
+    Object.prototype.hasOwnProperty.call(
+      route.query,
+      PROJECT_TYPE_ROUTES.NEXTCLOUD
+    )
+  ) {
+    return ProjectGroupNames.NEXTCLOUD;
   } else {
-    state.recentProjectNames[name].date = Date.now();
+    return null;
   }
-  localStorage.recentProjectNames = JSON.stringify(state.recentProjectNames);
 };
-export const saveToRecentProjectSpreadsheets = ({
-  name,
-  id
+export const getRouteTypeFromProjectType = (type: ProjectGroupNames) => {
+  if (type === ProjectGroupNames.GOOGLE_SPREADSHEET) {
+    return PROJECT_TYPE_ROUTES.GOOGLE_SPREADSHEET;
+  } else if (type === ProjectGroupNames.ICO) {
+    return PROJECT_TYPE_ROUTES.ICO;
+  } else if (type === ProjectGroupNames.XLSX) {
+    return PROJECT_TYPE_ROUTES.XLSX;
+  } else if (type === ProjectGroupNames.NEXTCLOUD) {
+    return PROJECT_TYPE_ROUTES.NEXTCLOUD;
+  } else {
+    return null;
+  }
+};
+
+export const getRouteTypeValue = (route: Route) => {
+  if (
+    Object.prototype.hasOwnProperty.call(
+      route.query,
+      PROJECT_TYPE_ROUTES.GOOGLE_SPREADSHEET
+    )
+  ) {
+    return route.query[PROJECT_TYPE_ROUTES.GOOGLE_SPREADSHEET] as string;
+  } else if (
+    Object.prototype.hasOwnProperty.call(route.query, PROJECT_TYPE_ROUTES.ICO)
+  ) {
+    return route.query[PROJECT_TYPE_ROUTES.ICO] as string;
+  } else if (
+    Object.prototype.hasOwnProperty.call(route.query, PROJECT_TYPE_ROUTES.XLSX)
+  ) {
+    return route.query[PROJECT_TYPE_ROUTES.XLSX] as string;
+  } else if (
+    Object.prototype.hasOwnProperty.call(
+      route.query,
+      PROJECT_TYPE_ROUTES.NEXTCLOUD
+    )
+  ) {
+    return route.query[PROJECT_TYPE_ROUTES.NEXTCLOUD] as string;
+  } else {
+    return null;
+  }
+};
+
+export const loadSpreadsheetFromRoute = async (
+  route: Route,
+  clear?: boolean
+) => {
+  const spreadsheetId = getRouteTypeValue(route);
+  //setSpreadsheet(spreadsheetId);
+  // saveToRecentProjectSpreadsheets({
+  //   id: spreadsheetId
+  // });
+  saveToRecentProjects(ProjectGroupNames.GOOGLE_SPREADSHEET, {
+    id: spreadsheetId,
+  });
+  let data = null;
+  // console.log(isProjectCached(route), "cached?");
+  if (isProjectCached(route)) {
+    data = getProjectDataCacheFromRoute(route);
+    state.notifications.push({
+      message: "Spreadsheet loaded from cache",
+    });
+  } else {
+    data = await getSpreadsheetData(spreadsheetId);
+  }
+  // saveToRecentProjectSpreadsheets({
+  //   name: data.project.name ? data.project.name : undefined,
+  //   id: spreadsheetId
+  // });
+  saveToRecentProjects(ProjectGroupNames.GOOGLE_SPREADSHEET, {
+    name: data.project && data.project.name ? data.project.name : undefined,
+    id: spreadsheetId,
+  });
+  try {
+    setData(data.items, data.project, clear);
+    setProjectCache(route, data);
+    state.spreadsheet = spreadsheetId;
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const loadIcoFromRoute = async (route: Route, clear?: boolean) => {
+  const icoId = getRouteTypeValue(route);
+
+  saveToRecentProjects(ProjectGroupNames.ICO, {
+    id: icoId,
+  });
+
+  let data = null;
+  if (isProjectCached(route)) {
+    data = getProjectDataCacheFromRoute(route);
+    state.notifications.push({
+      message: "Ico project loaded from cache",
+    });
+  } else {
+    data = await getIcoData(icoId);
+  }
+
+  if (data.project && data.project.name) {
+    saveToRecentProjects(ProjectGroupNames.ICO, {
+      name: data.project.name ? data.project.name : undefined,
+      id: data.project.name,
+    });
+    // saveToRecentProjectNames(data.project.name);
+  }
+
+  try {
+    setData(data.items, data.project, clear);
+    setProjectCache(route, data);
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const loadNextcloudFromRoute = async (route: Route, clear?: boolean) => {
+  // console.log("Nextcloud!");
+  const nextcloudId = getRouteTypeValue(route);
+
+  saveToRecentProjects(ProjectGroupNames.NEXTCLOUD, {
+    id: nextcloudId,
+  });
+
+  let data = null;
+  if (isProjectCached(route)) {
+    data = getProjectDataCacheFromRoute(route);
+    state.notifications.push({
+      message: "Nextcloud project loaded from cache",
+    });
+  } else {
+    //https://icotest.iate.inra.fr/nextcloud/s/iiw6WomRsepyx78/download
+    const nextcloudUrl = getNextcloudDownloadUrlFromId(nextcloudId);
+    data = await getNextcloudDataFromUrl(nextcloudUrl);
+  }
+
+  saveToRecentProjects(ProjectGroupNames.NEXTCLOUD, {
+    name: data.project && data.project.name ? data.project.name : undefined,
+    id: nextcloudId,
+  });
+  try {
+    setData(data.items, data.project, clear);
+    setProjectCache(route, data);
+  } catch (e) {
+    throw e;
+  }
+};
+
+// export const loadBy = async ({
+//   type,
+//   id,
+// }: {
+//   type: ProjectGroupNames;
+//   id: string;
+// }) => {
+//   const routeType = getRouteTypeFromProjectType(type);
+//   console.log(routeType, "ROUTE TYPE");
+//   const routeParams: Partial<Route> = {
+//     query: {
+//       [routeType]: id,
+//     },
+//     name: "project",
+//     path: "/project",
+//   };
+
+//   const route = router.resolve(routeParams).resolved;
+//   console.log(route, "ROUT");
+//   await loadAll(route);
+//   router.push(routeParams);
+// };
+
+export const getHrefFromTypeId = ({
+  type,
+  id,
 }: {
-  name?: string;
+  type: ProjectGroupNames;
   id: string;
 }) => {
-  if (!Object.keys(state.recentProjectSpreadsheets).includes(id)) {
-    /* state.recentProjectSpreadsheets[name] = {
-      name,
-      id,
-      date: Date.now()
-    }; */
-    state.recentProjectSpreadsheets = {
-      ...state.recentProjectSpreadsheets,
-      [id]: {
-        name,
-        id,
-        date: Date.now()
-      }
-    };
-  } else {
-    if (name) {
-      state.recentProjectSpreadsheets[id].name = name;
-    }
-    state.recentProjectSpreadsheets[id].date = Date.now();
-  }
-  localStorage.recentProjectSpreadsheets = JSON.stringify(
-    state.recentProjectSpreadsheets
-  );
+  const routeType = getRouteTypeFromProjectType(type);
+  // console.log(routeType, "ROUTE TYPE");
+  const routeParams: Partial<Route> = {
+    query: {
+      [routeType]: id,
+    },
+    name: "project",
+    path: "/project",
+  };
+
+  const href = router.resolve(routeParams).href;
+  return href;
 };
 
-export const isSpreadsheetCached = (spreadsheetId: string) => {
-  return localStorage.getItem("spreadsheet-" + spreadsheetId) !== null
-    ? true
-    : false;
-};
-export const getIcoProjectFromCache = (projectName: string) => {
-  return JSON.parse(localStorage.getItem("ico-" + projectName));
-};
-export const getSpreadsheetProjectFromCache = (spreadsheetId: string) => {
-  return JSON.parse(localStorage.getItem("spreadsheet-" + spreadsheetId));
-};
-export const setIcoProjectToCache = (
-  projectName: string,
-  data: Data
-) => {
-  localStorage.setItem("ico-" + projectName, JSON.stringify(data));
-};
+export const loadAll = async (route: Route, clear?: boolean) => {
+  showOverlay();
 
-export const setSpreadsheetProjectToCache = (
-  spreadsheetId: string,
-  data: Data
-) => {
-  localStorage.setItem("spreadsheet-" + spreadsheetId, JSON.stringify(data));
-};
-
-export const removeFromRecentProjectNames = (name: string) => {
-  // if (localStorage.recentProjectNames) {
-  //   state.recentProjectNames = JSON.parse(localStorage.recentProjectNames);
-  // }
-  if (state.recentProjectNames[name]) {
-    delete state.recentProjectNames[name];
-    localStorage.recentProjectNames = JSON.stringify(state.recentProjectNames);
-  }
-};
-
-export const removeFromRecentProjectSpreadsheets = (spreadsheetId: string) => {
-  // if (localStorage.recentProjectSpreadsheets) {
-  //   state.recentProjectSpreadsheets = JSON.parse(
-  //     localStorage.recentProjectSpreadsheets
-  //   );
-  // }
-  if (state.recentProjectSpreadsheets[spreadsheetId]) {
-    delete state.recentProjectSpreadsheets[spreadsheetId];
-    localStorage.recentProjectSpreadsheets = JSON.stringify(
-      state.recentProjectSpreadsheets
-    );
-  }
-};
-
-export const loadAll = async (route: any, clear = true) => {
-  if (clear) {
-    clearAll();
-  } else {
-    clearAppDialogs();
-    clearAppDataAndProject();
-  }
-  clearErrors();
-
-  state.overlay = true;
+  // console.log(route.query, "query");
   try {
-    const spreadsheetRouteParam = <string | null>(
-      route.query[spreadsheetIdRouteQuery]
-    );
-    const projectRouteParam = <string | null>route.query[projectNameRouteQuery];
-    if (spreadsheetRouteParam) {
-      //setSpreadsheet(spreadsheetRouteParam);
-
-      saveToRecentProjectSpreadsheets({
-        id: spreadsheetRouteParam
-      });
-
-      let data = null;
-      if (isSpreadsheetCached(spreadsheetRouteParam)) {
-        data = getSpreadsheetProjectFromCache(spreadsheetRouteParam);
-        state.notifications.push({
-          message: "Spreadsheet loaded from cache"
-        });
-      } else {
-        data = await getSpreadsheetData(spreadsheetRouteParam);
-      }
-      saveToRecentProjectSpreadsheets({
-        name: data.project.name ? data.project.name : undefined,
-        id: spreadsheetRouteParam
-      });
-
-      try {
-        setData(data.items, data.project);
-        setSpreadsheetProjectToCache(spreadsheetRouteParam, data);
-        state.spreadsheet = spreadsheetRouteParam;
-      } catch (e) {
-        throw e;
-      }
-    } else if (projectRouteParam) {
-      // const project = await loadProject(projectRouteParam);
-      // const items = await loadItems(projectRouteParam);
-
-      let data = null;
-      if (localStorage.ico && localStorage.ico[projectRouteParam]) {
-        data = getSpreadsheetProjectFromCache(projectRouteParam);
-      } else {
-        const [project, items] = await Promise.all([
-          await getProjectData(projectRouteParam),
-          await getItemsData(projectRouteParam)
-        ]);
-        data = { project, items };
-      }
-
-      if (data.project.name) {
-        saveToRecentProjectNames(data.project.name);
-      }
-
-      try {
-        setData(data.items, data.project);
-        setIcoProjectToCache(data.project.name, data);
-      } catch (e) {
-        throw e;
-      }
-      //}
-    } else if (route.query["demo"]) {
-      console.log("DEMO !");
-      //@ts-ignore
-      setData(dataJson, projectJson);
-    } else {
-      console.info("NOTHING TO LOAD");
-    }
-    if (route && route.path.includes("/project")) {
-      document.title = getProjectName.value + " | My Choice";
+    /**
+     * GOOGLE SPREADSHEET
+     */
+    if (
+      getProjectTypeFromRoute(route) === ProjectGroupNames.GOOGLE_SPREADSHEET
+    ) {
+      await loadSpreadsheetFromRoute(route, clear);
     }
 
-    state.overlay = false;
+    /**
+     * ICO
+     */
+    if (getProjectTypeFromRoute(route) === ProjectGroupNames.ICO) {
+      await loadIcoFromRoute(route, clear);
+    }
+
+    /**
+     * NEXTCLOUD
+     */
+    if (getProjectTypeFromRoute(route) === ProjectGroupNames.NEXTCLOUD) {
+      await loadNextcloudFromRoute(route, clear);
+    }
+
+    /**
+     * XLSX
+     */
+    if (getProjectTypeFromRoute(route) === ProjectGroupNames.XLSX) {
+      // console.log("XSLSX");
+      const file = state.dropFileInputRef.value.files[0];
+      await openXlsxFromFile(file, clear);
+    }
+
+    hideOverlay();
   } catch (e) {
-    state.overlay = false;
-
+    hideOverlay();
     if (e instanceof MyChoiceError) {
       console.warn(e.name, "MYCHOICE ERROR");
       setError(e.name, e.message);
       throw Error(e.stack);
     } else {
-      console.warn("ClassicError");
+      // console.warn("ClassicError");
+      //@ts-ignore
       setError(e.name, e.message);
-      console.log(e.stack, "stack");
+      //@ts-ignore
+      console.warn(e.stack, "stack");
       throw e;
     }
   }
-};
-
-export const getProjectData = async (projectId: string) => {
-  try {
-    let project = null;
-    // if (localStorage.project) {
-    //   project = JSON.parse(localStorage.project);
-    // } else {
-
-    const projectSource = await fetchProject(projectId);
-    project = getRenamedProject(projectSource);
-    //localStorage.project = JSON.stringify(project);
-    //}
-    //state.project = project;
-    return Promise.resolve(project);
-    //console.info(state.project, "Project source");
-  } catch (e) {
-    throw e;
-  }
-};
-
-export const getItemsData = async (projectId: string) => {
-  try {
-    let data = null;
-    // if (localStorage.data) {
-    //   data = JSON.parse(localStorage.data);
-    // } else {
-    const dataSource = await fetchData(projectId);
-
-    data = getRenamedItems(dataSource);
-    //localStorage.data = JSON.stringify(data);
-    //}
-    return Promise.resolve(data);
-    //const project = renamedProject(projectSource);
-  } catch (e) {
-    throw e;
-  }
-};
-
-export const setData = (
-  rawItems: Data["items"],
-  rawProject: Data["project"]
-) => {
-  try {
-    let parsedData;
-
-    if (state.mode === "interplay") {
-      //const normalizedData = getNormalizedData(data);
-      //const interplayData = filterNormalizedDataAsInterplay(normalizedData);
-      const interplayData = filterDataAsInterplay(rawItems);
-      const normalizedInterplayData = getNormalizedData(
-        interplayData,
-        rawProject
-      );
-      parsedData = Object.freeze(normalizedInterplayData);
-    } else if (state.mode === "prospective") {
-      const prospectiveData = filterDataAsProspective(rawItems);
-      const normalizedProspectiveData = getNormalizedData(
-        prospectiveData,
-        rawProject
-      );
-      parsedData = Object.freeze(normalizedProspectiveData);
-    } else if (state.mode === "data-reliability") {
-      const reliabilityData = filterDataAsReliability(
-        rawProject.sourceTypeEntities,
-        rawItems
-      );
-      const normalizedReliabilityData = getNormalizedData(
-        reliabilityData,
-        rawProject
-      );
-      parsedData = Object.freeze(normalizedReliabilityData);
-    } else if (state.mode === "expertise") {
-      const expertiseData = filterDataAsExpertise(
-        rawProject.expertiseEntities,
-        rawItems
-      );
-      const normalizedExpertiseData = getNormalizedData(
-        expertiseData,
-        rawProject
-      );
-      parsedData = Object.freeze(normalizedExpertiseData);
-    } else if (state.mode === "multi-stakeholder") {
-      const multiStakeholderData = filterDataAsMultiStakeholder(rawItems);
-      const normalizedMultiStakeholderData = getNormalizedData(
-        multiStakeholderData,
-        rawProject
-      );
-      parsedData = Object.freeze(normalizedMultiStakeholderData);
-    } else {
-      const normalizedData = getNormalizedData(rawItems, rawProject);
-      parsedData = Object.freeze(normalizedData);
-    }
-    // state.data = parsedData;
-    // state.project = rawProject;
-    Vue.set(state, "data", parsedData);
-    Vue.set(state, "project", rawProject);
-  } catch (e) {
-    throw e;
-  }
-  //state.filteredItems = parsedData.items;
-  //Vue.set(state, "filteredItems", parsedData.items);
 };

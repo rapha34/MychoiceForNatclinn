@@ -96,14 +96,27 @@
               <v-col class="py-0" lg="4">
                 <v-row>
                   <v-col class="d-flex" lg="12">
+                    <v-row>
+                      <v-col class="d-flex">
                     <v-btn
+                      class="mx-auto my-auto"
+                      @click="handleLoadFile"
+                    >
+                      <v-icon class="mr-2">mdi-upload</v-icon>Open local project
+                    </v-btn>
+                      </v-col>
+                      <v-col class="d-flex">
+                     <v-btn
                       class="mx-auto my-auto"
                       @click="state.openDialog = true"
                     >
-                      <v-icon class="mr-2">mdi-folder-open-outline</v-icon>Open
-                      project
+                      <v-icon class="mr-2">mdi-cloud-upload</v-icon>Open
+                      online project
                     </v-btn>
+                      </v-col>
+                    </v-row>
                   </v-col>
+                  
 
                   <v-col lg="12">
                     <v-subheader>Recent projects</v-subheader>
@@ -118,12 +131,10 @@
                         class="mx-auto"
                         loading="false"
                       ></v-skeleton-loader>-->
+                      
                       <v-list v-if="recentProjects.length">
                         <v-list-item
-                          @click="
-                            value.id
-                              ? openSpreadsheet(value.id)
-                              : openIco(value.name)
+                          :to="getHrefFromTypeId({type: value.type, id: value.id})
                           "
                           :key="'home-recent-' + projectName"
                           v-for="(value, projectName) in recentProjects"
@@ -131,11 +142,22 @@
                           <v-list-item-title>
                             {{ value.name || value.id }}
                           </v-list-item-title>
-                          <v-list-item-icon pos v-if="value.id">
+                          <v-list-item-icon pos v-if="value.type === 'googlespreadsheet'">
                             <v-icon>
                               mdi-google-spreadsheet
                             </v-icon>
                           </v-list-item-icon>
+                          <v-spacer></v-spacer>
+                  <v-list-item-action @click.stop>
+                    <v-btn
+                      icon
+                      @click.stop.prevent="
+                        removeFromRecentProjects(value.type, {id: value.id})
+                      "
+                    >
+                      <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                  </v-list-item-action>
                         </v-list-item>
                       </v-list>
                     </v-card>
@@ -183,28 +205,26 @@
 // import OpenIcoField from "@/components/Open/OpenIcoField.vue";
 // import OpenSpreadsheetField from "@/components/Open/OpenSpreadsheetField.vue";
 import Version from "@/components/Version.vue";
-import { state, openSpreadsheet, openIco, getRecentProjects } from "@/store";
-export default {
-  data: () => ({
-    state
-  }),
+import { state, openSpreadsheet, openIco, getRecentProjects, recentProjects, getHrefFromTypeId,removeFromRecentProjects, handleLoadFile } from "@/store";
+import { defineComponent } from "@vue/composition-api";
+export default defineComponent({
+  setup() {
+
+    return {
+      state,
+      recentProjects,
+      getHrefFromTypeId,
+      removeFromRecentProjects,
+      handleLoadFile
+    }
+
+  },
+  
   components: {
     Version
     // OpenIcoField,
     // OpenSpreadsheetField
-  },
-  methods: {
-    async openSpreadsheet(e) {
-      return await openSpreadsheet(e);
-    },
-    async openIco(e) {
-      return await openIco(e);
-    }
-  },
-  computed: {
-    recentProjects() {
-      return getRecentProjects();
-    }
   }
-};
+  
+});
 </script>

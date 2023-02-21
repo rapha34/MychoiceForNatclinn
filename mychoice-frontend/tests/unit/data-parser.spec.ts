@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -35,11 +35,11 @@ import { getCriterions, getStakeholders } from "@/data-parser";
 //import { data, project } from "@/data";
 import projectSource from "../../public/project.json";
 import dataSource from "../../public/data.json";
-import { getRenamedProject, getRenamedItems } from "@/data-renamed";
+import { getIcoRenamedProject, getIcoRenamedItems } from "@/data-renamed";
 
 //@ts-ignore (to remove when description field will be "" and not null)
-const project = getRenamedProject(projectSource);
-const data = getRenamedItems(dataSource);
+const project = getIcoRenamedProject(projectSource);
+const data = getIcoRenamedItems(dataSource);
 
 //const spreadsheetData = await getSpreadsheetData();
 

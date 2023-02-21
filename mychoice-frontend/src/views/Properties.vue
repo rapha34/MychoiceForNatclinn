@@ -13,7 +13,7 @@
               <th
                 class="text-center"
                 :key="index"
-                v-for="(alternativeId, index) in alternativesIds"
+                v-for="(alternativeId, index) in c_alternativesIds"
               >
                 {{ getAlternativeById(alternativeId).name }}
               </th>
@@ -35,28 +35,57 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import PropertyListRow from "@/components/PropertiesList/PropertyListRow.vue";
 import Header from "@/components/Header.vue";
 import {
   getNormalizedItemsByUniqueItemProp,
   getAlternativeById,
-  alternativesIds,
+  c_alternativesIds,
   state
 } from "@/store";
+import { defineComponent, ref } from "@vue/composition-api";
 
-export default {
-  data: () => ({
-    state,
-    height: ""
-  }),
+export default defineComponent({
+  // props: {
+  //   id: Number
+  // },
+
+  setup(props) {
+
+    const height = ref(null)
+
+
+    return {
+      state,
+      height,
+
+      c_alternativesIds,
+
+
+      setHeight: () => {
+        const tableFilters = document.querySelector("[table-filters]");
+
+        if (tableFilters) {
+          const tableFiltersRect = tableFilters.getBoundingClientRect();
+          height.value = window.innerHeight - tableFiltersRect.bottom - 24;
+        }
+      },
+      getNormalizedItemsByUniqueItemProp,
+      getAlternativeById
+    }
+
+  },
+  
+  // data: () => ({
+  //   state,
+  //   height: ""
+  // }),
   components: {
     Header,
     PropertyListRow
   },
-  computed: {
-    alternativesIds
-  },
+  
   mounted() {
     this.$nextTick(this.setHeight);
   },
@@ -69,20 +98,11 @@ export default {
   destroyed() {
     window.removeEventListener("resize", this.setHeight);
   },
-  methods: {
-    setHeight() {
-      const tableFilters = document.querySelector("[table-filters]");
-
-      if (tableFilters) {
-        const tableFiltersRect = tableFilters.getBoundingClientRect();
-        this.height = window.innerHeight - tableFiltersRect.bottom - 24;
-      }
-    },
-    getNormalizedItemsByUniqueItemProp,
-    getAlternativeById
-  },
-  props: ["id"]
-};
+  // methods: {
+    
+  // },
+  // props: ["id"]
+});
 </script>
 
 <style>

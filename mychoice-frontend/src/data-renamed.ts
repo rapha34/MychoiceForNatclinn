@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -32,38 +32,38 @@ knowledge of the CeCILL-C license and that you accept its terms.
 */
 import { findKey } from "lodash";
 import {
-  ServerProject,
+  IcoProject,
   Project,
-  ServerArguments,
+  IcoArguments,
   Argument,
   Data,
-  ServerArgument
+  IcoArgument,
 } from "./@types";
 import { SpreadsheetArgument } from "./data-spreadsheet";
 
-export const getRenamedProject = (
-  sourceProject: ServerProject
+export const getIcoRenamedProject = (
+  sourceProject: IcoProject
 ): Data["project"] => {
-  let item = sourceProject;
+  const item = sourceProject;
   const renamedItem: Omit<Project, "description" | "image"> = {
     stakeholders: item.nameStakeholder,
     name: item.nameProject,
     aims: item.aim,
     criterions: item.nameCriterion,
-    alternatives: item.alternatives.map(alternative => {
+    alternatives: item.alternatives.map((alternative) => {
       const renamedAlternative = {
         name: alternative.nameAlternative,
         image: alternative.imageAlternative,
-        icon: alternative.iconAlternative
+        icon: alternative.iconAlternative,
       };
       delete alternative.nameAlternative;
       return {
         ...alternative,
-        ...renamedAlternative
+        ...renamedAlternative,
       };
     }),
     sourceTypeEntities: item.typeSource,
-    expertiseEntities: item.hasExpertise
+    expertiseEntities: item.hasExpertise,
   };
   delete item.typeSource;
   delete item.hasExpertise;
@@ -73,14 +73,14 @@ export const getRenamedProject = (
   delete item.nameCriterion;
   return {
     ...item,
-    ...renamedItem
+    ...renamedItem,
   };
 };
 
-export const getRenamedItems = (
-  sourceArguments: ServerArguments
+export const getIcoRenamedItems = (
+  sourceArguments: IcoArguments
 ): Data["items"] => {
-  return sourceArguments.map(item => {
+  return sourceArguments.map((item) => {
     const renamedItem = {
       id: item.idArgument,
       stakeholder: item.nameStakeHolder,
@@ -89,7 +89,7 @@ export const getRenamedItems = (
       alternative: item.nameAlternative,
       criterion: item.nameCriterion,
       source: item.nameSource,
-      sourceType: item.nameTypeSource
+      sourceType: item.nameTypeSource,
     };
     delete item.idArgument;
     delete item.nameStakeHolder;
@@ -103,7 +103,7 @@ export const getRenamedItems = (
     // console.log(renamedItem, "renamedItem");
     return <Argument>{
       ...item,
-      ...renamedItem
+      ...renamedItem,
     };
   });
 };
@@ -135,91 +135,91 @@ export type EquivalentSources = "csv" | "server" | "spreadsheet";
 
 export const getEquivalentTable = () => {
   const appArgument: Argument = null;
-  const serverArgument: ServerArgument = null;
+  const serverArgument: IcoArgument = null;
   const spreadsheetArgument: SpreadsheetArgument = null;
 
   const equivalentTable: {
     [K in keyof Argument]: {
       csv: keyof CSVArgument;
-      server: keyof ServerArgument;
+      server: keyof IcoArgument;
       spreadsheet: keyof SpreadsheetArgument;
     };
   } = {
     id: {
       csv: "idArgument",
       server: "idArgument",
-      spreadsheet: "idArgument"
+      spreadsheet: "idArgument",
     },
     aim: {
       csv: "aim.description",
       server: "aim",
-      spreadsheet: "aim"
+      spreadsheet: "aim",
     },
     alternative: {
       csv: "alternative.nameAlternative",
       server: "nameAlternative",
-      spreadsheet: "nameAlternative"
+      spreadsheet: "nameAlternative",
     },
     assertion: {
       csv: "assertion",
       server: "assertion",
-      spreadsheet: "assertion"
+      spreadsheet: "assertion",
     },
     criterion: {
       csv: "criterion.nameCriterion",
       server: "nameCriterion",
-      spreadsheet: "nameCriterion"
+      spreadsheet: "nameCriterion",
     },
     date: {
       csv: "date",
       server: "date",
-      spreadsheet: "date"
+      spreadsheet: "date",
     },
     explanation: {
       csv: "explanation",
       server: "explanation",
-      spreadsheet: "explanation"
+      spreadsheet: "explanation",
     },
     favorable: {
       csv: "typeProCon",
       server: "typeProCon",
-      spreadsheet: "typeProCon"
+      spreadsheet: "typeProCon",
     },
     isProspective: {
       csv: "isProspective",
       server: "isProspective",
-      spreadsheet: "isProspective"
+      spreadsheet: "isProspective",
     },
     property: {
       csv: "property.nameProperty",
       server: "nameProperty",
-      spreadsheet: "nameProperty"
+      spreadsheet: "nameProperty",
     },
     source: {
       csv: "source.nameSource",
       server: "nameSource",
-      spreadsheet: "nameSource"
+      spreadsheet: "nameSource",
     },
     sourceType: {
       csv: "typesource.nameTypeSource",
       server: "nameTypeSource",
-      spreadsheet: "nameTypeSource"
+      spreadsheet: "nameTypeSource",
     },
     stakeholder: {
       csv: "stakeholder.nameStakeholder",
       server: "nameStakeHolder",
-      spreadsheet: "nameStakeHolder"
+      spreadsheet: "nameStakeHolder",
     },
     value: {
       csv: "qualvalue.qualValue",
       server: "value",
-      spreadsheet: "value"
+      spreadsheet: "value",
     },
     condition: {
       csv: "condition",
       server: "condition",
-      spreadsheet: "condition"
-    }
+      spreadsheet: "condition",
+    },
   };
 
   return equivalentTable;
@@ -227,9 +227,9 @@ export const getEquivalentTable = () => {
 
 export const getEquivalentAppPropFromSource = (
   source: EquivalentSources,
-  property: keyof CSVArgument | keyof ServerArgument | keyof SpreadsheetArgument
+  property: keyof CSVArgument | keyof IcoArgument | keyof SpreadsheetArgument
 ) => {
-  return findKey(getEquivalentTable(), function(k) {
+  return findKey(getEquivalentTable(), function (k) {
     return k[source] === property;
   }) as keyof Argument;
 };
@@ -246,7 +246,7 @@ export const getEquivalentSourcePropFromApp = (
 export const getRenamedItemPropFromTo = (
   from: EquivalentSources,
   to: EquivalentSources,
-  property: keyof CSVArgument | keyof ServerArgument | keyof SpreadsheetArgument
+  property: keyof CSVArgument | keyof IcoArgument | keyof SpreadsheetArgument
 ) => {
   const appProperty = getEquivalentAppPropFromSource(from, property);
   const toProperty = getEquivalentSourcePropFromApp(to, appProperty);
@@ -257,7 +257,7 @@ export const getRenamedItemPropFromTo = (
 export const getRenamedItemsFromSpreadsheetToCSV = (
   spreadsheetItems: SpreadsheetArgument[]
 ): CSVArgument[] => {
-  return spreadsheetItems.map(item => {
+  return spreadsheetItems.map((item) => {
     const renamedItem = {};
     Object.entries(item).forEach(([k, v]) => {
       //@ts-ignore

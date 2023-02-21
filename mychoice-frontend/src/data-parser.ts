@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -295,7 +295,7 @@ export const getNormalizedData = (
     items
   } = getNormalizedSubsets(data, project);
 
-  return {
+  const normalizedData = {
     criterions,
     alternatives,
     stakeholders,
@@ -308,6 +308,10 @@ export const getNormalizedData = (
       2: { id: 2, name: "🙁" }
     }
   };
+
+  /* console.log(normalizedData, "DATA"); */
+
+  return normalizedData;
 };
 
 export const getInterplayItems = function(items: Argument[]) {
@@ -379,7 +383,9 @@ export const filterDataAsReliability = (
 };
 
 export const filterDataAsProspective = (data: Arguments) => {
-  const prospectiveArguments = data.filter(item => item.isProspective === "1");
+  const prospectiveArguments = data.filter(
+    item => Number(item.isProspective) === 1
+  );
 
   return prospectiveArguments;
 };
@@ -427,7 +433,7 @@ export const filterNormalizedDataAsInterplay = (
   //   "stakeholder"
   // ];
 
-  let interplayData = normalizedData;
+  const interplayData = normalizedData;
   //@ts-ignore
   interplayData.items = getInterplayItems(normalizedData.items);
 

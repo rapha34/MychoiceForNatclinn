@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -41,7 +41,7 @@ export const getSupersetsBy = <T extends Superset>(payload: T): T[] => {
 
   const result = getAllItems()
     .filter(item => {
-      let hash = getPayloadHash(payload);
+      const hash = getPayloadHash(payload);
       if (arr.indexOf(hash) === -1) {
         arr.push(hash);
         return entries.every(([property, value]) => {
@@ -52,7 +52,7 @@ export const getSupersetsBy = <T extends Superset>(payload: T): T[] => {
       return false;
     })
     .map(item => {
-      let superset = <T>{};
+      const superset = <T>{};
       superset["alternative"] = item["alternative"];
       superset["subOption"] = item["subOption"];
       Object.keys(payload).forEach(key => {
@@ -104,7 +104,7 @@ export const addSupersetInSelection = function(payload: Superset) {
 };
 export const removeSupersetInSelection = function(payload: Superset) {
   const string = getPayloadHash(payload);
-  var index = getSelectedSupersets().indexOf(string);
+  const index = getSelectedSupersets().indexOf(string);
   if (index > -1) {
     state.selectedSupersets.splice(index, 1);
   }

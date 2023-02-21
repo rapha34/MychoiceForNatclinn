@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -31,12 +31,8 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
 */
 import { state } from "@/store";
-import {
-  getFilteredItems,
-  getAllItems,
-  filterNormalizedObjectByItemProp
-} from "@/store/items";
-import { NormalizedArgument } from "@/@types";
+import { getFilteredItems } from "@/store/items";
+import { NormalizedAims, NormalizedArgument } from "@/@types";
 import { uniqBy } from "lodash";
 
 export const getAims = function() {
@@ -60,14 +56,18 @@ export const getAimById = function(aimId: number) {
   return getAims()[aimId];
 };
 
-export const getAimsBy = <T extends keyof NormalizedArgument, V>(
+export const getAimsBy = <
+  T extends keyof NormalizedAims[keyof NormalizedAims],
+  V
+>(
   property: T,
   value: V
 ) => {
-  return Object.values(getAims()).filter(item => {
-    //@ts-ignore
+  const aims = Object.values(getAims()).filter(item => {
     return Number(item[property]) === Number(value);
   });
+
+  return aims;
 };
 
 export const getAimName = function(aimId: number) {
@@ -82,7 +82,10 @@ export const getFilteredAims = () => {
   });
 };
 
-export const getFilteredAimsBy = <T extends keyof NormalizedArgument, V>(
+export const getFilteredAimsBy = <
+  T extends keyof NormalizedAims[keyof NormalizedAims],
+  V
+>(
   property: T,
   value: V
 ) => {

@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -61,14 +61,13 @@ export class MyChoiceError extends Error {
 export const setError = (errorName: string, errorValue: boolean | string) => {
   // state.errors[errorName] = errorValue;
   Vue.set(state.errors, errorName, errorValue);
-  console.log(state.errors);
 };
 
 export const formatDate = (date: string) => {
   return dayjs(date, "DD/MM/YY").format("MMMM YYYY");
 };
 
-export const getRange = function(value: number, min: number, max: number) {
+export const getRange = function (value: number, min: number, max: number) {
   let range = (value - min) / (max - min);
   if (!isFinite(range)) {
     range = value;
@@ -76,15 +75,12 @@ export const getRange = function(value: number, min: number, max: number) {
   return range;
 };
 
-export const orderByPropName = <T extends object>(
-  list: T[],
-  propName: keyof T
-) => {
+export const orderByPropName = <T extends {}>(list: T[], propName: keyof T) => {
   return list.sort((a, b) => (a[propName] > b[propName] ? 1 : -1));
 };
 
 //@ts-ignore
-export const sortObject = o => {
+export const sortObject = (o) => {
   return (
     Object.keys(o)
       .sort()
@@ -93,12 +89,12 @@ export const sortObject = o => {
   );
 };
 
-export const pluralize = function(
+export const pluralize = function (
   str: string,
   object: {
     [key: string]: string | number;
   },
-  suffix: string = "s"
+  suffix = "s"
 ) {
   //let formatted = this;
   //const entries = Object.entries(object);
@@ -150,6 +146,10 @@ export const pluralize = function(
   // });
 
   return formatted;
+};
+
+export const setDocumentTitle = (title: string) => {
+  document.title = title;
 };
 
 /* const pluralize = (count, noun, suffix = "s") =>

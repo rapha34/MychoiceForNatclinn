@@ -22,14 +22,23 @@
 
     <v-list nav dense>
       <v-list-item-group>
+        <v-list-item @click="handleLoadFile">
+          <v-list-item-icon>
+            <v-icon>mdi-upload</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title
+            >Open local project <small>(.xlsx)</small></v-list-item-title
+          >
+        </v-list-item>
+
         <v-list-item
           :input-value="state.openDialog"
           @click="state.openDialog = true"
         >
           <v-list-item-icon>
-            <v-icon>mdi-folder-open-outline</v-icon>
+            <v-icon>mdi-cloud-upload</v-icon>
           </v-list-item-icon>
-          <v-list-item-title>Open project</v-list-item-title>
+          <v-list-item-title>Open online project</v-list-item-title>
         </v-list-item>
       </v-list-item-group>
 
@@ -38,7 +47,7 @@
         target="_blank"
       >
         <v-list-item-icon>
-          <v-icon>mdi-folder-plus-outline</v-icon>
+          <v-icon>mdi-plus-circle-outline</v-icon>
         </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-title>Create new project</v-list-item-title>
@@ -50,18 +59,18 @@
     <v-divider></v-divider>
 
     <v-subheader>Recent projects</v-subheader>
-    <v-card v-if="!recentProjects.length" disabled="" flat tile>
+    <v-card v-if="!hasRecentProjects" disabled="" flat tile>
       <v-card-subtitle>No recent projects</v-card-subtitle>
     </v-card>
-    <v-list v-if="recentProjects.length" subheader nav dense>
+    
+    <v-list v-if="hasRecentProjects" subheader nav dense>
       <v-list-item
-        @click="value.id ? openSpreadsheet(value.id) : openIco(value.name)"
+        :to="getHrefFromTypeId({type: value.type, id: value.id})"
         :key="id"
         v-for="(value, id) in recentProjects"
       >
-        
         <v-list-item-title>{{ value.name || value.id }}</v-list-item-title>
-        <v-list-item-icon pos v-if="value.id">
+        <v-list-item-icon pos v-if="value.type === 'googlespreadsheet'">
           <v-icon>
             mdi-google-spreadsheet
           </v-icon>
@@ -112,27 +121,6 @@
 
     <template v-slot:append>
       
-      <div class="pa-2">
-        <v-tooltip color="info" top>
-        <template v-slot:activator="{ on }">
-          <div v-on="!isSpreadsheet ? on : ''">
-        <v-btn
-          block
-          color="primary"
-          class="white--text"
-          @click="exportToCSV($router.currentRoute.query.spreadsheet)"
-          :disabled="
-            !isSpreadsheet || !$router.currentRoute.path.includes('project')
-          "
-        >
-          <v-icon small class="mr-3">mdi-database-export-outline</v-icon>Export
-          to CSV
-        </v-btn>
-          </div>
-        </template>
-        <span v-if="!isSpreadsheet">This feature is only available for Spreadsheets</span>
-        </v-tooltip>
-      </div>
 
       <div class="pa-2">
         <v-btn
@@ -171,31 +159,46 @@
 
 <script>
 import {
-  // clearApplicationCache,
   state,
   exportToCSV,
   getImagePath,
   openIco,
   openSpreadsheet,
-  getRecentProjects,
-  refreshProject
+  hasRecentProjects,
+  refreshProject,
+  recentProjects,getHrefFromTypeId,handleLoadFile, isExportableToCSV
 } from "@/store";
+import router from "@/store"
 import Version from "@/components/Version.vue";
+import { defineComponent } from "@vue/composition-api";
 
-export default {
+export default defineComponent({
+  setup() {
+    return {
+      state,
+      recentProjects,
+      hasRecentProjects,
+      getHrefFromTypeId,
+      handleLoadFile,
+      isExportableToCSV,
+      openIco,
+      openSpreadsheet,
+      getImagePath,
+      exportToCSV,
+      refreshProject
+    };
+  },
   components: {
     Version
   },
-  data: () => ({
-    state
-  }),
+  // data: () => ({
+  //   state
+  // }),
   computed: {
-    recentProjects() {
-      return getRecentProjects();
-    },
-    isSpreadsheet() {
-      return state.spreadsheet !== null ? true : false;
-    }
+    // recentProjects() {
+    //   return getRecentProjects();
+    // },
+    
     //   recentProjects() {
     //     const merge = {
     //       ...state.recentProjectNames,
@@ -212,17 +215,5 @@ export default {
     //   }
   },
 
-  methods: {
-    openIco,
-    openSpreadsheet,
-    getImagePath,
-    exportToCSV,
-    // clearApplicationCache,
-    refreshProject
-    // refresh: async () => {
-    //   clearApplicationCache();
-    //   await loadAll(this.$router.currentRoute);
-    // }
-  }
-};
+});
 </script>

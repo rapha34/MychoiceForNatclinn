@@ -5,7 +5,7 @@
 <script>
 export default {
   data: () => ({
-    version: process.env.VUE_APP_VERSION
-  })
+    version: process.env.VUE_APP_VERSION,
+  }),
 };
 </script>

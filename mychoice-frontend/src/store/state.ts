@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -33,9 +33,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 //import { data } from "../data";
 
 import Vue from "vue";
-import VueCompositionApi, { computed, watch } from "@vue/composition-api";
+import VueCompositionApi, { computed, Ref, watch } from "@vue/composition-api";
 
 import { NormalizedData, Project } from "@/@types";
+import { LocalStorageCache, LocalStorageCacheProjectItem } from ".";
 
 Vue.use(VueCompositionApi);
 
@@ -76,6 +77,7 @@ export interface State {
   };
   aboutDialog: boolean;
   creditsDialog: boolean;
+  dropFileInputRef: null | Ref<HTMLInputElement>;
   overlay: boolean;
   drawer: boolean;
   selectedView: string;
@@ -86,6 +88,7 @@ export interface State {
   readonly errorMessages: {
     [key: string]: string;
   };
+  recentProjects: LocalStorageCacheProjectItem[];
   recentProjectNames: {
     [key: string]: {
       name: string;
@@ -102,6 +105,7 @@ export interface State {
   fields: {
     projectName: string;
     spreadsheetUrl: string;
+    nextcloudUrl: string;
   };
 }
 
@@ -124,6 +128,7 @@ export const DEFAULTS: Pick<
   | "aboutDialog"
   | "creditsDialog"
   | "globalCardType"
+  | "dropFileInputRef"
 > = {
   mode: "consensus",
   globalCardType: "label",
@@ -141,7 +146,8 @@ export const DEFAULTS: Pick<
   data: null,
   project: null,
   aboutDialog: false,
-  creditsDialog: false
+  creditsDialog: false,
+  dropFileInputRef: null,
 };
 
 export const state = Vue.observable<State>({
@@ -161,23 +167,23 @@ export const state = Vue.observable<State>({
   mode: DEFAULTS.mode,
   modes: {
     consensus: {
-      name: "Consensus"
+      name: "Consensus",
     },
     interplay: {
-      name: "Interplay"
+      name: "Interplay",
     },
     prospective: {
-      name: "Prospective"
+      name: "Prospective",
     },
     expertise: {
-      name: "Expertise"
+      name: "Expertise",
     },
     "data-reliability": {
-      name: "Data reliability"
+      name: "Data reliability",
     },
     "multi-stakeholder": {
-      name: "Multi Stakeholder"
-    }
+      name: "Multi Stakeholder",
+    },
   },
   globalCardType: "label",
   dialog: DEFAULTS.dialog,
@@ -185,6 +191,7 @@ export const state = Vue.observable<State>({
   openDialog: DEFAULTS.openDialog,
   aboutDialog: DEFAULTS.aboutDialog,
   creditsDialog: DEFAULTS.creditsDialog,
+  dropFileInputRef: null,
   icons: {
     // alternative: {
     //   1: "mdi-carrot",
@@ -192,27 +199,29 @@ export const state = Vue.observable<State>({
     // },
     subOption: {
       1: "mdi-emoticon-happy-outline",
-      2: "mdi-emoticon-sad-outline"
+      2: "mdi-emoticon-sad-outline",
     },
-    compare: "mdi"
+    compare: "mdi",
   },
   overlay: false,
   drawer: false,
   errors: {
     FAILED_TO_FETCH_SPREADSHEET: false,
-    FAILED_TO_FETCH_ICO: false
+    FAILED_TO_FETCH_ICO: false,
   },
   snackbar: false,
   fields: {
     projectName: "",
-    spreadsheetUrl: ""
+    spreadsheetUrl: "",
+    nextcloudUrl: "",
   },
   errorMessages: {
     FAILED_TO_FETCH_SPREADSHEET:
       "The Spreadsheet isn't published or doesn't exists",
     FAILED_TO_FETCH_ICO:
-      "This project name doesn't exists (note: name is case sensitive)"
+      "This project name doesn't exists (note: name is case sensitive)",
   },
+  recentProjects: [],
   recentProjectNames:
     localStorage.recentProjectNames &&
     JSON.parse(localStorage.recentProjectNames) !== null
@@ -222,31 +231,8 @@ export const state = Vue.observable<State>({
     localStorage.recentProjectSpreadsheets &&
     JSON.parse(localStorage.recentProjectSpreadsheets) !== null
       ? JSON.parse(localStorage.recentProjectSpreadsheets)
-      : {}
+      : {},
 });
-
-export const getErrors = () => {
-  let acc: string[] = [];
-  Object.entries(state.errors).forEach(([key, value]) => {
-    if (value !== false) {
-      return acc.push(key);
-    }
-  });
-  return acc;
-};
-
-export const getErrorMessage = (errorName: string) => {
-  return state.errorMessages[errorName] || state.errors[errorName];
-};
-
-export const clearError = (errorName: string) => {
-  state.errors[errorName] = false;
-};
-export const clearErrors = () => {
-  Object.keys(state.errors).forEach(error => {
-    state.errors[error] = false;
-  });
-};
 
 export const clearAppDataAndProject = () => {
   Vue.set(state, "data", DEFAULTS.data);
@@ -324,6 +310,13 @@ export const is1stLevelStakeholdersMode = computed(() =>
 
 export const selectedSupersets = computed(() => state.selectedSupersets);
 
+export const showOverlay = () => {
+  state.overlay = true;
+};
+export const hideOverlay = () => {
+  state.overlay = false;
+};
+
 watch(
   () => state.globalCardType,
   (newValue, oldValue) => {
@@ -332,3 +325,21 @@ watch(
     }
   }
 );
+
+export const recentSpreadsheetProjects = computed(() => {
+  return Object.entries(state.recentProjects).filter(
+    ([key, { type }]) => type === "googlespreadsheet"
+  );
+});
+
+export const recentIcoProjects = computed(() => {
+  return Object.entries(state.recentProjects).filter(
+    ([key, { type }]) => type === "ico"
+  );
+});
+
+export const recentNextcloudProjects = computed(() => {
+  return Object.entries(state.recentProjects).filter(
+    ([key, { type }]) => type === "nextcloud"
+  );
+});

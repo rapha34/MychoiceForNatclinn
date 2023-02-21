@@ -7,7 +7,7 @@
               aim: aimItem.aim
             }),
             'stakeholder'
-          )" :key="stakeholderIndex + aimItem + aimIndex" >
+          )" :key="`stakeholder-${stakeholderIndex}-${aimIndex}`" >
 
         
         <td criterion v-if="aimIndex === 0 && stakeholderIndex === 0" :rowspan="uniqBy(
@@ -44,7 +44,7 @@
           <b>{{ getStakeholderName(stakeholderItem.stakeholder) }}</b>
         </td>
 
-        <td class="text-center" alternative :key="alternativeIndex" v-for="(alternativeId, alternativeIndex) in alternativesIds">
+        <td class="text-center" alternative :key="alternativeIndex" v-for="(alternativeId, alternativeIndex) in c_alternativesIds">
       
         
           <Acceptability
@@ -116,7 +116,7 @@
       </template>
     </td>
 
-    <td alternative :key="index" v-for="(alternativeId, index) in alternativesIds">
+    <td alternative :key="index" v-for="(alternativeId, index) in c_alternativesIds">
       <template v-for="(aimItem, aimIndex) in aimItems">
         <div
           class="text-center"
@@ -144,7 +144,7 @@
 </tbody>
 </template>
 
-<script>
+<script lang="ts">
 import { sortBy, uniqBy, countBy } from "lodash";
 import {
   getAcceptabilityFromProCon,
@@ -153,51 +153,85 @@ import {
   getAimById,
   normalizeByAlternative,
   filterItemsBy,
-  alternativesIds,
+  c_alternativesIds,
   getAimsCountFromAimsAndCriterion,
   getAimsFromItems,
   state,
-  getStakeholderName
+  getStakeholderName,
 } from "@/store";
+import { NormalizedArgument } from "@/@types";
+
 import Acceptability from "@/components/Acceptability.vue";
 import PropertiesListCriterion from "@/components/PropertiesList/PropertiesListCriterion.vue";
-export default {
-  data: () => ({
-    state,
-    showDetails: false
-  }),
-  computed: {
-    alternativesIds,
-    stakeholderItems() {
-      return uniqBy(this.items, "stakeholder");
-    },
-    criterionItems() {
-      return uniqBy(this.items, "criterion");
-    },
-    aimItems() {
-      return uniqBy(this.items, "aim");
-    },
-    hasMany() {
-      return this.criterionItems.length > 1 || this.aimItems.length > 1;
-    }
+import { computed, defineComponent, toRefs, PropType } from "@vue/composition-api";
+export default defineComponent({
+
+  props: {
+    items: Array as PropType<NormalizedArgument[]>,
+    property: {}
   },
+
+  setup(props) {
+
+    const {items, property} = toRefs(props)
+
+    const stakeholderItems = computed(() => {
+        return uniqBy(items.value, "stakeholder");
+      })
+
+    const criterionItems = computed(() => {
+        return uniqBy(items.value, "criterion");
+      })
+
+      const aimItems = computed(() => {
+        return uniqBy(items.value, "aim");
+      })
+      
+
+    return {
+      state,
+
+      c_alternativesIds,
+
+      stakeholderItems,
+      criterionItems,
+      aimItems,
+      
+      hasMany: computed(() => {
+        return criterionItems.value.length > 1 || aimItems.value.length > 1;
+      }),
+
+
+      getStakeholderName,
+      getAimsCountFromAimsAndCriterion,
+      getAimsFromItems,
+      countBy,
+      sortBy,
+      getSubOptionById,
+      getCriterionById,
+      getAimById,
+      getAcceptabilityFromProCon,
+      normalizeByAlternative,
+      filterItemsBy,
+      uniqBy
+        
+    }
+
+  },
+
+  // data: () => ({
+  //   state,
+  //   showDetails: false
+  // }),
+  // computed: {
+    
+  // },
   components: {
     Acceptability
   },
-  props: ["items", "property"],
-  methods: {
-    getStakeholderName,
-    getAimsCountFromAimsAndCriterion,
-    getAimsFromItems,
-    countBy,
-    sortBy,
-    getSubOptionById,
-    getCriterionById,
-    getAimById,
-    getAcceptabilityFromProCon,
-    normalizeByAlternative,
-    filterItemsBy,
-    uniqBy
-  }
-};
+  // props: ["items", "property"],
+  // methods: {
+    
+  // }
+});
 </script>

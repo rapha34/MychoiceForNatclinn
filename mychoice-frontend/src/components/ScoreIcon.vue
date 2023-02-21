@@ -26,30 +26,48 @@
   </span>
 </template>
 
-<script>
+<script lang="ts">
 import { getAcceptabilityName, state } from "@/store";
-export default {
-  props: ["score", "title", "alternative", "icon"],
-  data: () => ({
-    state
-  }),
-  mounted() {},
+import { defineComponent, toRefs } from "@vue/composition-api";
+export default defineComponent({
 
-  methods: {
-    getColorName: name => {
-      if (name === "pro") {
-        return "green";
-      } else if (name === "con") {
-        return "red";
-      } else if (name === "mix") {
-        return "orange";
-      } else {
-        return "rgba(0,0,0,.2)";
-      }
+
+  props: {
+    score: {
+      type: Number || null
     },
-    getAcceptabilityName
-  }
-};
+    title: {}, 
+    alternative: {
+      type: Number
+    },
+    icon: {}
+  },
+
+  setup(props) {
+
+    
+
+    return {
+      
+      state,
+
+      getColorName: (name: string) => {
+        if (name === "pro") {
+          return "green";
+        } else if (name === "con") {
+          return "red";
+        } else if (name === "mix") {
+          return "orange";
+        } else {
+          return "rgba(0,0,0,.2)";
+        }
+      },
+      getAcceptabilityName
+    }
+  },
+  
+
+});
 </script>
 
 <style lang="scss">

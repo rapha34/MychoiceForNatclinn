@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -30,6 +30,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
 */
+
 import { state, sortObject } from "@/store";
 import { uniqBy, sortBy, isEqual, property } from "lodash";
 import { NormalizedArgument, SubType, NormalizedObject } from "@/@types";
@@ -39,7 +40,7 @@ import { getCriterionsAsArray } from "@/store/criterions";
 
 import { filter, groupBy, flatten } from "lodash";
 
-export const getAllItems = function() {
+export const getAllItems = function () {
   const items = state!.data!.items;
   // if (state.mode === "interplay") {
   //   return getInterplayItems(items);
@@ -65,24 +66,24 @@ export const getAllItems = function() {
 //   return interplayItems;
 // };
 
-export const getFilteredItems = function() {
+export const getFilteredItems = function () {
   let items = filterItemsByValue(getAllItems(), state.searchInput);
 
   if (state.selectedAims.length) {
-    items = items.filter(item => {
+    items = items.filter((item) => {
       //@ts-ignore
       return state.selectedAims.includes(item["aim"]);
     });
   }
   if (state.selectedStakeholders.length) {
-    items = items.filter(item => {
+    items = items.filter((item) => {
       //@ts-ignore
       return state.selectedStakeholders.includes(item["stakeholder"]);
     });
   }
 
   if (state.selectedCriterions.length) {
-    items = items.filter(item => {
+    items = items.filter((item) => {
       //@ts-ignore
       return state.selectedCriterions.includes(
         Number(getAims()[item["aim"]].criterion)
@@ -102,14 +103,14 @@ export const filterItemsBy = <
   payload: T
 ) => {
   const entries = Object.entries(payload) as [P, V][];
-  return items.filter(item => {
+  return items.filter((item) => {
     return entries.every(([property, value]) => {
       return item[property] === value;
     });
   });
 };
 
-export const getItemsBy = function<T extends Partial<NormalizedArgument>>(
+export const getItemsBy = function <T extends Partial<NormalizedArgument>>(
   payload: T
 ) {
   return payload ? filterItemsBy(getAllItems(), payload) : [];
@@ -117,11 +118,11 @@ export const getItemsBy = function<T extends Partial<NormalizedArgument>>(
 
 //export const get _.uniqWith(objects, _.isEqual);
 
-export const getLabel = function(payload: Partial<NormalizedArgument>) {
+export const getLabel = function (payload: Partial<NormalizedArgument>) {
   return `${payload.property}:${payload.value}`;
 };
 
-export const getDuplicatesGroups = function<
+export const getDuplicatesGroups = function <
   T extends Partial<NormalizedArgument>
 >(payload: T[]) {
   return Object.values(
@@ -133,29 +134,29 @@ export const getDuplicatesGroups = function<
   );
 };
 
-export const getFilteredItemsBy = function<
+export const getFilteredItemsBy = function <
   T extends Partial<NormalizedArgument>
 >(payload: T) {
   return filterItemsBy(getFilteredItems(), payload);
 };
 
-export const filterByPropValue = function<
+export const filterByPropValue = function <
   P extends keyof NormalizedArgument,
   V extends NormalizedArgument[P]
 >(items: NormalizedArgument[], prop: P, value: V) {
-  return items.filter(item => {
+  return items.filter((item) => {
     return item[prop] === value;
   });
 };
 
-export const getItemsByPropValue = function<
+export const getItemsByPropValue = function <
   P extends keyof NormalizedArgument,
   V extends NormalizedArgument[P]
 >(prop: P, value: V) {
   return filterByPropValue(getAllItems(), prop, value);
 };
 
-export const getFilteredItemsByPropValue = function<
+export const getFilteredItemsByPropValue = function <
   P extends keyof NormalizedArgument,
   V extends NormalizedArgument[P]
 >(prop: P, value: V) {
@@ -176,7 +177,7 @@ export const getItemsFromUniqueProperty = ({
   criterion,
   aim,
   property,
-  value
+  value,
 }: {
   criterion: number;
   aim: number;
@@ -184,7 +185,7 @@ export const getItemsFromUniqueProperty = ({
   value: string;
 }) => {
   return getAllItems().filter(
-    item =>
+    (item) =>
       item.criterion === criterion &&
       item.aim === aim &&
       item.property === property &&
@@ -192,12 +193,12 @@ export const getItemsFromUniqueProperty = ({
   );
 };
 
-export const filterItemsByValue = function<T>(
+export const filterItemsByValue = function <T>(
   items: NormalizedArgument[],
   input: string
 ) {
-  return items.filter(o =>
-    Object.keys(o).some(k => {
+  return items.filter((o) =>
+    Object.keys(o).some((k) => {
       if (["property", "value"].includes(k)) {
         //@ts-ignore
         const value = o[k];
@@ -245,8 +246,8 @@ export const filterItemsByValue = function<T>(
 //   return items;
 // };
 
-export const getItemById = function(itemId: number) {
-  return getAllItems().find(item => item.id === itemId);
+export const getItemById = function (itemId: number) {
+  return getAllItems().find((item) => item.id === itemId);
 };
 
 // export const getItemsBy = function<K extends keyof NormalizedArgument>(
@@ -326,14 +327,14 @@ export const getItemById = function(itemId: number) {
 // };
 
 export const normalizeByAlternative = (items: NormalizedArgument[]) => {
-  let obj: {
+  const obj: {
     [id: string]: NormalizedArgument[];
   } = {};
   const alternatives = getAlternativesAsArray();
 
-  alternatives.forEach(alternativeId => {
+  alternatives.forEach((alternativeId) => {
     const filteredItems = items.filter(
-      argument => argument.alternative === alternativeId
+      (argument) => argument.alternative === alternativeId
     );
     obj[alternativeId] = filteredItems;
   });
@@ -342,13 +343,13 @@ export const normalizeByAlternative = (items: NormalizedArgument[]) => {
 };
 
 export const normalizeByAim = (items: NormalizedArgument[]) => {
-  let obj: {
+  const obj: {
     [id: string]: NormalizedArgument[];
   } = {};
   const aims = getAimsAsArray();
 
-  aims.forEach(aimId => {
-    const filteredItems = items.filter(argument => argument.aim === aimId);
+  aims.forEach((aimId) => {
+    const filteredItems = items.filter((argument) => argument.aim === aimId);
     obj[aimId] = filteredItems;
   });
 
@@ -356,14 +357,14 @@ export const normalizeByAim = (items: NormalizedArgument[]) => {
 };
 
 export const normalizeByCriterion = (items: NormalizedArgument[]) => {
-  let obj: {
+  const obj: {
     [id: string]: NormalizedArgument[];
   } = {};
   const criterions = getCriterionsAsArray();
 
-  criterions.forEach(criterionId => {
+  criterions.forEach((criterionId) => {
     const filteredItems = items.filter(
-      argument => argument.criterion === criterionId
+      (argument) => argument.criterion === criterionId
     );
     obj[criterionId] = filteredItems;
   });
@@ -372,14 +373,14 @@ export const normalizeByCriterion = (items: NormalizedArgument[]) => {
 };
 
 // DEPRECATED
-export const getNormalizedItemsByUniqueProperties = function(filtered = true) {
+export const getNormalizedItemsByUniqueProperties = function (filtered = true) {
   const normalizedObject: {
     [id: string]: NormalizedArgument[];
   } = {};
 
   const items = filtered ? getFilteredItems() : getAllItems();
 
-  items.forEach(item => {
+  items.forEach((item) => {
     if (normalizedObject[item.property]) {
       normalizedObject[item.property].push(item);
     } else {
@@ -390,7 +391,7 @@ export const getNormalizedItemsByUniqueProperties = function(filtered = true) {
   return sortObject(normalizedObject);
 };
 
-export const getNormalizedItemsByUniqueItemProp = function(
+export const getNormalizedItemsByUniqueItemProp = function (
   itemProp: keyof SubType<NormalizedArgument, string | number>,
   filtered = true
 ) {
@@ -400,7 +401,7 @@ export const getNormalizedItemsByUniqueItemProp = function(
 
   const items = filtered ? getFilteredItems() : getAllItems();
 
-  items.forEach(item => {
+  items.forEach((item) => {
     const itemPropValue = item[itemProp];
     if (normalizedObject[itemPropValue]) {
       normalizedObject[itemPropValue].push(item);
@@ -417,9 +418,9 @@ export const filterNormalizedObjectByItemProp = (
   itemProp: keyof NormalizedArgument
 ) => {
   return Object.keys(normalizedObject)
-    .map(key => Number(key))
-    .filter(id => {
-      return getAllItems().some(item => {
+    .map((key) => Number(key))
+    .filter((id) => {
+      return getAllItems().some((item) => {
         return item[itemProp] === id;
       });
     })

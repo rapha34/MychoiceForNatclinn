@@ -33,6 +33,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 process.env.VUE_APP_VERSION = require("./package.json").version;
 
 module.exports = {
+  lintOnSave: false,
   publicPath: process.env.BASE_URL,
   devServer: {
     proxy: {
@@ -40,12 +41,12 @@ module.exports = {
         target: process.env.VUE_APP_API_URL,
         changeOrigin: true,
         pathRewrite: {
-          "^/api": ""
+          "^/api": "",
         },
         // ws: true,
-        logLevel: "debug" // this what you want
-      }
-    }
+        logLevel: "debug", // this what you want
+      },
+    },
   },
-  transpileDependencies: ["vuetify"]
+  transpileDependencies: ["vuetify"],
 };

@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -33,27 +33,30 @@ knowledge of the CeCILL-C license and that you accept its terms.
 import datasample from "../../public/data.json";
 import projectsample from "../../public/project.json";
 import { getNormalizedData, getCriterions } from "@/data-parser";
-import { getRenamedItems, getRenamedProject } from "@/data-renamed";
+import { getIcoRenamedItems, getIcoRenamedProject } from "@/data-renamed";
 //import { data, project } from "@/data";
-import { ServerArgument, ServerArguments, ServerProject } from "@/@types";
+import { IcoArgument, IcoArguments, IcoProject } from "@/@types";
 
 export const getRandomArgument = () =>
   datasample[Math.floor(Math.random() * datasample.length)];
 
-export const mockArgument = (payload: Partial<ServerArgument>) => {
+export const mockArgument = (payload: Partial<IcoArgument>) => {
   const randomArgument = getRandomArgument();
   return { ...randomArgument, ...payload };
 };
 
-export const mockArguments = (array: Partial<ServerArgument>[]) => {
-  return array.map(payload => {
+export const mockArguments = (array: Partial<IcoArgument>[]) => {
+  return array.map((payload) => {
     return mockArgument(payload);
   });
 };
 
 export const parseMockSource = (
-  mockData: ServerArguments,
-  mockProject: Partial<ServerProject>
+  mockData: IcoArguments,
+  mockProject: IcoProject
 ) =>
   //@ts-ignore remove ts ignore when description is not null
-  getNormalizedData(getRenamedItems(mockData), getRenamedProject(mockProject));
+  getNormalizedData(
+    getIcoRenamedItems(mockData),
+    getIcoRenamedProject(mockProject)
+  );

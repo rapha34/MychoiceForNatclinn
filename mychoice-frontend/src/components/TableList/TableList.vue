@@ -14,7 +14,7 @@
       <!-- <TableListFoot /> -->
     </tfoot>
     <tbody>
-      <template v-for="criterionId in criterionsIds">
+      <template v-for="criterionId in c_criterionsIds">
         <tr
           :key="`aim-${criterionId}-${index}`"
           v-for="(aim, index) in getAimsBy('criterion', criterionId)"
@@ -60,7 +60,7 @@
   <!-- </div> -->
 </template>
 
-<script>
+<script lang="ts">
 import TableListHead from "./TableListHead.vue";
 import TableListFoot from "./TableListFoot.vue";
 import TableListAim from "./TableListAim.vue";
@@ -76,6 +76,7 @@ import {
   subOptionsIds,
   alternativesIds,
   criterionsIds,
+  c_criterionsIds,
   aimsIds,
   getAimsBy,
   getAlternatives,
@@ -85,29 +86,36 @@ import {
   getFilteredItems,
   getFilteredAims
 } from "@/store";
+import { computed, defineComponent } from "@vue/composition-api";
 
-export default {
-  computed: {
-    getFilteredCriterions,
-    subOptionsIds,
-    alternativesIds,
-    criterionsIds,
-    aimsIds,
-    getAlternatives,
-    getSubOptions,
-    getFilteredItems,
-    getFilteredAims,
-    project: function() {
-      return this.state.project;
+export default defineComponent({
+  setup() {
+    return {
+
+      state,
+      
+      sortBy,
+      getAimsBy,
+      setStickyTable,
+      handleStickyTableResize,
+      clearAppFilters,
+
+      c_criterionsIds,
+
+      getFilteredCriterions: computed(() => getFilteredCriterions()),
+      subOptionsIds: computed(() => subOptionsIds()),
+      alternativesIds: computed(() => alternativesIds()),
+      criterionsIds: computed(() => criterionsIds()),
+      aimsIds: computed(() => aimsIds()),
+      getAlternatives: computed(() => getAlternatives()),
+      getSubOptions: computed(() => getSubOptions()),
+      getFilteredItems: computed(() => getFilteredItems()),
+      getFilteredAims: computed(() => getFilteredAims()),
+      project: computed(() => state.project)
     }
   },
-  methods: {
-    sortBy,
-    getAimsBy,
-    setStickyTable,
-    handleStickyTableResize,
-    clearAppFilters
-  },
+  
+  
   mounted() {
     this.$nextTick(setStickyTable);
   },
@@ -130,10 +138,6 @@ export default {
     TableListFoot,
     TableListAlternative,
     TableListAim
-  },
-
-  data: () => ({
-    state
-  })
-};
+  }
+});
 </script>

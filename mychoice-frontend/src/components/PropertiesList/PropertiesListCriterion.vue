@@ -5,12 +5,24 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { getCriterionById } from "@/store";
-export default {
-  props: ["item", "row"],
-  methods: {
-    getCriterionById
-  }
-};
+import { defineComponent } from "@vue/composition-api";
+export default defineComponent({
+
+  props: {
+    item: {},
+    row: {}
+  },
+
+  setup() {
+
+    return {
+      getCriterionById
+    }
+
+  },
+  // props: ["item", "row"],
+  
+});
 </script>

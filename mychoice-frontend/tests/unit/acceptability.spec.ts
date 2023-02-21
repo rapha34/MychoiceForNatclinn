@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -33,7 +33,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 import { mockArguments, parseMockSource } from "./mock";
 import { filterItemsBy } from "@/store/items";
 import { getWeightedAcceptability } from "@/store/acceptability";
-import { NormalizedData, ServerProject } from "@/@types";
+import { NormalizedData, IcoProject } from "@/@types";
 
 import { state } from "@/store";
 const mockData = mockArguments([
@@ -42,102 +42,102 @@ const mockData = mockArguments([
     nameAlternative: "Alternative 1",
     typeProCon: true,
     aim: "But 1",
-    nameCriterion: "Criterion 1"
+    nameCriterion: "Criterion 1",
   },
   {
     idArgument: 2,
     nameAlternative: "Alternative 1",
     typeProCon: true,
     aim: "But 1",
-    nameCriterion: "Criterion 1"
+    nameCriterion: "Criterion 1",
   },
   {
     idArgument: 3,
     nameAlternative: "Alternative 1",
     typeProCon: false,
     aim: "But 1",
-    nameCriterion: "Criterion 1"
+    nameCriterion: "Criterion 1",
   },
   {
     idArgument: 4,
     nameAlternative: "Alternative 1",
     typeProCon: false,
     aim: "But 3",
-    nameCriterion: "Criterion 1"
+    nameCriterion: "Criterion 1",
   },
   {
     idArgument: 5,
     nameAlternative: "Alternative 1",
     typeProCon: true,
     aim: "But 4",
-    nameCriterion: "Criterion 1"
+    nameCriterion: "Criterion 1",
   },
   {
     idArgument: 6,
     nameAlternative: "Alternative 2",
     typeProCon: true,
     aim: "But 2",
-    nameCriterion: "Criterion 1"
+    nameCriterion: "Criterion 1",
   },
   {
     idArgument: 7,
     nameAlternative: "Alternative 2",
     typeProCon: true,
     aim: "But 3",
-    nameCriterion: "Criterion 1"
+    nameCriterion: "Criterion 1",
   },
   {
     idArgument: 8,
     nameAlternative: "Alternative 2",
     typeProCon: false,
     aim: "But 3",
-    nameCriterion: "Criterion 1"
+    nameCriterion: "Criterion 1",
   },
   {
     idArgument: 9,
     nameAlternative: "Alternative 2",
     typeProCon: false,
     aim: "But 3",
-    nameCriterion: "Criterion 1"
+    nameCriterion: "Criterion 1",
   },
   {
     idArgument: 10,
     nameAlternative: "Alternative 2",
     typeProCon: false,
     aim: "But 3",
-    nameCriterion: "Criterion 1"
+    nameCriterion: "Criterion 1",
   },
   {
     idArgument: 11,
     nameAlternative: "Alternative 2",
     typeProCon: true,
     aim: "But 4",
-    nameCriterion: "Criterion 1"
+    nameCriterion: "Criterion 1",
   },
   {
     idArgument: 12,
     nameAlternative: "Alternative 2",
     typeProCon: false,
     aim: "But 4",
-    nameCriterion: "Criterion 1"
-  }
+    nameCriterion: "Criterion 1",
+  },
 ]);
 
-const mockProject: Partial<ServerProject> = {
+const mockProject: Partial<IcoProject> = {
   alternatives: [
     {
       nameAlternative: "Alternative 1",
       description: "",
       imageAlternative: "",
-      iconAlternative: ""
+      iconAlternative: "",
     },
     {
       nameAlternative: "Alternative 2",
       description: "",
       imageAlternative: "",
-      iconAlternative: ""
-    }
-  ]
+      iconAlternative: "",
+    },
+  ],
 };
 
 //@ts-ignore

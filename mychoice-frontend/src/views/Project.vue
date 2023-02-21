@@ -121,7 +121,7 @@
   </v-card>
 </template>
 
-<script>
+<script lang="ts">
 import Empty from "@/components/Empty.vue"
 import {
   state,
@@ -131,23 +131,23 @@ import {
   getFilteredItemsBy,
   switchToView
 } from "@/store";
-export default {
+import { defineComponent, computed } from "@vue/composition-api";
+export default defineComponent ({
+  setup() {    
+
+    return {
+      alternativesIds: computed(() => alternativesIds()),
+      getAlternatives: computed(() => getAlternatives()),
+      switchToView: function(routeName: string) {
+        return switchToView(routeName);
+      },
+      getImagePath,
+      getFilteredItemsBy,
+      state
+    }
+  },
   components: {
     Empty
-  },
-  data: () => ({
-    state
-  }),
-  methods: {
-    switchToView: function(routeName) {
-      return switchToView(routeName);
-    },
-    getImagePath,
-    getFilteredItemsBy
-  },
-  computed: {
-    alternativesIds,
-    getAlternatives
   }
-};
+});
 </script>

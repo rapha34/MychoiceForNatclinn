@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -35,13 +35,8 @@ import {
   fetchSpreadsheetWorksheets,
   getRenamedSpreadsheetItems,
   getRenamedSpreadsheetProject,
-  SpreadsheetArgument
 } from "../data-spreadsheet";
 import { Argument, Data, Project } from "@/@types";
-import { getCSVFromJSON } from "@/data-csv";
-// import JSZip from "jszip";
-import { saveAs } from "file-saver";
-import { getRenamedItemsFromSpreadsheetToCSV } from "@/data-renamed";
 
 export const setSpreadsheet = (id: string) => {};
 
@@ -50,15 +45,15 @@ export const getSpreadsheetData = async (id: string) => {
     const worksheets = await fetchSpreadsheetWorksheets(id);
 
     const renamedSpreadsheetItems = await getRenamedSpreadsheetItems(
-      id,
-      worksheets
+      worksheets,
+      id
     );
 
     const renamedProject = await getRenamedSpreadsheetProject(worksheets);
 
     return {
       items: renamedSpreadsheetItems,
-      project: renamedProject
+      project: renamedProject,
     } as Data;
   } catch (e) {
     throw e;
@@ -82,83 +77,6 @@ export const getSpreadsheetData = async (id: string) => {
 //     saveAs(content, state.project.name + ".zip");
 //   });
 // };
-
-export const exportToCSV = async (id: string) => {
-  const worksheets = await fetchSpreadsheetWorksheets(id);
-  // const argument = worksheets[0].data;
-
-  // const argumentWorksheet = worksheets.find(
-  //   worksheet => worksheet.title === "argument"
-  // ).data;
-  // const projectWorksheet = worksheets.find(
-  //   worksheet => worksheet.title === "project"
-  // ).data;
-  // console.log(projectWorksheet, "works");
-
-  //@ts-ignore
-  // const projectCSV = getCSVFromJSON(projectWorksheet);
-  //@ts-ignore
-  // const argumentCSV = getCSVFromJSON(argumentWorksheet);
-  // saveAsCSVFile(projectCSV, "project.csv");
-  // saveAsCSVFile(argumentCSV, "argument.csv");
-  let headersLengths: number[] = [];
-  let multiCSV: { [key: string]: string } = {};
-
-  const headerOrder = [
-    "project",
-    "alternative",
-    "typesource",
-    "argument",
-    "hasexpertise"
-  ];
-
-  worksheets.forEach(worksheet => {
-    let data = worksheet.data;
-    const firstItem = data[0];
-    if (worksheet.title === "parameters" || !firstItem) {
-      return;
-    }
-
-    const headerLength = Object.keys(firstItem).length - 1;
-    headersLengths.push(headerLength);
-
-    if (worksheet.title === "argument") {
-      data = getRenamedItemsFromSpreadsheetToCSV(data as SpreadsheetArgument[]);
-    }
-
-    const CSV = getCSVFromJSON(data);
-    multiCSV[worksheet.title] = CSV;
-    // const filename = worksheet.title + ".csv";
-    //
-  });
-  const maxHeaderLength = Math.max(...headersLengths);
-  const lineSeparator = ";".repeat(maxHeaderLength);
-
-  const sortedMultiCSV = Object.entries(multiCSV)
-    .sort(function([a], [b]) {
-      return headerOrder.indexOf(a) - headerOrder.indexOf(b);
-    })
-    .reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
-
-  const mergedCSV = Object.entries(sortedMultiCSV)
-    .map(([key, value]) => {
-      return `"${key}"${lineSeparator}\n${value}\n${lineSeparator}`;
-    })
-    .join("\n");
-  // console.log(mergedCSV, "MERGE");
-  const blob = getAsCSVBlob(mergedCSV);
-  saveAs(blob, state.project.name + ".csv");
-  //@ts-ignore
-  // const argumentCSV = exportJSONToCSV(argumentWorksheet);
-};
-export const getAsFile = (data: any, filename: string) => {
-  const blob = getAsCSVBlob(data);
-  var file = new File([blob], filename);
-  return file;
-};
-export const getAsCSVBlob = (data: any) => {
-  return new Blob([data], { type: "text/csv;charset=utf-8;" });
-};
 
 export const getSpreadsheetIdFromUrl = (url: string) => {
   const matches = new RegExp("/spreadsheets/d/([a-zA-Z0-9-_]+)").exec(url);

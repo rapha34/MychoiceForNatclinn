@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -50,8 +50,17 @@ export const switchToView = (routeName: Route["name"]) => {
   pushRouteWithQuery(route);
 };
 
-export const projectNameRouteQuery = "name";
-export const spreadsheetIdRouteQuery = "spreadsheet";
+export enum PROJECT_TYPE_ROUTES {
+  ICO = "name",
+  GOOGLE_SPREADSHEET = "spreadsheet",
+  XLSX = "xlsx",
+  NEXTCLOUD = "nextcloud"
+}
+
+export const projectNameRouteQuery = PROJECT_TYPE_ROUTES.ICO;
+export const spreadsheetIdRouteQuery = PROJECT_TYPE_ROUTES.GOOGLE_SPREADSHEET;
+export const xlsxFileRouteQuery = PROJECT_TYPE_ROUTES.XLSX;
+export const nextcloudIdRouteQuery = PROJECT_TYPE_ROUTES.NEXTCLOUD;
 
 export const getRouteProjectId = computed(() => {
   return state.vm &&

@@ -21,19 +21,21 @@ import {
   alternativesIds,
   subOptionsIds,
   getAlternatives,
-  getFilteredItemsBy
+  
 } from "@/store";
-export default {
-  data: () => ({
-    state
-  }),
-  methods: {
-    getFilteredItemsBy
-  },
-  computed: {
-    alternativesIds,
-    subOptionsIds,
-    getAlternatives
+import { computed, defineComponent } from "@vue/composition-api";
+export default defineComponent({
+  setup() {
+
+    return {
+      state,
+      
+
+      alternativesIds: computed(() => alternativesIds()),
+      subOptionsIds: computed(() => subOptionsIds()),
+      getAlternatives: computed(() => getAlternatives())
+
+    }
   }
-};
+});
 </script>

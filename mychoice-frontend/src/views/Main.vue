@@ -105,35 +105,29 @@ import Header from "@/components/Header.vue";
 import SupersetCard from "@/components/SupersetCard.vue";
 import {
   state,
-  getItemsFromUniqueProperty,
   getFilteredItems,
   getAllItems,
   removeSupersetInSelection,
   selectedSupersets
 } from "@/store";
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent, computed } from "@vue/composition-api";
 
 export default defineComponent({
   setup() {
     return {
-      selectedSupersets
+      state,
+      selectedSupersets,
+      getFilteredItems: computed(() => getFilteredItems()),
+      getAllItems: computed(() => getAllItems()),
+
+      removeSupersetInSelection
     }
   },
-  data: () => ({
-    state
-  }),
+  
   components: {
     Header,
     TableList,
     SupersetCard
-  },
-  computed: {
-    getFilteredItems,
-    getAllItems
-  },
-  methods: {
-    getItemsFromUniqueProperty,
-    removeSupersetInSelection
   }
 });
 </script>

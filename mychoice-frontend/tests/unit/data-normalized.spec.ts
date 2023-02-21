@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -30,7 +30,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
 */
-import { ServerProject } from "@/@types";
+import { IcoProject } from "@/@types";
 import { mockArguments, parseMockSource } from "./mock";
 import projectSource from "../../public/project.json";
 
@@ -39,38 +39,38 @@ const mockData = mockArguments([
     nameProperty: "property A",
     value: "value 1",
     aim: "aim 1",
-    nameCriterion: "criterion 1"
+    nameCriterion: "criterion 1",
   },
   {
     nameProperty: "property A",
     value: "value 1",
     aim: "aim 1",
-    nameCriterion: "criterion 1"
+    nameCriterion: "criterion 1",
   },
   {
     nameProperty: "property B",
     value: "value 1",
     aim: "aim 2",
-    nameCriterion: "criterion 1"
+    nameCriterion: "criterion 1",
   },
   {
     nameProperty: "property A",
     value: "value 3",
     aim: "aim 3",
-    nameCriterion: "criterion 2"
+    nameCriterion: "criterion 2",
   },
   {
     nameProperty: "property C",
     value: "value 4",
     aim: "aim 4",
-    nameCriterion: "criterion 3"
+    nameCriterion: "criterion 3",
   },
   {
     nameProperty: "property D",
     value: "value 4",
     aim: "aim 4",
-    nameCriterion: "criterion 3"
-  }
+    nameCriterion: "criterion 3",
+  },
 ]);
 
 const data = parseMockSource(mockData, projectSource);

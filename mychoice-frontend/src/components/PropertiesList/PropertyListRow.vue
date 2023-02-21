@@ -43,7 +43,7 @@
       </template>
     </td>
 
-    <td :key="index" v-for="(alternativeId, index) in alternativesIds">
+    <td :key="index" v-for="(alternativeId, index) in c_alternativesIds">
       <template v-if="!showDetails">
         <div class="text-center">
           <Acceptability
@@ -67,7 +67,7 @@
   </tr>
 </template>
 
-<script>
+<script lang="ts">
 import { sortBy, uniqBy, countBy } from "lodash";
 import {
   getAcceptabilityFromProCon,
@@ -76,47 +76,76 @@ import {
   getAimById,
   normalizeByAlternative,
   filterItemsBy,
-  alternativesIds,
+  c_alternativesIds,
   getAimsCountFromAimsAndCriterion,
   getAimsFromItems,
   state
 } from "@/store";
+import { NormalizedArgument } from "@/@types";
+
 import Acceptability from "@/components/Acceptability.vue";
 import PropertiesListCriterion from "@/components/PropertiesList/PropertiesListCriterion.vue";
-export default {
-  data: () => ({
-    state,
-    showDetails: false
-  }),
-  computed: {
-    alternativesIds,
-    criterionItems() {
-      return uniqBy(this.items, "criterion");
-    },
-    aimItems() {
-      return uniqBy(this.items, "aim");
-    },
-    hasMany() {
-      return this.criterionItems.length > 1 || this.aimItems.length > 1;
+import { computed, defineComponent, ref, toRefs, PropType } from "@vue/composition-api";
+export default defineComponent({
+
+  props: {
+    items: Array as PropType<NormalizedArgument[]>,
+    property: {}
+  },
+
+  setup(props) {
+
+    const {items, property} = toRefs(props);
+
+    const showDetails = ref(false);
+
+    const criterionItems = computed(() => {
+      return uniqBy(items.value, "criterion");
+    });
+    const aimItems = computed(() => {
+      return uniqBy(items.value, "aim");
+    });
+
+    const hasMany = computed(() => {
+      return criterionItems.value.length > 1 || aimItems.value.length > 1;
+    });
+
+    return {
+      state,
+      c_alternativesIds,
+      showDetails,
+
+      criterionItems,
+      aimItems,
+      hasMany,
+
+      getAimsCountFromAimsAndCriterion,
+      getAimsFromItems,
+      countBy,
+      sortBy,
+      getSubOptionById,
+      getCriterionById,
+      getAimById,
+      getAcceptabilityFromProCon,
+      normalizeByAlternative,
+      filterItemsBy,
+      uniqBy
     }
   },
+
+  // data: () => ({
+  //   state,
+  //   showDetails: false
+  // }),
+  // computed: {
+    
+    
+  // },
   components: {
     Acceptability,
     PropertiesListCriterion
-  },
-  props: ["items", "property"],
-  methods: {
-    getAimsCountFromAimsAndCriterion,
-    getAimsFromItems,
-    countBy,
-    sortBy,
-    getSubOptionById,
-    getCriterionById,
-    getAimById,
-    getAcceptabilityFromProCon,
-    normalizeByAlternative,
-    filterItemsBy,
-    uniqBy
   }
-};
+  // props: ["items", "property"],
+  
+});
 </script>

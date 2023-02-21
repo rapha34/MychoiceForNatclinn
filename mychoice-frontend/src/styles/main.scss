@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -160,3 +160,35 @@ header .v-toolbar__content {
 .v-snack__wrapper.red a {
   color: white;
 }
+
+.fileDrop {
+  position: fixed;
+  top: 0;
+  right: 0;left: 0;bottom: 0;
+  z-index: 1000;
+
+}
+.fileDropHighlight {
+  
+  &::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;left: 0;bottom: 0;
+    border: 3px dashed #333;
+    background-color: rgba(#333, 0.25);
+    pointer-events: none;
+    z-index: 100;
+    
+  }
+  &.fileDropHighlight--invalid {
+    cursor: not-allowed !important;
+    &::after {
+      border-color: rgba(red, 0.25) !important;
+      background-color: rgba(red, 0.1);
+    }
+  }
+
+}
+

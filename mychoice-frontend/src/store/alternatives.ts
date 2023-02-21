@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -31,6 +31,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
 */
 import { state } from "@/store";
+import { computed } from "@vue/composition-api";
 
 export const getAlternatives = function() {
   return state.data!.alternatives;
@@ -43,6 +44,9 @@ export const getAlternativesAsArray = function() {
 export const alternativesIds = function() {
   return Object.keys(getAlternatives()).map(id => Number(id));
 };
+export const c_alternativesIds = computed(() => {
+  return Object.keys(getAlternatives()).map(id => Number(id));
+});
 
 export const getAlternativeById = function(alternativeId: number) {
   return getAlternatives()[alternativeId];

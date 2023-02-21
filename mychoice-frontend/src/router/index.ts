@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -39,7 +39,16 @@ import Properties from "@/views/Properties.vue";
 import Stakeholders from "@/views/Stakeholders.vue";
 //import Compare from "@/views/Compare.vue";
 //import ItemList from "@/components/ItemList.vue";
-import { state } from "@/store";
+import {
+  clearProjectDataCacheFromRoute,
+  getProjectTypeFromRoute,
+  getRouteTypeValue,
+  hideOverlay,
+  loadAll,
+  PROJECT_TYPE_ROUTES,
+  setDocumentTitle,
+  showOverlay,
+} from "@/store";
 Vue.use(Router);
 
 const routes = [
@@ -57,14 +66,14 @@ const routes = [
     name: "property-view",
     path: "/project/property-view",
     component: Properties,
-    props: true
+    props: true,
   },
   {
     name: "stakeholder-view",
     path: "/project/stakeholder-view",
     component: Stakeholders,
-    props: true
-  }
+    props: true,
+  },
   // {
   //   name: "compare",
   //   path: "/compare",
@@ -78,15 +87,16 @@ const routes = [
 const router = new Router({
   mode: "history",
   base: process.env.BASE_URL,
-  routes // short for `routes: routes`
+  routes, // short for `routes: routes`
 });
 
 // function hasQueryParams(route: any) {
 //   return !!Object.keys(route.query).length;
 // }
 
-router.beforeEach((to, from, next) => {
-  state.overlay = true;
+router.beforeEach(async (to, from, next) => {
+  showOverlay();
+
   next();
   // if (!hasQueryParams(to) && hasQueryParams(from)) {
   //   next({ name: to.name, query: from.query });
@@ -96,10 +106,43 @@ router.beforeEach((to, from, next) => {
 });
 
 router.afterEach(async (to, from) => {
-  if (!to.path.includes("/project")) {
-    document.title = to.meta.title || "My Choice";
+  if (to.path.startsWith("/project")) {
+    const toProjectType = getProjectTypeFromRoute(to);
+    const fromProjectType = getProjectTypeFromRoute(from);
+    const toProjectId = getRouteTypeValue(to);
+    const fromProjectId = getRouteTypeValue(from);
+    const isSameProject =
+      toProjectType === fromProjectType && toProjectId === fromProjectId;
+    if (!isSameProject) {
+      await loadProject();
+    }
+  } else {
+    setDocumentTitle(to.meta.title || "My Choice");
   }
-  state.overlay = false;
+
+  hideOverlay();
 });
+
+router.onReady(async () => {
+  // console.log("onready");
+  await loadProject();
+});
+
+export const loadProject = async () => {
+  if (
+    router.currentRoute.query[PROJECT_TYPE_ROUTES.ICO] ||
+    router.currentRoute.query[PROJECT_TYPE_ROUTES.GOOGLE_SPREADSHEET] ||
+    router.currentRoute.query[PROJECT_TYPE_ROUTES.NEXTCLOUD] ||
+    router.currentRoute.query["demo"]
+  ) {
+    try {
+      await loadAll(router.currentRoute);
+    } catch (e) {
+      console.info("LOAD FAIL, RETRY WITHOUT CACHE!");
+      clearProjectDataCacheFromRoute(router.currentRoute);
+      await loadAll(router.currentRoute);
+    }
+  }
+};
 
 export default router;

@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -31,6 +31,8 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
 */
 export * from "./state";
+export * from "./routes";
+export * from "./notifications";
 export * from "./fetch";
 export * from "./items";
 export * from "./aims";
@@ -44,21 +46,24 @@ export * from "./utils";
 export * from "./labels";
 export * from "./select";
 export * from "./spreadsheet";
-export * from "./routes";
 export * from "./project";
+export * from "./filedrop";
+export * from "./xlsx";
+export * from "./cache";
+export * from "./csv";
 
 import { state } from "./state";
 
 import { NormalizedData, NormalizedArgument } from "@/@types";
 import router from "@/router";
-import { projectNameRouteQuery, spreadsheetIdRouteQuery } from "./routes";
 import { loadAll } from "./fetch";
+import { clearProjectDataCacheFromRoute } from "./cache";
 
 export const getSearchInput = () => {
   return state.searchInput;
 };
 
-export const getPropById = function<K extends keyof NormalizedData>(
+export const getPropById = function <K extends keyof NormalizedData>(
   prop: K,
   id: number
 ) {
@@ -70,7 +75,7 @@ export const getUniqueOrBlank = (
   prop: keyof NormalizedArgument
 ) => {
   const arr: NormalizedArgument[] & null[] = [];
-  items.forEach(item => {
+  items.forEach((item) => {
     //@ts-ignore
     if (arr.indexOf(item[prop]) === -1) {
       arr.push(item);
@@ -82,45 +87,32 @@ export const getUniqueOrBlank = (
 };
 
 // Clear all cache except
-export const clearLocalStorageExcept = (excludedKeys: string[]) => {
-  const toRestore: any = {};
-  excludedKeys.forEach(key => {
-    toRestore[key] = localStorage.getItem(key);
-  });
+// export const clearLocalStorageExcept = (excludedKeys: string[]) => {
+//   const toRestore: any = {};
+//   excludedKeys.forEach(key => {
+//     toRestore[key] = localStorage.getItem(key);
+//   });
 
-  localStorage.clear();
+//   localStorage.clear();
 
-  Object.keys(toRestore).forEach(key => {
-    localStorage.setItem(key, toRestore[key]);
-  });
-};
+//   Object.keys(toRestore).forEach(key => {
+//     localStorage.setItem(key, toRestore[key]);
+//   });
+// };
 
 export const refreshProject = async () => {
-  clearItemFromCache();
+  clearProjectDataCacheFromRoute(router.currentRoute);
   await loadAll(router.currentRoute);
 };
-export const clearItemFromCache = () => {
-  if (router.currentRoute.query[projectNameRouteQuery]) {
-    clearIcoItemFromCache(
-      router.currentRoute.query[projectNameRouteQuery] as string
-    );
-  }
-  if (router.currentRoute.query[spreadsheetIdRouteQuery]) {
-    clearSpreadsheetItemFromCache(
-      router.currentRoute.query[spreadsheetIdRouteQuery] as string
-    );
-  }
-};
-export const clearSpreadsheetItemFromCache = (spreadsheetId: string) => {
-  localStorage.removeItem("spreadsheet-" + spreadsheetId);
-};
-export const clearIcoItemFromCache = (projectName: string) => {
-  localStorage.removeItem("ico-" + projectName);
-};
-export const clearApplicationCache = () => {
-  const excludedKeys = ["recentProjectNames", "recentProjectSpreadsheets"];
-  clearLocalStorageExcept(excludedKeys);
-};
-export const clearLocalStorage = function() {
-  return localStorage.clear();
-};
+
+// DEPRECATED
+// export const clearSpreadsheetItemFromCache = (spreadsheetId: string) => {
+//   localStorage.removeItem("spreadsheet-" + spreadsheetId);
+// };
+// export const clearIcoItemFromCache = (projectName: string) => {
+//   localStorage.removeItem("ico-" + projectName);
+// };
+// export const clearApplicationCache = () => {
+//   const excludedKeys = ["recentProjectNames", "recentProjectSpreadsheets"];
+//   clearLocalStorageExcept(excludedKeys);
+// };

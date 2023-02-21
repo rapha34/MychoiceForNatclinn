@@ -1,7 +1,7 @@
 /*
 Copyright INRAE
 Contact contributor(s) : Rallou Thomopoulos / Julien Cufi (26/03/2020)
-MyChoice is a web application supporting collective decision.
+MyChoice is a web application supporting collective decision.
 See more on https://ico.iate.inra.fr/MyChoice
 This application is registered to the European organization for the
 protection of authors and publishers of digital creations with
@@ -37,17 +37,13 @@ import router from "./router";
 //import { getSpreadsheetData } from "./data-spreadsheet";
 //import { data } from "./data";
 
-import {
-  state,
-  loadAll,
-  clearApplicationCache,
-  projectNameRouteQuery,
-  spreadsheetIdRouteQuery
-} from "@/store";
+import { state } from "@/store";
 import vuetify from "./plugins/vuetify";
 import "./plugins/text-highlight";
 import "roboto-fontface/css/roboto/roboto-fontface.css";
 import "@mdi/font/css/materialdesignicons.css";
+
+import { onAppInit } from "./store/events";
 
 //Vue.config.performance = true;
 
@@ -67,26 +63,12 @@ Vue.config.errorHandler = (err, vm, info) => {
 // register globally
 
 (async () => {
-  router.onReady(async () => {
-    if (
-      router.currentRoute.query[projectNameRouteQuery] ||
-      router.currentRoute.query[spreadsheetIdRouteQuery] ||
-      router.currentRoute.query["demo"]
-    ) {
-      try {
-        await loadAll(router.currentRoute);
-      } catch (e) {
-        console.info("LOAD FAIL, RETRY WITHOUT CACHE!");
-        clearApplicationCache();
-        await loadAll(router.currentRoute);
-      }
-    }
-  });
+  await onAppInit();
 
   state.vm = new Vue({
     router,
     //@ts-ignore
     vuetify,
-    render: h => h(App)
+    render: (h) => h(App),
   }).$mount("#app");
 })();

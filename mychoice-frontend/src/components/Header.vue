@@ -213,7 +213,7 @@
   </v-row>
 </template>
 
-<script>
+<script lang="ts">
 import {
   getSelectStakeholders,
   getSelectAims,
@@ -223,47 +223,45 @@ import {
   getAllItems,
   orderByPropName,
   getSelectModes,
-  clearState,
   loadAll,
   switchToView,
-  is1stLevelStakeholdersMode
+  is1stLevelStakeholdersMode,
 } from "@/store";
 import { debounce } from "lodash";
-import { defineComponent } from "@vue/composition-api";
+import { computed, defineComponent } from "@vue/composition-api";
 
 export default defineComponent({
   setup() {
     return  {
-      is1stLevelStakeholdersMode
+      state,
+
+      clearSearch: () => {
+        state.searchInput = "";
+      },
+      switchToView: function(routeName: string) {
+        return switchToView(routeName);
+      },
+      debounceInput: debounce(value => {
+        state.searchInput = value;
+      }, 200),
+
+      orderByPropName,
+      is1stLevelStakeholdersMode,
+      getSelectModes: computed(() => getSelectModes()),
+      getAllItems: computed(() => getAllItems()),
+      getSelectStakeholders: computed(() => getSelectStakeholders()),
+      getSelectAims: computed(() => getSelectAims()),
+      getSelectCriterions: computed(() => getSelectCriterions()),
+      getFilteredItems: computed(() => getFilteredItems()),
+      
+      mode: computed(() => {
+        return state.mode;
+      })
     }
   },
-  data: () => ({
-    state
-  }),
-  methods: {
-    clearSearch() {
-      state.searchInput = "";
-    },
-    switchToView: function(routeName) {
-      return switchToView(routeName);
-    },
-    orderByPropName,
-    debounceInput: debounce(value => {
-      state.searchInput = value;
-    }, 200)
-  },
-  computed: {
-    getSelectModes,
-    getAllItems,
-    getSelectStakeholders,
-    getSelectAims,
-    getSelectCriterions,
-    getFilteredItems,
-    
-    mode: function() {
-      return this.state.mode;
-    }
-  },
+  
+  
+  
   watch: {
     async mode() {
       

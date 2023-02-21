@@ -34,7 +34,7 @@
                 <v-btn
                   icon
                   @click.stop.prevent="
-                        removeFromRecentProjectSpreadsheets(item.text)
+                        removeFromRecentProjectSpreadsheets(item.value)
                       "
                 >
                   <v-icon>mdi-close</v-icon>

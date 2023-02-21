@@ -111,28 +111,31 @@ import {
   getAllItems,
   state
 } from "@/store";
-export default {
-  data: () => ({
-    state
-  }),
+import { computed, defineComponent } from "@vue/composition-api";
+export default defineComponent({
+  setup() {
+
+    return  {
+      state,
+
+      getAcceptabilityFromAlternativeId,
+      getFilteredItemsBy,
+      getWeightedAcceptability,
+      pluralize,
+
+      totalAcceptability: computed(() => {
+        return getWeightedAcceptability(getFilteredItems());
+      }),
+      alternativesIds: computed(() => alternativesIds()),
+      subOptionsIds: computed(() => subOptionsIds()),
+      getSubOptions: computed(() => getSubOptions()),
+      getFilteredItems: computed(() => getFilteredItems()),
+      getAllItems: computed(() => getAllItems())
+    }
+  },
+  
   components: {
     ScoreIcon
-  },
-  computed: {
-    totalAcceptability: function() {
-      return getWeightedAcceptability(getFilteredItems());
-    },
-    alternativesIds,
-    subOptionsIds,
-    getSubOptions,
-    getFilteredItems,
-    getAllItems
-  },
-  methods: {
-    getAcceptabilityFromAlternativeId,
-    getFilteredItemsBy,
-    getWeightedAcceptability,
-    pluralize
   }
-};
+});
 </script>

@@ -1,11 +1,11 @@
 <template>
   <td criterion :rowspan="getAimsBy('criterion', criterionId).length">
     <div class="d-flex flex-column justify-space-between text-break">
-      <div>{{getCriterions[aim.criterion].name}}</div>
+      <div>{{c_criterions[aim.criterion].name}}</div>
       <div class="mt-1 flex-grow-1 flex-wrap d-flex">
         <Acceptability
           :key="'citerion-alternative-'+index+criterionItems[alternativeId]"
-          v-for="(alternativeId, index) in alternativesIds"
+          v-for="(alternativeId, index) in c_alternativesIds"
           class="mb-1 mr-1"
           :icon="true"
           :alternative="alternativeId"
@@ -20,40 +20,45 @@
 </template>
 
 
-<script>
+<script lang="ts">
 import {
   getFilteredItemsBy,
   getAimsBy,
-  getCriterions,
+  c_criterions,
   getFilteredCriterions,
-  alternativesIds
+  c_alternativesIds
 } from "@/store";
 import ItemsCount from "@/components/ItemsCount.vue";
 import Acceptability from "@/components/Acceptability.vue";
+import { defineComponent, computed, PropType, toRefs } from "@vue/composition-api";
+import { NormalizedAim, NormalizedArgument } from "@/@types";
 
-export default {
-  components: {
-    Acceptability,
-    ItemsCount
-  },
-  methods: {
-    getAimsBy
-  },
-  computed: {
-    alternativesIds,
-    totalItems: function() {
-      return Object.values(this.criterionItems).reduce((acc, items) => {
-        return acc + items.length;
-      }, 0);
+export default defineComponent({
+
+  props: {
+    aim: {
+      type: Object as PropType<NormalizedAim>
     },
-    criterionItems: function() {
-      let obj = {};
-      this.alternativesIds.forEach(alternativeId => {
+    criterionId: {
+      type: Number
+    }
+
+  },
+
+
+  setup(props) {
+
+    const {aim, criterionId} = toRefs(props)
+  
+    const criterionItems = computed(() => {
+      let obj: {[key: string]: NormalizedArgument[]} = {};
+      c_alternativesIds.value.forEach(alternativeId => {
         const items = getFilteredItemsBy({
           alternative: alternativeId,
-          criterion: this.criterionId
+          criterion: criterionId.value
         });
 
+        
         obj[alternativeId] = items;
 
         // return {
@@ -68,11 +73,33 @@ export default {
         // };
       });
       return obj;
-    },
-    getCriterions,
-    getFilteredCriterions
+    })
+
+
+    return {
+
+      getAimsBy,
+      c_alternativesIds,
+      criterionItems,
+
+      totalItems: computed(()=> {
+        return Object.values(criterionItems.value).reduce((acc, items) => {
+          return acc + items.length;
+        }, 0);
+      }),
+
+    
+      c_criterions,
+      getFilteredCriterions
+    }
+
   },
-  props: ["criterionId", "aim"]
-};
+  components: {
+    Acceptability,
+    ItemsCount
+  }
+  
+  
+});
 </script>
 
