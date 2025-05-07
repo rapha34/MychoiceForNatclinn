@@ -30,8 +30,11 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
 */
-import Vue from "vue";
-//@ts-ignore
-import TextHighlight from "vue-text-highlight";
+import { App } from 'vue';
+import Highlighter from 'vue-highlight-words';
 
-Vue.component("text-highlight", TextHighlight);
+  export default {
+    install(app: App) {
+      app.component('TextHighlight', Highlighter);
+    },
+  };

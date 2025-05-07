@@ -24,9 +24,8 @@
         </div>
       </template>
       <template v-if="criterionItems.length <= 1 || (criterionItems.length > 1 && showDetails)">
-        <template v-for="(item, index) in criterionItems">
+        <template v-for="(item, index) in criterionItems" :key="index">
           <PropertiesListCriterion
-            :key="index"
             :item="item"
             :row="getAimsCountFromAimsAndCriterion(getAimsFromItems(items), item.criterion)"
           />
@@ -85,7 +84,7 @@ import { NormalizedArgument } from "@/@types";
 
 import Acceptability from "@/components/Acceptability.vue";
 import PropertiesListCriterion from "@/components/PropertiesList/PropertiesListCriterion.vue";
-import { computed, defineComponent, ref, toRefs, PropType } from "@vue/composition-api";
+import { computed, defineComponent, ref, toRefs, PropType } from "vue";
 export default defineComponent({
 
   props: {

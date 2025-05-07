@@ -29,7 +29,7 @@
 import ItemsCount from "@/components/ItemsCount.vue";
 import Acceptability from "@/components/Acceptability.vue";
 import { getFilteredItemsBy, c_alternativesIds } from "@/store";
-import { computed, defineComponent, PropType, ref, toRefs  } from "@vue/composition-api";
+import { computed, defineComponent, PropType, ref, toRefs  } from "vue";
 import { NormalizedAim, NormalizedArgument } from "@/@types";
 export default defineComponent({
 

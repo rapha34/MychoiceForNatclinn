@@ -30,7 +30,7 @@ import {
 } from "@/store";
 import ItemsCount from "@/components/ItemsCount.vue";
 import Acceptability from "@/components/Acceptability.vue";
-import { defineComponent, computed, PropType, toRefs } from "@vue/composition-api";
+import { defineComponent, computed, PropType, toRefs } from "vue";
 import { NormalizedAim, NormalizedArgument } from "@/@types";
 
 export default defineComponent({

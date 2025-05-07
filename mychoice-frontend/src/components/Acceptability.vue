@@ -33,7 +33,7 @@
 <script lang="ts">
 import { NormalizedArgument } from "@/@types";
 import { getAcceptabilityFromProCon, pluralize } from "@/store";
-import { computed, defineComponent, PropType, toRefs } from "@vue/composition-api";
+import { computed, defineComponent, PropType, toRefs } from "vue";
 import ScoreIcon from "./ScoreIcon.vue";
 export default defineComponent({
 

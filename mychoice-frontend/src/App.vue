@@ -5,11 +5,11 @@
     <Drawer></Drawer>
 
       <input style="display:none;" ref="dropFileInputRef" accept=".xlsx" type="file" @change="onFileChange"/>
-      <v-content>
+      <v-main>
 
         <router-view />
 
-      </v-content>
+      </v-main>
       
 
     <v-dialog v-model="state.openDialog" max-width="600px">
@@ -69,65 +69,77 @@ import AppBar from "@/components/AppBar.vue";
 import Drawer from "@/components/Drawer.vue";
 import OpenDialog from "@/components/OpenDialog.vue";
 import About from "@/views/About.vue";
-import { state, clearErrors, getErrors, getErrorMessage, refreshProject,onFileChange, onFileDrop, onFileDragEnter, onFileDragLeave, onFileDragOver, initDropArea, notifications } from "@/store";
-import {ref, onMounted,  defineComponent } from "@vue/composition-api";
+
+import {
+  state,
+  clearErrors,
+  getErrors,
+  getErrorMessage,
+  refreshProject,
+  onFileChange,
+  onFileDrop,
+  onFileDragEnter,
+  onFileDragLeave,
+  onFileDragOver,
+  initDropArea,
+  notifications
+} from "@/store";
+
+import { ref, onMounted, computed, defineComponent } from "vue";
+import { dropFileInputRef } from "@/store";
 
 export default defineComponent({
-  setup() {
-    const dropFileInputRef = ref(null)
-
-    onMounted(() => {
-        state.dropFileInputRef = dropFileInputRef
-      initDropArea()
-    })
-
-
-    return {
-      onFileChange,
-      onFileDrop,
-      onFileDragEnter, onFileDragLeave, onFileDragOver,
-      clearErrors,
-      getErrorMessage,
-      refreshProject,
-      dropFileInputRef,
-      notifications
-    }
-
-  },
-  data: () => ({
-    state
-  }),
+  name: 'App',
   components: {
     Drawer,
     OpenDialog,
     AppBar,
     About
   },
-  computed: {
-    getErrors,
-    isNotification: {
+  setup() {
+
+    onMounted(() => { 
+      initDropArea();
+    });
+
+    const isNotification = computed({
       get() {
-        return state.notifications && state.notifications.length <= 0 ? false : true
+        return state.notifications && state.notifications.length > 0;
       },
       set(value) {
-        if (value === false) {
-          state.notifications = []
-        }
+        if (!value) state.notifications = [];
       }
-    },
-    isError: {
+    });
+
+    const isError = computed({
       get() {
         return Object.values(state.errors).some(error => error !== false);
       },
       set(value) {
-        if (value === false) {
-          clearErrors();
-        }
+        if (!value) clearErrors();
       }
-    }
+    });
+
+    return {
+      dropFileInputRef,
+      onFileChange,
+      onFileDrop,
+      onFileDragEnter,
+      onFileDragLeave,
+      onFileDragOver,
+      clearErrors,
+      getErrorMessage,
+      refreshProject,
+      state,
+      getErrors,
+      notifications,
+      isNotification,
+      isError
+    };
   }
 });
 </script>
+
 
 <style lang="scss">
 @import "@/styles/main.scss";

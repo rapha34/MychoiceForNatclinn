@@ -1,10 +1,10 @@
 import router from "@/router";
-import { openXlsxFromFile, state } from "@/store";
-import { computed } from "@vue/composition-api";
+import { openXlsxFromFile, state, dropFileInputRef } from "@/store";
+import { computed } from "vue";
 import { loadAll } from "./fetch";
 
 export const handleLoadFile = () => {
-  state.dropFileInputRef.value.click();
+  dropFileInputRef.value?.click();
 };
 
 export const preventDefaults = (e: any) => {
@@ -31,19 +31,19 @@ export const onFileDrop = (e: {
   preventDefaults(e);
   unhighlightDrop(e);
   const files = e.dataTransfer.files;
-  state.dropFileInputRef.value.files = files;
+  dropFileInputRef.value!.files = files;
   onFileChange();
 };
 export const onFileChange = async () => {
-  const file = state.dropFileInputRef.value.files[0];
-  const route = router.resolve(`/project?xlsx=${file.name}`).resolved;
+  const file = dropFileInputRef.value?.files?.[0];
+  const route = router.resolve(`/project?xlsx=${file.name}`);
   await loadAll(route);
   router.push(route);
 };
-export const getDropFileInputRef = computed(() => state.dropFileInputRef.value);
+export const getDropFileInputRef = computed(() => dropFileInputRef.value);
 
 export const getInputFile = computed(
-  () => state.dropFileInputRef.value.files[0]
+  () => dropFileInputRef.value?.files?.[0]
 );
 
 export const isXlsxType = (type: string) =>

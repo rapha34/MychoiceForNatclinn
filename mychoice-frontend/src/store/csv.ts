@@ -13,62 +13,55 @@ import {
   getRouteTypeValue,
   getXlsxWorksheets,
   state,
+  dropFileInputRef
 } from "@/store";
 import { saveAs } from "file-saver";
-import { Route } from "vue-router";
+import type { RouteLocationNormalized } from "vue-router";
 import { ProjectGroupNames } from "./cache";
 
 export const isExportableToCSV = () => {
-  const type = getProjectTypeFromRoute(router.currentRoute);
-  if (
+  const type = getProjectTypeFromRoute(router.currentRoute.value);
+  return (
     type === ProjectGroupNames.GOOGLE_SPREADSHEET ||
     type === ProjectGroupNames.XLSX ||
     type === ProjectGroupNames.NEXTCLOUD
-  ) {
-    return true;
-  } else {
-    return false;
-  }
+  );
 };
 
-export const exportToCSV = async (route: Route) => {
+export const exportToCSV = async (route: RouteLocationNormalized) => {
   const id = getRouteTypeValue(route);
-  if (getProjectTypeFromRoute(route) === ProjectGroupNames.GOOGLE_SPREADSHEET) {
+  const projectType = getProjectTypeFromRoute(route);
+
+  if (projectType === ProjectGroupNames.GOOGLE_SPREADSHEET) {
     const worksheets = await fetchSpreadsheetWorksheets(id);
     await exportWorksheetsToCSV(worksheets);
   }
-  if (getProjectTypeFromRoute(route) === ProjectGroupNames.NEXTCLOUD) {
+
+  if (projectType === ProjectGroupNames.NEXTCLOUD) {
     const url = getNextcloudDownloadUrlFromId(id);
     const file = await getNextcloudFileFromUrl(url);
     const worksheets = await getXlsxWorksheets(file);
     await exportWorksheetsToCSV(worksheets);
   }
-  if (getProjectTypeFromRoute(route) === ProjectGroupNames.XLSX) {
-    const file = state.dropFileInputRef.value.files[0];
-    const worksheets = await getXlsxWorksheets(file);
-    await exportWorksheetsToCSV(worksheets);
+
+  if (projectType === ProjectGroupNames.XLSX) {
+    const inputElement = dropFileInputRef.value;
+
+    if (inputElement?.files?.length) {
+      const file = inputElement.files[0];
+      const worksheets = await getXlsxWorksheets(file);
+      await exportWorksheetsToCSV(worksheets);
+    }
+    else {
+      console.error("Aucun fichier XLSX sélectionné.");
+    }
   }
+  
 };
 
 export const exportWorksheetsToCSV = async (
   worksheets: SpreadsheetWorksheet[]
 ) => {
-  // const argument = worksheets[0].data;
-
-  // const argumentWorksheet = worksheets.find(
-  //   worksheet => worksheet.title === "argument"
-  // ).data;
-  // const projectWorksheet = worksheets.find(
-  //   worksheet => worksheet.title === "project"
-  // ).data;
-  // console.log(projectWorksheet, "works");
-
-  //@ts-ignore
-  // const projectCSV = getCSVFromJSON(projectWorksheet);
-  //@ts-ignore
-  // const argumentCSV = getCSVFromJSON(argumentWorksheet);
-  // saveAsCSVFile(projectCSV, "project.csv");
-  // saveAsCSVFile(argumentCSV, "argument.csv");
   const headersLengths: number[] = [];
   const multiCSV: { [key: string]: string } = {};
 
@@ -96,34 +89,28 @@ export const exportWorksheetsToCSV = async (
 
     const CSV = getCSVFromJSON(data);
     multiCSV[worksheet.title] = CSV;
-    // const filename = worksheet.title + ".csv";
-    //
   });
+
   const maxHeaderLength = Math.max(...headersLengths);
   const lineSeparator = ";".repeat(maxHeaderLength);
 
   const sortedMultiCSV = Object.entries(multiCSV)
-    .sort(function ([a], [b]) {
-      return headerOrder.indexOf(a) - headerOrder.indexOf(b);
-    })
+    .sort(([a], [b]) => headerOrder.indexOf(a) - headerOrder.indexOf(b))
     .reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
 
   const mergedCSV = Object.entries(sortedMultiCSV)
-    .map(([key, value]) => {
-      return `"${key}"${lineSeparator}\n${value}\n${lineSeparator}`;
-    })
+    .map(([key, value]) => `"${key}"${lineSeparator}\n${value}\n${lineSeparator}`)
     .join("\n");
-  // console.log(mergedCSV, "MERGE");
+
   const blob = getAsCSVBlob(mergedCSV);
   saveAs(blob, state.project.name + ".csv");
-  //@ts-ignore
-  // const argumentCSV = exportJSONToCSV(argumentWorksheet);
 };
+
 export const getAsFile = (data: any, filename: string) => {
   const blob = getAsCSVBlob(data);
-  const file = new File([blob], filename);
-  return file;
+  return new File([blob], filename);
 };
+
 export const getAsCSVBlob = (data: any) => {
   return new Blob([data], { type: "text/csv;charset=utf-8;" });
 };

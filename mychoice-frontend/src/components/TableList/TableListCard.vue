@@ -75,7 +75,7 @@ import {
   getStakeholderName,
   is1stLevelStakeholdersMode
 } from "@/store";
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from "vue";
 export default defineComponent({
   setup() {
     return {

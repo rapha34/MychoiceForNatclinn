@@ -47,7 +47,7 @@ import {
   state,
   getCriterionName
 } from "@/store";
-import { defineComponent, ref } from "@vue/composition-api";
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
 

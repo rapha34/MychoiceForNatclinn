@@ -101,8 +101,8 @@ export const getUniqueOrBlank = (
 // };
 
 export const refreshProject = async () => {
-  clearProjectDataCacheFromRoute(router.currentRoute);
-  await loadAll(router.currentRoute);
+  clearProjectDataCacheFromRoute(router.currentRoute.value);
+  await loadAll(router.currentRoute.value);
 };
 
 // DEPRECATED

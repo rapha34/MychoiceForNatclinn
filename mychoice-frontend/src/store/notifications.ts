@@ -1,4 +1,4 @@
-import { computed } from "@vue/composition-api";
+import { computed } from "vue";
 import { uniqBy } from "lodash";
 import { state } from "./state";
 

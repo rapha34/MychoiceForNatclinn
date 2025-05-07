@@ -1,9 +1,9 @@
 import { Data } from "@/@types";
 
-import { computed } from "@vue/composition-api";
+import { computed } from "vue";
 
 import { merge, omit } from "lodash";
-import { Route } from "vue-router";
+import type { RouteLocationNormalized } from "vue-router";
 import { getRouteTypeValue, PROJECT_TYPE_ROUTES, state } from ".";
 
 export enum ProjectGroupNames {
@@ -196,8 +196,10 @@ export const removeFromRecentProjects = (
 ) => {
   // const fullId = getProjectFullId(type, id);
   const isProjectExist = state.recentProjects.some(
-    (project) => project.type === type && project.id === id
+    (project: LocalStorageCacheProjectItem) =>
+      project.type === type && project.id === id
   );
+  
 
   if (isProjectExist) {
     removeProjectFromCache(type, id);
@@ -218,7 +220,7 @@ export const removeProjectDataFromCache = (
   removeFromLocalStorageCache(`projects.${type}.${id}.data`);
 };
 
-export const clearProjectDataCacheFromRoute = (route: Route) => {
+export const clearProjectDataCacheFromRoute = (route: RouteLocationNormalized) => {
   if (route.query[PROJECT_TYPE_ROUTES.ICO]) {
     // clearIcoItemFromCache(
     //   router.currentRoute.query[projectNameRouteQuery] as string
@@ -252,11 +254,11 @@ export const clearProjectDataCacheFromRoute = (route: Route) => {
   }
 };
 
-export const isProjectCached = (route: Route) => {
+export const isProjectCached = (route: RouteLocationNormalized) => {
   return getProjectDataCacheFromRoute(route) ? true : false;
 };
 
-export const getProjectCacheFromRoute = (route: Route) => {
+export const getProjectCacheFromRoute = (route: RouteLocationNormalized) => {
   const id = getRouteTypeValue(route);
   if (route.query[PROJECT_TYPE_ROUTES.GOOGLE_SPREADSHEET]) {
     return getProjectFromCache(ProjectGroupNames.GOOGLE_SPREADSHEET, id);
@@ -272,7 +274,7 @@ export const getProjectCacheFromRoute = (route: Route) => {
   }
 };
 
-export const setProjectCache = (route: Route, data: Data) => {
+export const setProjectCache = (route: RouteLocationNormalized, data: Data) => {
   const id = getRouteTypeValue(route);
   if (route.query[PROJECT_TYPE_ROUTES.GOOGLE_SPREADSHEET]) {
     saveProjectToCache(ProjectGroupNames.GOOGLE_SPREADSHEET, {
@@ -300,7 +302,7 @@ export const setProjectCache = (route: Route, data: Data) => {
   }
 };
 
-export const getProjectDataCacheFromRoute = (route: Route) => {
+export const getProjectDataCacheFromRoute = (route: RouteLocationNormalized) => {
   const { data } = getProjectCacheFromRoute(route);
   return data;
 };

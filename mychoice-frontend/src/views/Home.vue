@@ -22,7 +22,7 @@
               </v-col>
             </v-row>
             <v-row justify="center" class="grey lighten-5">
-              <v-col cols="12" sm="8" lg="8">
+              <v-col cols="12" sm="8" lg="8">           
                 <b>MyChoice</b> is a web application supporting collective
                 decision, designed by INRAE. The software enables project
                 participants to:
@@ -119,7 +119,8 @@
                   
 
                   <v-col lg="12">
-                    <v-subheader>Recent projects</v-subheader>
+                    <!-- <v-subheader>Recent projects</v-subheader> -->
+                    <v-list-subheader>Recent projects</v-list-subheader>
                     <v-card :disabled="!recentProjects.length" flat tile>
                       <v-card-subtitle v-if="!recentProjects.length"
                         >No recent projects</v-card-subtitle
@@ -142,11 +143,11 @@
                           <v-list-item-title>
                             {{ value.name || value.id }}
                           </v-list-item-title>
-                          <v-list-item-icon pos v-if="value.type === 'googlespreadsheet'">
-                            <v-icon>
+                          <!-- <v-list-item-icon pos v-if="value.type === 'googlespreadsheet'"> -->
+                            <v-icon pos v-if="value.type === 'googlespreadsheet'">
                               mdi-google-spreadsheet
                             </v-icon>
-                          </v-list-item-icon>
+                          <!-- </v-list-item-icon> -->
                           <v-spacer></v-spacer>
                   <v-list-item-action @click.stop>
                     <v-btn
@@ -206,7 +207,7 @@
 // import OpenSpreadsheetField from "@/components/Open/OpenSpreadsheetField.vue";
 import Version from "@/components/Version.vue";
 import { state, openSpreadsheet, openIco, getRecentProjects, recentProjects, getHrefFromTypeId,removeFromRecentProjects, handleLoadFile } from "@/store";
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from "vue";
 export default defineComponent({
   setup() {
 

@@ -163,7 +163,7 @@ import { NormalizedArgument } from "@/@types";
 
 import Acceptability from "@/components/Acceptability.vue";
 import PropertiesListCriterion from "@/components/PropertiesList/PropertiesListCriterion.vue";
-import { computed, defineComponent, toRefs, PropType } from "@vue/composition-api";
+import { computed, defineComponent, toRefs, PropType } from "vue";
 export default defineComponent({
 
   props: {

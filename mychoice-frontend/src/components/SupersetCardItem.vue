@@ -53,7 +53,6 @@
 
 
 <script>
-import Vue from "vue";
 
 import {
   getItemsBy,
@@ -72,14 +71,14 @@ import {
   getImagePath,
   is1stLevelStakeholdersMode
 } from "@/store";
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from "vue";
 export default defineComponent({
   setup() {
     return {
       state,
       getImagePath,
-      openMe: function(index) {
-        Vue.set(this.open, index, !this.open[index]);
+      openMe(index) {
+        this.open[index] = !this.open[index];
       },
       addSupersetInSelection,
       removeSupersetInSelection,
@@ -106,11 +105,7 @@ export default defineComponent({
     }
   },
   mounted() {
-    Vue.set(
-      this,
-      "open",
-      this.supersetItems.map(() => false)
-    );
+    this.open = this.supersetItems.map(() => false);
   }
 });
 </script>

@@ -32,7 +32,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 */
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import Vue from "vue";
 import { state } from "./state";
 dayjs.extend(customParseFormat);
 
@@ -60,7 +59,7 @@ export class MyChoiceError extends Error {
 
 export const setError = (errorName: string, errorValue: boolean | string) => {
   // state.errors[errorName] = errorValue;
-  Vue.set(state.errors, errorName, errorValue);
+  (state.errors as any)[errorName] = errorValue;
 };
 
 export const formatDate = (date: string) => {
@@ -121,12 +120,12 @@ export const pluralize = function (
         "\\{" + wordToPluralize + ":" + linkedVar + "\\}",
         "g"
       );
-      if (value > 1 && object.plural) {
+      if (Number(value) > 1 && object.plural) {
         formatted = formatted.replace(regex, `${object.plural}`);
       } else {
         formatted = formatted.replace(
           regex,
-          `${wordToPluralize}${value > 1 ? suffix : ""}`
+          `${wordToPluralize}${Number(value) > 1 ? suffix : ""}`
         );
       }
     }

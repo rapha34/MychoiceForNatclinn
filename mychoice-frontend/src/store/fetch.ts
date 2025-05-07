@@ -37,6 +37,7 @@ import {
   getNextcloudDownloadUrlFromId,
   getNextcloudDataFromUrl,
   openXlsxFromFile,
+  dropFileInputRef
 } from "@/store";
 import { PROJECT_TYPE_ROUTES } from "./routes";
 import {
@@ -56,7 +57,7 @@ import {
   saveToRecentProjects,
   setProjectCache,
 } from "./cache";
-import { Route } from "vue-router";
+import { RouteLocationNormalized, RouteLocationAsPathGeneric } from 'vue-router';
 import router from "@/router";
 
 export const getIcoApiUrl = () => {
@@ -105,184 +106,12 @@ export const fetchIcoProject = async (projectId: string) => {
   return json;
 };
 
-// export const loadSpreadsheetData = async () => {
-//   // let data = null;
-//   // if (localStorage.data) {
-//   //   data = JSON.parse(localStorage.data);
-//   // } else {
-//   //   data = await getSpreadsheetData();
-//   //   localStorage.data = JSON.stringify(data);
-//   // }
-// };
 
-// export const saveToRecentProjectNames = (name: string) => {
-//   if (!Object.keys(state.recentProjectNames).includes(name)) {
-//     state.recentProjectNames = {
-//       ...state.recentProjectNames,
-//       [name]: {
-//         name,
-//         date: Date.now()
-//       }
-//     };
-//   } else {
-//     state.recentProjectNames[name].date = Date.now();
-//   }
-//   localStorage.recentProjectNames = JSON.stringify(state.recentProjectNames);
-// };
-// export const saveToRecentProjectSpreadsheets = ({
-//   name,
-//   id
-// }: {
-//   name?: string;
-//   id: string;
-// }) => {
-//   if (!Object.keys(state.recentProjectSpreadsheets).includes(id)) {
-//     /* state.recentProjectSpreadsheets[name] = {
-//       name,
-//       id,
-//       date: Date.now()
-//     }; */
-//     state.recentProjectSpreadsheets = {
-//       ...state.recentProjectSpreadsheets,
-//       [id]: {
-//         name,
-//         id,
-//         date: Date.now()
-//       }
-//     };
-//   } else {
-//     if (name) {
-//       state.recentProjectSpreadsheets[id].name = name;
-//     }
-//     state.recentProjectSpreadsheets[id].date = Date.now();
-//   }
-//   localStorage.recentProjectSpreadsheets = JSON.stringify(
-//     state.recentProjectSpreadsheets
-//   );
-// };
 
 export const loadProject = () => {};
 
-// export const loadAll = async (route: any, clear?: boolean) => {
-//   showOverlay();
-//   try {
-//     const spreadsheetRouteParam = <string | null>(
-//       route.query[PROJECT_TYPE_ROUTES.GOOGLE_SPREADSHEET]
-//     );
-//     const nextcloudIdRouteParam = <string | null>(
-//       route.query[PROJECT_TYPE_ROUTES.NEXTCLOUD]
-//     );
-//     const xlsxFileRouteParam = <string | null>(
-//       route.query[PROJECT_TYPE_ROUTES.XLSX]
-//     );
-//     const icoRouteParam = <string | null>route.query[PROJECT_TYPE_ROUTES.ICO];
-//     if (spreadsheetRouteParam) {
-//       //setSpreadsheet(spreadsheetRouteParam);
 
-//       // saveToRecentProjectSpreadsheets({
-//       //   id: spreadsheetRouteParam
-//       // });
-//       saveToRecentProjects(ProjectGroupNames.GOOGLE_SPREADSHEET, {
-//         id: spreadsheetRouteParam
-//       });
-
-//       let data = null;
-//       console.log(isSpreadsheetCached(spreadsheetRouteParam), "cached?");
-//       if (isSpreadsheetCached(spreadsheetRouteParam)) {
-//         data = getSpreadsheetProjectDataFromCache(spreadsheetRouteParam);
-//         state.notifications.push({
-//           message: "Spreadsheet loaded from cache"
-//         });
-//       } else {
-//         data = await getSpreadsheetData(spreadsheetRouteParam);
-//       }
-//       // saveToRecentProjectSpreadsheets({
-//       //   name: data.project.name ? data.project.name : undefined,
-//       //   id: spreadsheetRouteParam
-//       // });
-//       saveToRecentProjects(ProjectGroupNames.GOOGLE_SPREADSHEET, {
-//         name: data.project && data.project.name ? data.project.name : undefined,
-//         id: spreadsheetRouteParam
-//       });
-
-//       try {
-//         setData(data.items, data.project, clear);
-//         setSpreadsheetProjectToCache(spreadsheetRouteParam, data);
-//         state.spreadsheet = spreadsheetRouteParam;
-//       } catch (e) {
-//         throw e;
-//       }
-//     } else if (icoRouteParam) {
-//       // const project = await loadProject(projectRouteParam);
-//       // const items = await loadItems(projectRouteParam);
-
-//       let data = null;
-//       if (localStorage.ico && localStorage.ico[icoRouteParam]) {
-//         data = getSpreadsheetProjectDataFromCache(icoRouteParam);
-//       } else {
-//         const [project, items] = await Promise.all([
-//           await getProjectData(icoRouteParam),
-//           await getItemsData(icoRouteParam)
-//         ]);
-//         data = { project, items };
-//       }
-
-//       if (data.project && data.project.name) {
-//         saveToRecentProjects(ProjectGroupNames.ICO, {
-//           name: data.project.name ? data.project.name : undefined,
-//           id: data.project.name
-//         });
-//         // saveToRecentProjectNames(data.project.name);
-//       }
-
-//       try {
-//         setData(data.items, data.project, clear);
-//         setIcoProjectToCache(data.project.name, data);
-//       } catch (e) {
-//         throw e;
-//       }
-//       //}
-//     } else if (route.query["demo"]) {
-//       console.log("DEMO !");
-//       //@ts-ignore
-//       setData(dataJson, projectJson, clear);
-//     } else if (xlsxFileRouteParam) {
-//       console.log("XLSX !");
-//       const file = state.dropFileInputRef.value.files[0];
-//       await openXlsxFromFile(file, clear);
-//     } else if (nextcloudIdRouteParam) {
-//       console.log("Nextcloud !");
-
-//       //https://icotest.iate.inra.fr/nextcloud/s/iiw6WomRsepyx78/download
-//       const nextcloudUrl = getNextcloudDownloadUrlFromId(nextcloudIdRouteParam);
-//       await openXlsxFromUrl(nextcloudUrl);
-//     } else {
-//       console.info("NOTHING TO LOAD");
-//     }
-//     if (route && route.path.includes("/project")) {
-//       document.title = getProjectName.value + " | My Choice";
-//     }
-
-//     hideOverlay();
-//   } catch (e) {
-//     hideOverlay();
-
-//     if (e instanceof MyChoiceError) {
-//       console.warn(e.name, "MYCHOICE ERROR");
-//       setError(e.name, e.message);
-//       throw Error(e.stack);
-//     } else {
-//       console.warn("ClassicError");
-//       //@ts-ignore
-//       setError(e.name, e.message);
-//       //@ts-ignore
-//       console.log(e.stack, "stack");
-//       throw e;
-//     }
-//   }
-// };
-
-export const getProjectTypeFromRoute = (route: Route) => {
+export const getProjectTypeFromRoute = (route: RouteLocationNormalized) => {
   if (
     Object.prototype.hasOwnProperty.call(
       route.query,
@@ -323,7 +152,7 @@ export const getRouteTypeFromProjectType = (type: ProjectGroupNames) => {
   }
 };
 
-export const getRouteTypeValue = (route: Route) => {
+export const getRouteTypeValue = (route: RouteLocationNormalized) => {
   if (
     Object.prototype.hasOwnProperty.call(
       route.query,
@@ -352,7 +181,7 @@ export const getRouteTypeValue = (route: Route) => {
 };
 
 export const loadSpreadsheetFromRoute = async (
-  route: Route,
+  route: RouteLocationNormalized,
   clear?: boolean
 ) => {
   const spreadsheetId = getRouteTypeValue(route);
@@ -390,7 +219,7 @@ export const loadSpreadsheetFromRoute = async (
   }
 };
 
-export const loadIcoFromRoute = async (route: Route, clear?: boolean) => {
+export const loadIcoFromRoute = async (route: RouteLocationNormalized, clear?: boolean) => {
   const icoId = getRouteTypeValue(route);
 
   saveToRecentProjects(ProjectGroupNames.ICO, {
@@ -423,7 +252,7 @@ export const loadIcoFromRoute = async (route: Route, clear?: boolean) => {
   }
 };
 
-export const loadNextcloudFromRoute = async (route: Route, clear?: boolean) => {
+export const loadNextcloudFromRoute = async (route: RouteLocationNormalized, clear?: boolean) => {
   // console.log("Nextcloud!");
   const nextcloudId = getRouteTypeValue(route);
 
@@ -455,28 +284,7 @@ export const loadNextcloudFromRoute = async (route: Route, clear?: boolean) => {
   }
 };
 
-// export const loadBy = async ({
-//   type,
-//   id,
-// }: {
-//   type: ProjectGroupNames;
-//   id: string;
-// }) => {
-//   const routeType = getRouteTypeFromProjectType(type);
-//   console.log(routeType, "ROUTE TYPE");
-//   const routeParams: Partial<Route> = {
-//     query: {
-//       [routeType]: id,
-//     },
-//     name: "project",
-//     path: "/project",
-//   };
 
-//   const route = router.resolve(routeParams).resolved;
-//   console.log(route, "ROUT");
-//   await loadAll(route);
-//   router.push(routeParams);
-// };
 
 export const getHrefFromTypeId = ({
   type,
@@ -486,20 +294,33 @@ export const getHrefFromTypeId = ({
   id: string;
 }) => {
   const routeType = getRouteTypeFromProjectType(type);
-  // console.log(routeType, "ROUTE TYPE");
-  const routeParams: Partial<Route> = {
+
+  if (!routeType) {
+    throw new Error("Route type is undefined for this project type.");
+  }
+
+  // Construction des paramètres de route avec path ou name
+  const routeParams: RouteLocationNormalized = {
     query: {
       [routeType]: id,
     },
-    name: "project",
-    path: "/project",
+    name: "project", // Assure-toi que "project" est bien un nom de route défini dans tes routes
+    path: "/project", // Assure-toi que cette route "/project" existe dans tes routes
+    params: {}, // Si tu n'as pas de paramètres, mets un objet vide
+    matched: [], // Tableau vide si aucune correspondance n'est requise
+    fullPath: "/project", // Remplacer par le chemin complet si nécessaire
+    hash: "",
+    redirectedFrom: undefined,
+    meta: undefined
   };
 
+  // Appel de router.resolve avec un objet contenant path ou name
   const href = router.resolve(routeParams).href;
   return href;
 };
 
-export const loadAll = async (route: Route, clear?: boolean) => {
+
+export const loadAll = async (route: RouteLocationNormalized, clear?: boolean) => {
   showOverlay();
 
   // console.log(route.query, "query");
@@ -531,9 +352,13 @@ export const loadAll = async (route: Route, clear?: boolean) => {
      * XLSX
      */
     if (getProjectTypeFromRoute(route) === ProjectGroupNames.XLSX) {
-      // console.log("XSLSX");
-      const file = state.dropFileInputRef.value.files[0];
-      await openXlsxFromFile(file, clear);
+      const fileInput = dropFileInputRef.value;
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        await openXlsxFromFile(file, clear);
+      } else {
+        console.error("No file selected or file input is not valid.");
+      }
     }
 
     hideOverlay();

@@ -29,7 +29,7 @@
               <template v-slot:activator="{ on: tooltip  }">
                 <v-btn
                   :color="$router.currentRoute.name === 'global-view' ? '' : ''"
-                                v-on="{ ...tooltip }"
+                  v-on="tooltip || {}"
                   v-bind="attrs"
                   :value="'global-view'"
                 >
@@ -40,7 +40,7 @@
                         : 'grey'
                     "
                   >mdi-table</v-icon>
-                <v-btn x-small icon color="transparent" :value="'global-view'" v-on="{ ...menu }" v-bind="attrs">
+                <v-btn x-small icon color="transparent" :value="'global-view'" v-on="menu || {}" v-bind="attrs">
                   <v-icon :color="
                       $router.currentRoute.name === 'global-view'
                         ? 'primary'
@@ -112,7 +112,7 @@
             </v-tooltip>
           </v-btn-toggle>
           <!-- <v-spacer></v-spacer> -->
-          <v-overflow-btn
+          <v-select
             :items="getSelectModes"
             v-model="state.mode"
             hide-selected
@@ -121,7 +121,7 @@
             solo
             style="min-width: 200px;"
             class="ml-6 flex-grow-1"
-          ></v-overflow-btn>
+          ></v-select>
           <!-- <v-divider vertical></v-divider> -->
           <!-- <v-select
             class
@@ -228,7 +228,7 @@ import {
   is1stLevelStakeholdersMode,
 } from "@/store";
 import { debounce } from "lodash";
-import { computed, defineComponent } from "@vue/composition-api";
+import { computed, defineComponent } from "vue";
 
 export default defineComponent({
   setup() {
@@ -265,7 +265,7 @@ export default defineComponent({
   watch: {
     async mode() {
       
-      await loadAll(this.$router.currentRoute, false);
+      await loadAll(this.$router.currentRoute.value, false);
     },
     
   }

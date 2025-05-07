@@ -10,9 +10,9 @@ import router from "@/router";
 import xlsxParser from "xlsx-parse-json";
 import { loadAll } from "./fetch";
 import { setData } from "./project";
-import { computed } from "@vue/composition-api";
+import { computed } from "vue";
 import { nextcloudIdRouteQuery, state } from ".";
-import { Route } from "vue-router";
+import type { RouteLocationNormalized } from "vue-router";
 
 export const isValidNextcloudUrl = computed(() => {
   return state.fields.nextcloudUrl;

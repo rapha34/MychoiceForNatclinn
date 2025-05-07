@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { pluralize } from "@/store";
-import { computed, defineComponent } from "@vue/composition-api";
+import { computed, defineComponent } from "vue";
 export default defineComponent({
   props: ["count"],
 

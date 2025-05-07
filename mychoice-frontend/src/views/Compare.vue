@@ -11,7 +11,7 @@
 <script>
 import SupersetCard from "@/components/SupersetCard.vue";
 import {selectedSupersets} from "@/store"
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from "vue";
 export default defineComponent({
   setup() {
     return {

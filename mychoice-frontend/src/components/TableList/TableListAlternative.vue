@@ -39,7 +39,7 @@
 <script>
 import { getUniqueFilteredLabelsBy, getFilteredItemsBy, getFilteredItemsGroupByProp, is1stLevelStakeholdersMode } from "@/store";
 import { sortBy } from "lodash";
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from "vue";
 import TableListCard from "./TableListCard";
 export default defineComponent({
   setup() {

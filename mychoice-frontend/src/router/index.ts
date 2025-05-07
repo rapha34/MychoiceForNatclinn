@@ -30,15 +30,15 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
 */
-import Vue from "vue";
-import Router from "vue-router";
+// src/router/index.ts
+
+import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Project from "@/views/Project.vue";
 import Home from "@/views/Home.vue";
 import Main from "@/views/Main.vue";
 import Properties from "@/views/Properties.vue";
 import Stakeholders from "@/views/Stakeholders.vue";
-//import Compare from "@/views/Compare.vue";
-//import ItemList from "@/components/ItemList.vue";
+
 import {
   clearProjectDataCacheFromRoute,
   getProjectTypeFromRoute,
@@ -49,19 +49,11 @@ import {
   setDocumentTitle,
   showOverlay,
 } from "@/store";
-Vue.use(Router);
 
-const routes = [
+const routes: Array<RouteRecordRaw> = [
   { name: "home", path: "/", component: Home },
   { name: "global-view", path: "/project/global-view", component: Main },
   { name: "project", path: "/project/", component: Project },
-  //{ name: "aim", path: "/aim/:id", component: ItemList, props: true },
-  // {
-  //   name: "criterion",
-  //   path: "/criterion/:id",
-  //   component: ItemList,
-  //   props: true
-  // },
   {
     name: "property-view",
     path: "/project/property-view",
@@ -74,35 +66,16 @@ const routes = [
     component: Stakeholders,
     props: true,
   },
-  // {
-  //   name: "compare",
-  //   path: "/compare",
-  //   component: Compare
-  // }
 ];
 
-// 3. Create the router instance and pass the `routes` option
-// You can pass in additional options here, but let's
-// keep it simple for now.
-const router = new Router({
-  mode: "history",
-  base: process.env.BASE_URL,
-  routes, // short for `routes: routes`
+const router = createRouter({
+  history: createWebHistory(process.env.BASE_URL),
+  routes,
 });
-
-// function hasQueryParams(route: any) {
-//   return !!Object.keys(route.query).length;
-// }
 
 router.beforeEach(async (to, from, next) => {
   showOverlay();
-
   next();
-  // if (!hasQueryParams(to) && hasQueryParams(from)) {
-  //   next({ name: to.name, query: from.query });
-  // } else {
-  //   next();
-  // }
 });
 
 router.afterEach(async (to, from) => {
@@ -117,30 +90,31 @@ router.afterEach(async (to, from) => {
       await loadProject();
     }
   } else {
-    setDocumentTitle(to.meta.title || "My Choice");
+    if (typeof to.meta?.title === 'string') {
+      setDocumentTitle(to.meta.title);
+    } else {
+      setDocumentTitle("My Choice");
+    }    
   }
 
   hideOverlay();
 });
 
-router.onReady(async () => {
-  // console.log("onready");
-  await loadProject();
-});
-
+// In Vue 3, there's no router.onReady. You can call loadProject after app is mounted.
 export const loadProject = async () => {
+  const route = router.currentRoute.value;
   if (
-    router.currentRoute.query[PROJECT_TYPE_ROUTES.ICO] ||
-    router.currentRoute.query[PROJECT_TYPE_ROUTES.GOOGLE_SPREADSHEET] ||
-    router.currentRoute.query[PROJECT_TYPE_ROUTES.NEXTCLOUD] ||
-    router.currentRoute.query["demo"]
+    route.query[PROJECT_TYPE_ROUTES.ICO] ||
+    route.query[PROJECT_TYPE_ROUTES.GOOGLE_SPREADSHEET] ||
+    route.query[PROJECT_TYPE_ROUTES.NEXTCLOUD] ||
+    route.query["demo"]
   ) {
     try {
-      await loadAll(router.currentRoute);
+      await loadAll(route);
     } catch (e) {
       console.info("LOAD FAIL, RETRY WITHOUT CACHE!");
-      clearProjectDataCacheFromRoute(router.currentRoute);
-      await loadAll(router.currentRoute);
+      clearProjectDataCacheFromRoute(route);
+      await loadAll(route);
     }
   }
 };

@@ -41,34 +41,6 @@
                 </v-list-item>
               </template>
             </v-combobox>
-
-            <!-- <v-text-field
-              outlined
-              clearable
-              hide-details=""
-              v-model="projectName"
-              label="Project name"
-              class="mb-0"
-            ></v-text-field>
-
-            <v-list subheader dense="" class="">
-              <template v-for="(value, name) in state.recentProjectNames">
-                <v-list-item @click="openIco(value)" :key="name">
-                  <v-list-item-content>
-                    <v-list-item-title v-text="value"></v-list-item-title>
-                  </v-list-item-content>
-
-                  <v-list-item-action>
-                    <v-btn icon @click="removeFromRecentProjectNames(value)">
-                      <v-icon small color="grey lighten-1">
-                        mdi-close
-                      </v-icon>
-                    </v-btn>
-                  </v-list-item-action>
-                </v-list-item>
-              </template>
-            </v-list>-->
-
             <v-btn
               class="ml-auto d-flex"
               color="secondary"
@@ -100,7 +72,7 @@ import {
   recentSpreadsheetProjects,recentIcoProjects, recentNextcloudProjects,
   removeFromRecentProjects, getHrefFromTypeId
 } from "@/store";
-import { computed, defineComponent } from "@vue/composition-api";
+import { computed, defineComponent } from "vue";
 export default defineComponent({
   
 

@@ -31,7 +31,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
 */
 import { state } from "@/store";
-import { computed } from "@vue/composition-api";
+import { computed } from "vue";
 
 export const getAlternatives = function() {
   return state.data!.alternatives;

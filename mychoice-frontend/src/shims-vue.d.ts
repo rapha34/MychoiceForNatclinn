@@ -31,6 +31,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
 */
 declare module "*.vue" {
-  import Vue from "vue";
+  // import Vue from "vue";
   export default Vue;
 }

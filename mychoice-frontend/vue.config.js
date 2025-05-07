@@ -30,6 +30,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
 */
+const webpack = require("webpack");
 process.env.VUE_APP_VERSION = require("./package.json").version;
 
 module.exports = {
@@ -43,10 +44,17 @@ module.exports = {
         pathRewrite: {
           "^/api": "",
         },
-        // ws: true,
-        logLevel: "debug", // this what you want
+        logLevel: "debug",
       },
     },
   },
   transpileDependencies: ["vuetify"],
+  configureWebpack: {
+    plugins: [
+      new webpack.DefinePlugin({
+        __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: JSON.stringify(false),
+      }),
+    ],
+  },
 };
+

@@ -30,22 +30,123 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
 */
-import Vue from "vue";
-//@ts-ignore
-import Vuetify from "vuetify/lib";
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import {
+  VApp,
+  VAppBar,
+  VNavigationDrawer,
+  VList,
+  VListItem,
+  VListItemTitle,
+  VListItemSubtitle,
+  VDivider,
+  VBtn,
+  VIcon,
+  VCard,
+  VCardTitle,
+  VCardText,
+  VDialog,
+  VMain,
+  VItemGroup,       // pour remplacer VListItemGroup
+  VListSubheader,   // pour remplacer VSubheader
+  VOverlay,
+  VProgressCircular,
+  VSnackbar,
+  VFooter,
+  VContainer,
+  VListItemAction,
+  VSpacer,
+  VCardSubtitle,
+  VRow,
+  VCol,
+  VToolbarTitle,
+  VTooltip,
+  VAppBarNavIcon,
+  VForm,
+  VCombobox,
+  VImg,
+  VAvatar,
+  VChip,
+  VBadge,
+  VExpandTransition,
+  VMenu,
+  VBtnToggle,
+  VToolbar,
+  VAutocomplete,
+  VTextField,
+  VSelect
+} from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+import { aliases, mdi } from 'vuetify/iconsets/mdi'
 
-Vue.use(Vuetify);
+const vuetify = createVuetify({
+  components: {
+    VApp,
+    VAppBar,
+    VNavigationDrawer,
+    VList,
+    VListItem,
+    VListItemTitle,
+    VListItemSubtitle,
+    VDivider,
+    VBtn,
+    VIcon,
+    VCard,
+    VCardTitle,
+    VCardText,
+    VDialog,
+    VMain,
+    VItemGroup,       // pour remplacer VListItemGroup
+    VListSubheader,   // pour remplacer VSubheader
+    VOverlay,
+    VProgressCircular,
+    VSnackbar,
+    VFooter,
+    VContainer,
+    VListItemAction,
+    VSpacer,
+    VCardSubtitle,
+    VRow,
+    VCol,
+    VToolbarTitle,
+    VTooltip,
+    VAppBarNavIcon,
+    VForm,
+    VCombobox,
+    VImg,
+    VAvatar,
+    VChip,
+    VBadge,
+    VExpandTransition,
+    VMenu,
+    VBtnToggle,
+    VToolbar,
+    VAutocomplete,
+    VTextField,
+    VSelect
+  },
+  directives,
+  icons: {
+    defaultSet: 'mdi',
+    aliases,
+    sets: { mdi },
+  },
+})
 
-export default new Vuetify({
-  theme: {
-    themes: {
-      light: {
-        primary: "#4F4F4F",
-        secondary: "#00A3A6"
-        // secondary: "#b0bec5",
-        // accent: "#8c9eff",
-        // error: "#b71c1c"
-      }
-    }
-  }
-});
+export default vuetify
+// Vue.use(Vuetify);
+
+// export default new Vuetify({
+//   theme: {
+//     themes: {
+//       light: {
+//         primary: "#4F4F4F",
+//         secondary: "#00A3A6"
+//         // secondary: "#b0bec5",
+//         // accent: "#8c9eff",
+//         // error: "#b71c1c"
+//       }
+//     }
+//   }
+// });

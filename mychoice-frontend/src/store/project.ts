@@ -37,7 +37,7 @@ import {
 } from "./routes";
 import { fetchIcoData, fetchIcoProject, loadAll } from "./fetch";
 import router from "@/router";
-import { Route } from "vue-router";
+import type { RouteLocationNormalized } from "vue-router";
 import { getSpreadsheetIdFromUrl } from "./spreadsheet";
 
 import { getIcoRenamedItems, getIcoRenamedProject } from "@/data-renamed";
@@ -58,12 +58,12 @@ import {
 } from "@/store";
 
 import { Data } from "@/@types";
-import Vue from "vue";
+// import Vue from "vue";
 import { getNextcloudIdFromUrl } from "./xlsx";
 
 export const openSpreadsheet = async (spreadsheetUrl: string) => {
   const spreadsheetId = getSpreadsheetIdFromUrl(spreadsheetUrl);
-  const routeParams: Pick<Route, "query" | "name" | "path"> = {
+  const routeParams: Pick<RouteLocationNormalized, "query" | "name" | "path"> = {
     query: {
       [spreadsheetIdRouteQuery]: spreadsheetId,
     },
@@ -71,7 +71,7 @@ export const openSpreadsheet = async (spreadsheetUrl: string) => {
     path: "/project",
   };
   // routeParams.query[spreadsheetIdRouteQuery] = spreadsheetId;
-  const route = router.resolve(routeParams).resolved;
+  const route = router.resolve(routeParams);
   await router.push(route);
   // try {
   await loadAll(route);
@@ -83,14 +83,14 @@ export const openSpreadsheet = async (spreadsheetUrl: string) => {
 };
 
 export const openIco = async (projectName: string) => {
-  const routeParams: Pick<Route, "query" | "name"> = {
+  const routeParams: Pick<RouteLocationNormalized, "query" | "name"> = {
     query: {
       [projectNameRouteQuery]: projectName,
     },
     name: "project",
   };
   // routeParams.query[projectNameRouteQuery] = projectName;
-  const route = router.resolve(routeParams).resolved;
+  const route = router.resolve(routeParams);
   await router.push(route);
   // try {
   await loadAll(route);
@@ -103,7 +103,7 @@ export const openIco = async (projectName: string) => {
 
 export const openNextcloudUrl = async (url: string) => {
   const nextcloudId = getNextcloudIdFromUrl(url);
-  const routeParams: Pick<Route, "query" | "name" | "path"> = {
+  const routeParams: Pick<RouteLocationNormalized, "query" | "name" | "path"> = {
     query: {
       [nextcloudIdRouteQuery]: nextcloudId,
     },
@@ -111,7 +111,7 @@ export const openNextcloudUrl = async (url: string) => {
     path: "/project",
   };
   // routeParams.query[nextcloudIdRouteQuery] = nextcloudId;
-  const route = router.resolve(routeParams).resolved;
+  const route = router.resolve(routeParams);
   await router.push(routeParams);
   // try {
   await loadAll(route);
@@ -255,12 +255,12 @@ export const setData = (
     }
     // state.data = parsedData;
     // state.project = rawProject;
-    Vue.set(state, "data", parsedData);
-    Vue.set(state, "project", rawProject);
+    state.data = parsedData;
+    state.project = rawProject;
     // console.log(state, "STATE");
   } catch (e) {
     throw e;
   }
   //state.filteredItems = parsedData.items;
-  //Vue.set(state, "filteredItems", parsedData.items);
+ 
 };

@@ -30,45 +30,22 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
 */
-import Vue from "vue";
-import App from "./App.vue";
-import router from "./router";
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import vuetify from './plugins/vuetify';
+import textHighlight from './plugins/text-highlight';
+import 'roboto-fontface/css/roboto/roboto-fontface.css';
+import '@mdi/font/css/materialdesignicons.css';
 
-//import { getSpreadsheetData } from "./data-spreadsheet";
-//import { data } from "./data";
-
-import { state } from "@/store";
-import vuetify from "./plugins/vuetify";
-import "./plugins/text-highlight";
-import "roboto-fontface/css/roboto/roboto-fontface.css";
-import "@mdi/font/css/materialdesignicons.css";
-
-import { onAppInit } from "./store/events";
-
-//Vue.config.performance = true;
-
-Vue.config.productionTip = false;
-
-Vue.config.errorHandler = (err, vm, info) => {
-  // err: error trace
-  // vm: component in which error occured
-  // info: Vue specific error information such as lifecycle hooks, events etc.
-
-  // TODO: Perform any custom logic or log to server
-  console.error(err);
-  // console.info(vm, "vm");
-  // console.info(info, "info");
-};
-
-// register globally
+import { onAppInit } from './store/events';
 
 (async () => {
   await onAppInit();
 
-  state.vm = new Vue({
-    router,
-    //@ts-ignore
-    vuetify,
-    render: (h) => h(App),
-  }).$mount("#app");
+  const app = createApp(App);
+  app.use(router);
+  app.use(vuetify);
+  app.use(textHighlight); // ← Enregistre TextHighlight globalement
+  app.mount('#app');
 })();

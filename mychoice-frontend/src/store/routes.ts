@@ -31,23 +31,43 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
 */
 import router from "@/router";
-import { computed } from "@vue/composition-api";
-import { Route } from "vue-router";
+import { computed } from "vue";
+import { RouteLocationNormalized, LocationQuery, RouteRecordNameGeneric } from 'vue-router';
 import { state } from "@/store";
 
-export const pushRouteWithQuery = (routeParams: Partial<Route>) => {
-  const query = router.currentRoute.query || {};
-  router.push({
-    ...routeParams,
-    query: query
-  });
+export const pushRouteWithQuery = (routeParams: Partial<RouteLocationNormalized>) => {
+  const query = router.currentRoute.value.query || {};  // On récupère les paramètres de requête actuels
+  
+  // Vérifie si routeParams contient un `name` ou un `path`
+  if (!routeParams.name && !routeParams.path) {
+    throw new Error('La route doit contenir un `name` ou un `path`');
+  }
+
+  // Construire l'objet pour router.push() en fonction des paramètres passés
+  const routeToPush: any = {
+    query: query,  // Ajoute les paramètres de requête
+    ...routeParams, // Ajoute les autres paramètres
+  };
+
+  // Si `routeParams` contient un `name`, on n'ajoute pas `path`
+  if (routeParams.name) {
+    delete routeToPush.path;  // Si `name` est défini, on supprime `path` car ce n'est pas nécessaire
+  }
+  
+  // Si `routeParams` contient un `path`, on supprime `name`
+  if (routeParams.path) {
+    delete routeToPush.name;  // Si `path` est défini, on supprime `name`
+  }
+
+  // Appel à router.push() avec l'objet corrigé
+  router.push(routeToPush);
 };
 
-export const switchToView = (routeName: Route["name"]) => {
+export const switchToView = (routeName: RouteLocationNormalized["name"]) => {
   const route = {
     name: routeName
   };
-  pushRouteWithQuery(route);
+  router.push(route);
 };
 
 export enum PROJECT_TYPE_ROUTES {

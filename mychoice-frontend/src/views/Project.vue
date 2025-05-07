@@ -61,7 +61,7 @@
             </div>
             <v-card min-width="280" max-width="320" class outlined="">
               <v-list-item three-line>
-                <v-list-item-content>
+                <!-- <v-list-item-content> -->
                   <!-- <div class="overline mb-4">OVERLINE</div> -->
                   <div class="title lh-1 mb-1 font-weight-bold">
                     <v-icon class="primary--text text--lighten-2" light>{{
@@ -78,15 +78,15 @@
                         }}
                         arguments
                     </v-list-item-subtitle> -->
-                </v-list-item-content>
+                <!-- </v-list-item-content> -->
 
-                <v-list-item-avatar size="56" color="grey">
+                <v-avatar size="56" color="grey">
                   <img
                     :src="
                       `${getImagePath(getAlternatives[alternativeId].image)}`
                     "
                   />
-                </v-list-item-avatar>
+                </v-avatar>
               </v-list-item>
 
               <v-card-text>
@@ -131,7 +131,7 @@ import {
   getFilteredItemsBy,
   switchToView
 } from "@/store";
-import { defineComponent, computed } from "@vue/composition-api";
+import { defineComponent, computed } from "vue";
 export default defineComponent ({
   setup() {    
 

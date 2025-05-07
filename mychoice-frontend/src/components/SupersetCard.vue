@@ -70,7 +70,8 @@
 
     <v-divider class="my-1" />
     <v-card-text>
-      <v-subheader class="px-0" v-text="`Arguments (${supersetItems.length})`"></v-subheader>
+      <!-- <v-subheader class="px-0" v-text="`Arguments (${supersetItems.length})`"></v-subheader> -->
+      <v-list-subheader class="px-0" v-text="`Arguments (${supersetItems.length})`"></v-list-subheader>
 
       
       
@@ -111,7 +112,7 @@
 </template>
 
 <script>
-import Vue from "vue";
+// import Vue from "vue";
 
 import {
   getItemsBy,
@@ -132,7 +133,7 @@ import {
   is1stLevelStakeholdersMode
 } from "@/store";
 import SupersetCardItem from './SupersetCardItem.vue';
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from "vue";
 export default defineComponent({
   setup() {
     return {

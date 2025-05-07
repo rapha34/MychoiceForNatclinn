@@ -28,7 +28,7 @@
 
 <script lang="ts">
 import { getAcceptabilityName, state } from "@/store";
-import { defineComponent, toRefs } from "@vue/composition-api";
+import { defineComponent, toRefs } from "vue";
 export default defineComponent({
 
 

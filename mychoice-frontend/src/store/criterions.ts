@@ -32,7 +32,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 */
 import { state, getFilteredItems } from "@/store";
 import { NormalizedArgument, NormalizedObject } from "@/@types";
-import { computed } from "@vue/composition-api";
+import { computed } from "vue";
 
 export const getCriterions = function() {
   const criterions = state.data!.criterions;

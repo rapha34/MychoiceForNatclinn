@@ -17,10 +17,9 @@
       </v-container>
     </th>
 
-    <template v-for="alternativeId in alternativesIds">
+    <template v-for="alternativeId in subOptionsIds" :key="`subOption-${alternativeId}`">
       <th
         alternative
-        :key="`subOption-${alternativeId}`"
         :colspan="subOptionsIds.length"
       >
         <table style="width: 100%;">
@@ -111,7 +110,7 @@ import {
   getAllItems,
   state
 } from "@/store";
-import { computed, defineComponent } from "@vue/composition-api";
+import { computed, defineComponent } from "vue";
 export default defineComponent({
   setup() {
 

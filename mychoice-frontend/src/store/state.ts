@@ -32,16 +32,12 @@ knowledge of the CeCILL-C license and that you accept its terms.
 */
 //import { data } from "../data";
 
-import Vue from "vue";
-import VueCompositionApi, { computed, Ref, watch } from "@vue/composition-api";
-
+import { computed, Ref, reactive, watch, ref } from "vue";
 import { NormalizedData, Project } from "@/@types";
 import { LocalStorageCache, LocalStorageCacheProjectItem } from ".";
 
-Vue.use(VueCompositionApi);
-
 export interface State {
-  vm: Vue;
+  vm: any;  // Utiliser `any` ou `ComponentPublicInstance` pour Vue 3
   notifications: {
     type?: string;
     message: string;
@@ -77,7 +73,7 @@ export interface State {
   };
   aboutDialog: boolean;
   creditsDialog: boolean;
-  dropFileInputRef: null | Ref<HTMLInputElement>;
+  // dropFileInputRef: null | Ref<HTMLInputElement>;
   overlay: boolean;
   drawer: boolean;
   selectedView: string;
@@ -128,7 +124,7 @@ export const DEFAULTS: Pick<
   | "aboutDialog"
   | "creditsDialog"
   | "globalCardType"
-  | "dropFileInputRef"
+  // | "dropFileInputRef"
 > = {
   mode: "consensus",
   globalCardType: "label",
@@ -147,10 +143,12 @@ export const DEFAULTS: Pick<
   project: null,
   aboutDialog: false,
   creditsDialog: false,
-  dropFileInputRef: null,
+  // dropFileInputRef: null,
 };
 
-export const state = Vue.observable<State>({
+export const dropFileInputRef = ref<HTMLInputElement | null>(null);
+
+export const state = reactive<State>({
   vm: null,
   notifications: [],
   baseUrl: process.env.BASE_URL,
@@ -191,12 +189,8 @@ export const state = Vue.observable<State>({
   openDialog: DEFAULTS.openDialog,
   aboutDialog: DEFAULTS.aboutDialog,
   creditsDialog: DEFAULTS.creditsDialog,
-  dropFileInputRef: null,
+  // dropFileInputRef: ref<HTMLInputElement | null>(null),
   icons: {
-    // alternative: {
-    //   1: "mdi-carrot",
-    //   2: "mdi-cow"
-    // },
     subOption: {
       1: "mdi-emoticon-happy-outline",
       2: "mdi-emoticon-sad-outline",
@@ -217,9 +211,9 @@ export const state = Vue.observable<State>({
   },
   errorMessages: {
     FAILED_TO_FETCH_SPREADSHEET:
-      "The Spreadsheet isn't published or doesn't exists",
+      "The Spreadsheet isn't published or doesn't exist",
     FAILED_TO_FETCH_ICO:
-      "This project name doesn't exists (note: name is case sensitive)",
+      "This project name doesn't exist (note: name is case-sensitive)",
   },
   recentProjects: [],
   recentProjectNames:
@@ -235,19 +229,16 @@ export const state = Vue.observable<State>({
 });
 
 export const clearAppDataAndProject = () => {
-  Vue.set(state, "data", DEFAULTS.data);
-  Vue.set(state, "project", DEFAULTS.project);
+  state.data = DEFAULTS.data;
+  state.project = DEFAULTS.project;
   state.spreadsheet = DEFAULTS.spreadsheet;
 };
 
 export const clearAppMode = () => {
-  Vue.set(state, "mode", DEFAULTS.mode);
+  state.mode = DEFAULTS.mode;
 };
 
 export const clearAll = () => {
-  // state.data = DEFAULTS.data;
-  // state.project = DEFAULTS.project;
-  // state.mode = DEFAULTS.mode;
   clearAppDataAndProject();
   clearAppFilters();
   clearAppMode();
@@ -256,22 +247,19 @@ export const clearAll = () => {
 
 export const clearAppDialogs = () => {
   state.selectedSuperset = DEFAULTS.selectedSuperset;
-  // Vue.set(state, "selectedSupersets", DEFAULTS.selectedSupersets);
-  // Vue.set(state, "selectedAims", DEFAULTS.selectedAims);
-  // Vue.set(state, "selectedCriterions", DEFAULTS.selectedCriterions);
-  // Vue.set(state, "selectedStakeholders", DEFAULTS.selectedStakeholders);
-  // state.selectedSupersets = DEFAULTS.selectedSupersets;
-  state.selectedSupersets.splice(0); // splice is because objects?
+  state.selectedSupersets.splice(0); // Clear the array
   state.compareDialog = DEFAULTS.compareDialog;
   state.dialog = DEFAULTS.dialog;
   state.openDialog = DEFAULTS.openDialog;
 };
+
 export const clearAppFilters = () => {
   state.searchInput = DEFAULTS.searchInput;
   state.selectedAims = DEFAULTS.selectedAims;
   state.selectedCriterions = DEFAULTS.selectedCriterions;
   state.selectedStakeholders = DEFAULTS.selectedStakeholders;
 };
+
 export const getImagePath = (url: string) => {
   const regex = new RegExp("^(?:[a-z]+:)?//", "i");
   const isAbsoluteUrl = regex.test(url);
@@ -304,7 +292,6 @@ export const getProjectName = computed(() =>
 );
 
 export const is1stLevelStakeholdersMode = computed(() =>
-  // state.mode === "by-stakeholder" ? true : false
   state.globalCardType === "stakeholder" ? true : false
 );
 
@@ -313,6 +300,7 @@ export const selectedSupersets = computed(() => state.selectedSupersets);
 export const showOverlay = () => {
   state.overlay = true;
 };
+
 export const hideOverlay = () => {
   state.overlay = false;
 };

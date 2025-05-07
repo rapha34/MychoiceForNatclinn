@@ -110,7 +110,7 @@ import {
   removeSupersetInSelection,
   selectedSupersets
 } from "@/store";
-import { defineComponent, computed } from "@vue/composition-api";
+import { defineComponent, computed } from "vue";
 
 export default defineComponent({
   setup() {

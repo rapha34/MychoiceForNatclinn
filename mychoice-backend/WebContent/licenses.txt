@@ -217,7 +217,7 @@ MyChoice's frontend use the following libraries :
     @vue/cli-service@4.1.1	MIT	https://github.com/vuejs/vue-cli
     @vue/cli-shared-utils@4.1.1	MIT	https://github.com/vuejs/vue-cli
     @vue/component-compiler-utils@3.0.2	MIT	https://github.com/vuejs/component-compiler-utils
-    @vue/composition-api@0.3.2	MIT	
+    vue@0.3.2	MIT	
     @vue/eslint-config-typescript@4.0.0	MIT	https://github.com/vuejs/vue-cli
     @vue/preload-webpack-plugin@1.1.1	Apache-2.0	https://github.com/vuejs/preload-webpack-plugin
     @vue/test-utils@1.0.0-beta.29	MIT	https://github.com/vuejs/vue-test-utils

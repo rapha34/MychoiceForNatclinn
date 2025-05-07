@@ -332,7 +332,7 @@ export const checkEmptyArguments = <T extends SpreadsheetWorksheet["data"][0]>({
       throw new MyChoiceError(
         "SPREADSHEET_ERROR",
         // `On <b>${worksheet.title}</b> sheet, the <b>${key}</b> on <a href="${url}" target="_blank">line <b>${line}</b></a> is empty and must be filled`
-        `On <b>${worksheet.title}</b> sheet, the <b>${key}</b> on line <b>${line}</b> is empty and must be filled`
+        `On <b>${worksheet.title}</b> sheet, the <b>${String(key)}</b> on line <b>${line}</b> is empty and must be filled`
       );
     }
   });
