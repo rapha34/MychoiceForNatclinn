@@ -6,7 +6,7 @@
     <td>
       <a :name="`${property}`" :id="property"></a>
       <b>
-        <text-highlight :queries="[state.searchInput]">{{ property }}</text-highlight>
+        <text-highlight :searchWords="[state.searchInput]">{{ property }}</text-highlight>
       </b>
       <v-icon
         v-if="criterionItems.length > 1 || aimItems.length > 1"

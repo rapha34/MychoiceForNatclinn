@@ -15,13 +15,13 @@
     </v-btn>-->
     <v-container>
       <div>
-        <b v-if="is1stLevelStakeholdersMode"><text-highlight :queries="[state.searchInput]">{{getStakeholderName(superset.stakeholder)}}</text-highlight></b>
+        <b v-if="is1stLevelStakeholdersMode"><text-highlight :searchWords="[state.searchInput]">{{getStakeholderName(superset.stakeholder)}}</text-highlight></b>
         <b v-else>
-          <text-highlight :queries="[state.searchInput]">{{superset.property}}</text-highlight>
+          <text-highlight :searchWords="[state.searchInput]">{{superset.property}}</text-highlight>
         </b>
       </div>
       <div :class="superset.subOption === 1 ? 'green--text' : 'red--text'">
-        <text-highlight :queries="[state.searchInput]">{{superset.value}}</text-highlight>
+        <text-highlight :searchWords="[state.searchInput]">{{superset.value}}</text-highlight>
       </div>
       <v-chip outlined x-small>{{items.length}}</v-chip>
       <!-- <small>

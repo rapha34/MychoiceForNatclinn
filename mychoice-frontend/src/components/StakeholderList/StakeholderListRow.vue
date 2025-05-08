@@ -19,7 +19,7 @@
           
 
           <a :name="`${property}`" :id="property"></a>
-        <text-highlight class="inline-block" :queries="[state.searchInput]">{{
+        <text-highlight class="inline-block" :searchWords="[state.searchInput]">{{
           property
         }}</text-highlight>
 
@@ -69,7 +69,7 @@
 <!-- 
     <td criterion>
       <a :name="`${property}`" :id="property"></a>
-      <text-highlight class="inline-block" :queries="[state.searchInput]">{{
+      <text-highlight class="inline-block" :searchWords"[state.searchInput]">{{
         property
       }}</text-highlight>
     </td>
