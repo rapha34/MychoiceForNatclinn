@@ -10,7 +10,7 @@
                 <div :class="`caption ${!open[index] ? 'text-truncate' : ''}`">
                   <span :class="
             `font-weight-regular	  ${
-              item.subOption === 1 ? 'green--text' : 'red--text'
+              item.subOption === 1 ? 'text-success' : 'text-error'
             }`
           " v-if="is1stLevelStakeholdersMode">{{item.value}}</span>
                   <em v-else>in {{ item.source }}</em>
@@ -18,7 +18,13 @@
               </div>
 
               <div class="ml-auto flex-shrink-0">
-                <v-chip outlined x-small>{{duplicatesCount}}</v-chip>
+                <!-- <v-chip outlined x-small>{{duplicatesCount}}</v-chip> -->
+                <v-chip
+                  variant="outlined"
+                  size="x-small"
+                >
+                  {{duplicatesCount}}
+                </v-chip>
                 <v-btn icon>
                   <v-icon>
                     {{
@@ -29,7 +35,7 @@
               </div>
             </div>
 
-            <div class="text--secondary body-1" v-if="!open[index]">{{ item.assertion }}</div>
+            <div class="text-secondary body-1" v-if="!open[index]">{{ item.assertion }}</div>
 
             
             
@@ -40,9 +46,21 @@
                 <p class="mb-5 body-1">{{ item.explanation }}</p>
 
                 <div class="overline">Assertion</div>
-                <p class="body-1 text--secondary">{{ item.assertion }}</p>
+                <p class="body-1 text-secondary">{{ item.assertion }}</p>
 
-                <div v-if="item.date" class="text-right text--secondary caption">
+                <div v-if="item.tagInitiator" class="mt-4">
+                  <div class="overline">Tag Initiator</div>
+                  <v-chip
+                    size="x-small"
+                    variant="outlined"
+                    color="black"
+                    class="font-weight-medium"
+                  >
+                    {{ item.tagInitiator }}
+                  </v-chip>
+                </div>
+
+                <div v-if="item.date" class="text-right text-secondary caption mt-4">
                   <small>{{ formatDate(item.date) }}</small>
                 </div>
               </div>

@@ -30,6 +30,8 @@ export const isExportableToCSV = () => {
 
 export const exportToCSV = async (route: RouteLocationNormalized) => {
   const id = getRouteTypeValue(route);
+  if (!id) return;
+  
   const projectType = getProjectTypeFromRoute(route);
 
   if (projectType === ProjectGroupNames.GOOGLE_SPREADSHEET) {
@@ -103,7 +105,8 @@ export const exportWorksheetsToCSV = async (
     .join("\n");
 
   const blob = getAsCSVBlob(mergedCSV);
-  saveAs(blob, state.project.name + ".csv");
+  const projectName = state.project?.name || 'project';
+  saveAs(blob, projectName + ".csv");
 };
 
 export const getAsFile = (data: any, filename: string) => {

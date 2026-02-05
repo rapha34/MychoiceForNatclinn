@@ -37,6 +37,8 @@ import {
   Alternative,
   expertiseEntity,
   SourceTypeEntity,
+  Product,
+  Composition,
 } from "./@types";
 import { MyChoiceError, setError } from "./store/utils";
 
@@ -177,6 +179,7 @@ export interface SpreadsheetArgument {
   nameTypeSource: string;
   isProspective: string;
   condition?: string;
+  tagInitiator?: string;
 }
 
 export type SpreadsheetProject = {
@@ -197,6 +200,23 @@ export type SpreadsheetExpertise = {
 export type SpreadsheetSourceType = {
   nameTypeSource: string;
   fiability: number;
+};
+
+export type SpreadsheetProduct = {
+  nameAlternative: string;
+  productUri: string;
+  nameProduct: string;
+  tagProduct: string; // Sera parsé en tableau
+};
+
+export type SpreadsheetComposition = {
+  uriCompose: string;
+  nameCompose: string;
+  typeComposant: string;
+  uriComposant: string;
+  nameComposant: string;
+  Rang: number;
+  tagComposant: string; // Sera parsé en tableau
 };
 
 export const hasExpectedProperties = <T>(obj: T, props: string[]) => {
@@ -283,6 +303,8 @@ export const isValidWorkSheet = async (worksheet: SpreadsheetWorksheet) => {
     ],
     project: ["nameProject"],
     alternative: ["nameAlternative", "iconAlternative"],
+    product: ["nameAlternative", "productUri", "nameProduct", "tagProduct"],
+    composition: ["uriCompose", "nameCompose", "typeComposant", "uriComposant", "nameComposant", "Rang", "tagComposant"],
   };
 
   //@ts-ignore
@@ -447,6 +469,7 @@ export const getRenamedSpreadsheetItems = async (
       value: item["value"],
       aim: item["aim"],
       date: item["date"] ? item["date"].toString() : null,
+      tagInitiator: item["tagInitiator"] || undefined,
     };
 
     delete item.idArgument;
@@ -459,6 +482,7 @@ export const getRenamedSpreadsheetItems = async (
     delete item["nameTypeSource"];
     delete item["value"];
     delete item["aim"];
+    delete item["tagInitiator"];
     return <Argument>{
       ...item,
       ...renamedItem,
@@ -540,6 +564,51 @@ export const getRenamedSpreadsheetProject = async (
       nameTypeSource: k.nameTypeSource,
     }));
 
+  // Process products worksheet if it exists
+  let renamedProducts: Product[] = [];
+  const productWorksheet = worksheets.find(
+    (worksheet) => worksheet.title === "product"
+  );
+  if (productWorksheet && productWorksheet.data.length > 0) {
+    try {
+      await isValidWorkSheet(productWorksheet);
+      const spreadsheetProducts = productWorksheet.data as SpreadsheetProduct[];
+      renamedProducts = spreadsheetProducts.map((k) => ({
+        nameAlternative: k.nameAlternative,
+        productUri: k.productUri,
+        nameProduct: k.nameProduct,
+        tagProduct: k.tagProduct ? k.tagProduct.split(',').map(t => t.trim()).filter(t => t !== '') : [],
+      }));
+    } catch (e) {
+      // If product sheet exists but has issues, throw error
+      throw e;
+    }
+  }
+
+  // Process composition worksheet if it exists (replaces ingredient)
+  let renamedCompositions: Composition[] = [];
+  const compositionWorksheet = worksheets.find(
+    (worksheet) => worksheet.title === "composition"
+  );
+  if (compositionWorksheet && compositionWorksheet.data.length > 0) {
+    try {
+      await isValidWorkSheet(compositionWorksheet);
+      const spreadsheetCompositions = compositionWorksheet.data as SpreadsheetComposition[];
+      renamedCompositions = spreadsheetCompositions.map((k) => ({
+        uriCompose: k.uriCompose,
+        nameCompose: k.nameCompose,
+        typeComposant: k.typeComposant as 'Product' | 'Ingredient',
+        uriComposant: k.uriComposant,
+        nameComposant: k.nameComposant,
+        rang: k.Rang,
+        tagComposant: k.tagComposant ? k.tagComposant.split(',').map(t => t.trim()).filter(t => t !== '') : [],
+      }));
+    } catch (e) {
+      // If composition sheet exists but has issues, throw error
+      throw e;
+    }
+  }
+
   const renamedProject: Project = {
     name: spreadsheetProject.nameProject,
     image: spreadsheetProject.image,
@@ -547,6 +616,8 @@ export const getRenamedSpreadsheetProject = async (
     alternatives: renamedAlternatives,
     expertiseEntities: renamedExpertiseEntities,
     sourceTypeEntities: renamedSourceTypeEntities,
+    products: renamedProducts.length > 0 ? renamedProducts : undefined,
+    compositions: renamedCompositions.length > 0 ? renamedCompositions : undefined,
   };
 
   return renamedProject;

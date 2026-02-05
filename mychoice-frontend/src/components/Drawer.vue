@@ -1,7 +1,9 @@
 <template>
-  <v-navigation-drawer v-model="state.drawer" fixed temporary hide-overlay>
-    <v-list-item>
-      <!-- <v-list-item-content> -->
+  <v-navigation-drawer
+    v-model="state.drawer"
+    temporary
+    scrim="false"
+  >    <v-list-item>
         <v-list-item-title class="title">
           <router-link to="/">
             <img
@@ -10,41 +12,30 @@
             />
           </router-link>
         </v-list-item-title>
-      <!-- </v-list-item-content> -->
     </v-list-item>
 
     <v-divider />
 
     <v-list nav dense>
-      <!-- <v-list-item-group> -->
       <v-item-group>  
         <v-list-item @click="handleLoadFile">
-          <!-- <v-list-item-icon> -->
             <v-icon>mdi-upload</v-icon>
-          <!-- </v-list-item-icon> -->
           <v-list-item-title>Open local project <small>(.xlsx)</small></v-list-item-title>
         </v-list-item>
 
         <v-list-item @click="state.openDialog = true">
-          <!-- <v-list-item-icon> -->
             <v-icon>mdi-cloud-upload</v-icon>
-          <!-- </v-list-item-icon> -->
           <v-list-item-title>Open online project</v-list-item-title>
         </v-list-item>
       </v-item-group>     
-      <!-- </v-list-item-group> -->
 
       <v-list-item
         href="https://docs.google.com/spreadsheets/d/1Cj5tC6JyLQxCHdtZJ8d9_-FSV9UbHT7AGE3wrLEMlig/copy"
         target="_blank"
       >
-        <!-- <v-list-item-icon> -->
           <v-icon>mdi-plus-circle-outline</v-icon>
-        <!-- </v-list-item-icon> -->
-        <!-- <v-list-item-content> -->
           <v-list-item-title>Create new project</v-list-item-title>
           <v-list-item-subtitle>from spreadsheet template</v-list-item-subtitle>
-        <!-- </v-list-item-content> -->
       </v-list-item>
     </v-list>
 
@@ -64,9 +55,7 @@
         :to="getHrefFromTypeId({ type: value.type, id: value.id })"
       >
         <v-list-item-title>{{ value.name || value.id }}</v-list-item-title>
-        <!-- <v-list-item-icon v-if="value.type === 'googlespreadsheet'"> -->
           <v-icon v-if="value.type === 'googlespreadsheet'">mdi-google-spreadsheet</v-icon>
-        <!-- </v-list-item-icon> -->
       </v-list-item>
     </v-list>
 
@@ -75,22 +64,20 @@
         <v-btn
           block
           color="red"
-          class="white--text"
+          class="text-white"
           @click="refreshProject"
           :disabled="!route.path.includes('project')"
         >
-          <v-icon small class="mr-3">mdi-autorenew</v-icon>
+          <v-icon size="small" class="mr-3">mdi-autorenew</v-icon>
           Refresh project
         </v-btn>
       </div>
 
       <v-list nav dense>
-        <!-- <v-list-item-group> -->
         <v-item-group>  
           <v-list-item @click="state.aboutDialog = true">
             <v-list-item-title>About</v-list-item-title>
           </v-list-item>
-        <!-- </v-list-item-group> -->
         </v-item-group> 
       </v-list>
 

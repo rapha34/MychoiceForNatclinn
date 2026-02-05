@@ -1,70 +1,75 @@
 <template>
-  <v-app style="background-color: #fafafa;">
-    <AppBar></AppBar>
+  <v-app class="bg-grey-lighten-4">
+    <AppBar />
+    <Drawer />
 
-    <Drawer></Drawer>
+    <!-- Input pour import local -->
+    <input
+      type="file"
+      ref="dropFileInputRef"
+      accept=".xlsx"
+      style="display: none"
+      @change="onFileChange"
+    />
+    <v-main> 
+      <router-view />
+    </v-main>
 
-      <input style="display:none;" ref="dropFileInputRef" accept=".xlsx" type="file" @change="onFileChange"/>
-      <v-main>
 
-        <router-view />
-
-      </v-main>
-      
-
-    <v-dialog v-model="state.openDialog" max-width="600px">
+    <!-- Dialogue ouverture projet en ligne -->
+    <v-dialog v-model="state.openDialog" max-width="600">
       <v-card>
-        <v-card-title>
-          <span class>
-            <v-icon class="mr-2">mdi-cloud-upload</v-icon>Open online project
-          </span>
+        <v-card-title class="d-flex align-center">
+          <v-icon class="mr-2">mdi-cloud-upload</v-icon>
+          <span>Open online project</span>
         </v-card-title>
-
         <v-card-text>
           <OpenDialog />
         </v-card-text>
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="state.aboutDialog" max-width="600px">
+    <!-- Dialogue "About" -->
+    <v-dialog v-model="state.aboutDialog" max-width="600">
       <About />
     </v-dialog>
 
-    <v-overlay z-index="3" :value="state.overlay">
-      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    <!-- Overlay de chargement -->
+    <v-overlay :model-value="state.overlay" class="d-flex justify-center align-center" z-index="3">
+      <v-progress-circular indeterminate size="64" color="primary" />
     </v-overlay>
 
-    <v-snackbar top color="info" v-model="isNotification">
-      <v-icon align-center>mdi-information</v-icon>&nbsp;
-      <div>
-      <div v-for="(notification, index) in notifications" :key="index">
-      
-        {{ notification.message }}.
-
-        
-      </div>
-      </div>
-      <v-btn class="ml-3" color="white" small outlined
-          @click="refreshProject"
-        >
-          Refresh 
-        </v-btn>
-      
+    <!-- Snackbar notifications -->
+    <v-snackbar v-model="isNotification" color="info" location="top">
+      <template #default>
+        <v-icon class="mr-2">mdi-information</v-icon>
+        <div>
+          <div v-for="(notification, index) in notifications" :key="index">
+            {{ notification.message }}
+          </div>
+        </div>
+      </template>
+      <template #actions>
+        <v-btn variant="outlined" size="small" @click="refreshProject">Refresh</v-btn>
+      </template>
     </v-snackbar>
 
-    <v-snackbar color="red" v-model="isError" :timeout="0">
-      
-      <div>
-      <div v-for="(key, index) in getErrors" :key="index">
-        <span v-html="getErrorMessage(key)"></span>.
-      </div>
-      </div>
-      <v-btn text @click="clearErrors()">Close</v-btn>
+    <!-- Snackbar erreurs -->
+    <v-snackbar v-model="isError" color="error" timeout="0" multi-line>
+      <template #default>
+        <div v-for="(key, index) in getErrors" :key="index">
+          {{ getErrorMessage(key) }}
+        </div>
+      </template>
+      <template #actions>
+        <v-btn variant="text" @click="clearErrors">Close</v-btn>
+      </template>
     </v-snackbar>
   </v-app>
 </template>
 
 <script>
+import { onMounted, computed, defineComponent } from "vue";
 import AppBar from "@/components/AppBar.vue";
 import Drawer from "@/components/Drawer.vue";
 import OpenDialog from "@/components/OpenDialog.vue";
@@ -82,41 +87,34 @@ import {
   onFileDragLeave,
   onFileDragOver,
   initDropArea,
-  notifications
+  notifications,
+  dropFileInputRef
 } from "@/store";
 
-import { ref, onMounted, computed, defineComponent } from "vue";
-import { dropFileInputRef } from "@/store";
-
 export default defineComponent({
-  name: 'App',
+  name: "App",
   components: {
+    AppBar,
     Drawer,
     OpenDialog,
-    AppBar,
     About
   },
   setup() {
-
-    onMounted(() => { 
+    onMounted(() => {
       initDropArea();
     });
 
     const isNotification = computed({
-      get() {
-        return state.notifications && state.notifications.length > 0;
-      },
-      set(value) {
-        if (!value) state.notifications = [];
+      get: () => state.notifications.length > 0,
+      set: (val) => {
+        if (!val) state.notifications = [];
       }
     });
 
     const isError = computed({
-      get() {
-        return Object.values(state.errors).some(error => error !== false);
-      },
-      set(value) {
-        if (!value) clearErrors();
+      get: () => Object.values(state.errors).some(error => error !== false),
+      set: (val) => {
+        if (!val) clearErrors();
       }
     });
 
@@ -139,7 +137,6 @@ export default defineComponent({
   }
 });
 </script>
-
 
 <style lang="scss">
 @import "@/styles/main.scss";

@@ -1,4 +1,4 @@
-<template>
+0+0<template>
   <v-card elevation="1" @click="toggleSuperset(superset)" class="text-center mb-3" max-width="344">
     
     <!-- <v-btn
@@ -15,15 +15,24 @@
     </v-btn>-->
     <v-container>
       <div>
-        <b v-if="is1stLevelStakeholdersMode"><text-highlight :searchWords="[state.searchInput]">{{getStakeholderName(superset.stakeholder)}}</text-highlight></b>
+        <b v-if="is1stLevelStakeholdersMode">
+          <Highlighter :searchWords="[state.searchInput]" :textToHighlight="getStakeholderName(superset.stakeholder) ?? ''"/>
+        </b>
         <b v-else>
-          <text-highlight :searchWords="[state.searchInput]">{{superset.property}}</text-highlight>
+          <Highlighter :searchWords="[state.searchInput]" :textToHighlight="superset.property ?? ''"/>
         </b>
       </div>
-      <div :class="superset.subOption === 1 ? 'green--text' : 'red--text'">
-        <text-highlight :searchWords="[state.searchInput]">{{superset.value}}</text-highlight>
+      <div :class="[superset.subOption === 1 ? 'text-success' : 'text-error']">
+        <Highlighter :searchWords="[state.searchInput]" :textToHighlight="superset.value ?? ''"/>
       </div>
-      <v-chip outlined x-small>{{items.length}}</v-chip>
+        <v-chip
+          variant="outlined"
+          size="x-small"
+          color="default"
+        >
+          {{ items.length }}
+        </v-chip>
+
       <!-- <small>
         <b>{{ items.length > 1 ? `${items.length} arguments` : `${items.length} argument`}}</b>
       </small>-->
@@ -41,21 +50,21 @@
       <v-btn
         v-if="!findSuperset(superset)"
         @click.stop="addSupersetInSelection(superset)"
-        text
+        variant="text"
         icon
-        small
+        size="small"
       >
-        <v-icon x-small>mdi-plus-circle-outline</v-icon>
+        <v-icon size="x-small">mdi-plus-circle-outline</v-icon>
       </v-btn>
       <v-btn
         v-if="findSuperset(superset)"
         @click.stop="removeSupersetInSelection(superset)"
-        text
+        variant="text"
         icon
-        small
+        size="small"
         color="secondary"
       >
-        <v-icon x-small>mdi-plus-circle</v-icon>
+        <v-icon size="x-small">mdi-plus-circle</v-icon>
       </v-btn>
 
     </div>

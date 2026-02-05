@@ -14,7 +14,7 @@
                     </h4>
 
                     <v-btn @click="refreshProject">
-                        <v-icon small class="mr-3">mdi-autorenew</v-icon>Refresh project
+                        <v-icon size="small" class="mr-3">mdi-autorenew</v-icon>Refresh project
                     </v-btn>
 
                 </v-container>

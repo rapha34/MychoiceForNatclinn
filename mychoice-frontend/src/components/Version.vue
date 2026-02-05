@@ -1,5 +1,5 @@
 <template>
-  <small class="text--small grey--text">v{{ version }}</small>
+  <small class="text-caption text-grey">v{{ version }}</small>
 </template>
 
 <script>

@@ -6,7 +6,7 @@
     <td>
       <a :name="`${property}`" :id="property"></a>
       <b>
-        <text-highlight :searchWords="[state.searchInput]">{{ property }}</text-highlight>
+        <Highlighter :searchWords="[state.searchInput]":textToHighlight="property ?? ''"/>
       </b>
       <v-icon
         v-if="criterionItems.length > 1 || aimItems.length > 1"
@@ -15,11 +15,7 @@
 
     <td>
       <template v-if="criterionItems.length > 1 && !showDetails">
-        <div class="grey--text">
-          <!-- {{`${pluralize('{count} {criterion:count}', {
-          count: criterionItems.length,
-          plural: 'criteria'
-          })}`}}-->
+        <div class="text-grey">
           {{criterionItems.length}} criteria
         </div>
       </template>
@@ -35,7 +31,7 @@
 
     <td>
       <template v-if="aimItems.length > 1 && !showDetails">
-        <div class="grey--text">{{aimItems.length}} aims</div>
+        <div class="text-grey">{{aimItems.length}} aims</div>
       </template>
       <template v-if="aimItems.length <= 1 || (aimItems.length > 1 && showDetails)">
         <div :key="index" v-for="(argument, index) in aimItems">{{ getAimById(argument.aim).name }}</div>
@@ -48,7 +44,9 @@
           <Acceptability
             :items="filterItemsBy(items, {
                 alternative: alternativeId
-          })"
+            })"
+            :alternative="alternativeId"
+            :icon="false"
           />
         </div>
       </template>
@@ -58,7 +56,9 @@
             :items="filterItemsBy(items, {
                 alternative: alternativeId,
                 aim: item.aim
-          })"
+            })"
+            :alternative="alternativeId"
+            :icon="false"             
           />
         </div>
       </template>
@@ -89,7 +89,10 @@ export default defineComponent({
 
   props: {
     items: Array as PropType<NormalizedArgument[]>,
-    property: {}
+    property: {
+      type: String,
+      required: true
+    }
   },
 
   setup(props) {
@@ -131,20 +134,10 @@ export default defineComponent({
       uniqBy
     }
   },
-
-  // data: () => ({
-  //   state,
-  //   showDetails: false
-  // }),
-  // computed: {
-    
-    
-  // },
   components: {
     Acceptability,
     PropertiesListCriterion
   }
-  // props: ["items", "property"],
   
 });
 </script>

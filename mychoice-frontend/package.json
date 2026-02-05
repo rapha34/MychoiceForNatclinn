@@ -1,6 +1,6 @@
 {
   "name": "my-choice",
-  "version": "1.5.1-saffi",
+  "version": "0.0.1-natclinn",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

@@ -10,14 +10,14 @@
 		<frontend.src>
 			${basedir}/../mychoice-frontend/
 		</frontend.src>
-		<java.version>1.8</java.version>
-	    <maven.compiler.source>1.8</maven.compiler.source>
-    	<maven.compiler.target>1.8</maven.compiler.target>
+		<java.version>17</java.version>
+	    <maven.compiler.source>17</maven.compiler.source>
+    	<maven.compiler.target>17</maven.compiler.target>
 	</properties>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.2.0.RELEASE</version>
+		<version>3.2.12</version>
 	</parent>
 	<dependencies>
 		<dependency>
@@ -35,28 +35,18 @@
 			<artifactId>mariadb-java-client</artifactId>
 		</dependency>
 
+		<!-- HikariCP is included in spring-boot-starter-jdbc -->
 		<dependency>
-			<groupId>com.mchange</groupId>
-			<artifactId>c3p0</artifactId>
-			<version>0.9.5.2</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>2.10.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>2.10.0</version>
-			<scope>test</scope>
-		</dependency>
+		<!-- Mockito is included in spring-boot-starter-test -->
 	</dependencies>
 	<build>
 		<finalName>MyChoice</finalName>
@@ -114,7 +104,7 @@
 							<goal>install-node-and-npm</goal>
 						</goals>
 						<configuration>
-							<nodeVersion>v14.16.0</nodeVersion>
+							<nodeVersion>v20.11.1</nodeVersion>
 						</configuration>
 					</execution>
 					<execution>
@@ -163,16 +153,16 @@
 
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5.1</version>
+				<version>3.13.0</version>
 				<configuration>
-					<executable>${JDK_1_8}/bin/javac</executable>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>17</source>
+					<target>17</target>
+					<release>17</release>
 				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>3.0.0</version>
+			<version>3.3.2</version>
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
 

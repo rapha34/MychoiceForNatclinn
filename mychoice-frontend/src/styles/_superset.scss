@@ -30,88 +30,95 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
 */
+// Variables — adapte-les selon ta charte graphique
+$superset-padding: 36px;
+$superset-min-width: 320px;
+$superset-max-width: 380px;
+$superset-border-radius: 8px;
+$superset-z-index: 6;
+$superset-bg: #7f7f7f;
+$superset-opacity: 0.3;
+$panel-padding-x: 12px;
+
+// Carte superset
 .superset-card {
-    overflow: auto;
-    
+  overflow: auto;
 }
 
+// Conteneur principal des comparaisons
 .compare-container {
-    position: fixed;
-    bottom: 0;
-    overflow: auto;
-    left: 0;
-    margin-right: 12px;
-    margin-left: 12px;
-    max-height: 50vh;
-    z-index: 6;
-    max-width: calc(100% - 24px);
-    
-    
-    [superset] {
-        max-width: 380px;
-        width: 100%;
-        min-width: 320px;
-    
-    }
-}
-.supersets-container {
-    max-width: 100%;
-    overflow: auto;
-    display: flex;
-    align-items: flex-start;
-    padding: 36px;
-    padding-top: 16px;
-    
-    
-}
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  margin: 0 $panel-padding-x;
+  max-height: 50vh;
+  max-width: calc(100% - 2 * #{$panel-padding-x});
+  z-index: $superset-z-index;
+  overflow: auto;
 
-.supersets-compare {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    padding: 0 12px;
-    display: flex;
-    z-index: 6;
-    max-height: 50vh;
+  [superset] {
+    min-width: $superset-min-width;
+    max-width: $superset-max-width;
     width: 100%;
-    pointer-events: none;
-
-    & > div {
-        pointer-events: auto;
-        max-width: 380px;
-        width: 100%;
-        min-width: 320px;
-    }
+  }
 }
 
+// Conteneur horizontal des blocs de comparaison
+.supersets-container {
+  display: flex;
+  align-items: flex-start;
+  overflow: auto;
+  max-width: 100%;
+  padding: $superset-padding;
+  padding-top: 16px;
+}
 
-.v-expansion-panel-header .row {
+// Bandeau fixe de comparaison
+.supersets-compare {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  padding: 0 $panel-padding-x;
+  display: flex;
+  z-index: $superset-z-index;
+  max-height: 50vh;
+  pointer-events: none;
 
+  & > div {
+    pointer-events: auto;
+    min-width: $superset-min-width;
+    max-width: $superset-max-width;
+    width: 100%;
+  }
+}
+
+// Expansion panel : gestion du titre
+.v-expansion-panel-header {
+  .row {
     overflow: hidden !important;
 
     .v-list-item__title {
-        display: inline-block;
-        white-space: nowrap;
-        text-overflow: ellipsis !important;
-        max-width: 100%;
+      display: inline-block;
+      white-space: nowrap;
+      text-overflow: ellipsis !important;
+      max-width: 100%;
     }
-}
+  }
 
-.v-expansion-panel-header--active {
-
-
+  &--active {
     .v-list-item__title {
-        white-space: initial !important;
+      white-space: initial !important;
     }
+  }
 }
 
-
+// Images responsive avec fond grisé et opacité
 .v-responsive.v-image {
-    background-color: rgb(127, 127, 127);
-
+  background-color: $superset-bg;
 }
 
 .v-image__image.v-image__image--cover {
-    opacity: 0.3;
+  opacity: $superset-opacity;
 }

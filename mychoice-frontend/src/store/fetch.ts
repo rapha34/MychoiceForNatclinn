@@ -185,15 +185,12 @@ export const loadSpreadsheetFromRoute = async (
   clear?: boolean
 ) => {
   const spreadsheetId = getRouteTypeValue(route);
-  //setSpreadsheet(spreadsheetId);
-  // saveToRecentProjectSpreadsheets({
-  //   id: spreadsheetId
-  // });
+  if (!spreadsheetId) throw new Error('Spreadsheet ID is required');
+  
   saveToRecentProjects(ProjectGroupNames.GOOGLE_SPREADSHEET, {
     id: spreadsheetId,
   });
   let data = null;
-  // console.log(isProjectCached(route), "cached?");
   if (isProjectCached(route)) {
     data = getProjectDataCacheFromRoute(route);
     state.notifications.push({
@@ -202,10 +199,8 @@ export const loadSpreadsheetFromRoute = async (
   } else {
     data = await getSpreadsheetData(spreadsheetId);
   }
-  // saveToRecentProjectSpreadsheets({
-  //   name: data.project.name ? data.project.name : undefined,
-  //   id: spreadsheetId
-  // });
+  if (!data) throw new Error('Failed to load spreadsheet data');
+  
   saveToRecentProjects(ProjectGroupNames.GOOGLE_SPREADSHEET, {
     name: data.project && data.project.name ? data.project.name : undefined,
     id: spreadsheetId,
@@ -221,6 +216,7 @@ export const loadSpreadsheetFromRoute = async (
 
 export const loadIcoFromRoute = async (route: RouteLocationNormalized, clear?: boolean) => {
   const icoId = getRouteTypeValue(route);
+  if (!icoId) throw new Error('ICO ID is required');
 
   saveToRecentProjects(ProjectGroupNames.ICO, {
     id: icoId,
@@ -234,8 +230,7 @@ export const loadIcoFromRoute = async (route: RouteLocationNormalized, clear?: b
     });
   } else {
     data = await getIcoData(icoId);
-  }
-
+  }  if (!data) throw new Error('Failed to load ICO data');
   if (data.project && data.project.name) {
     saveToRecentProjects(ProjectGroupNames.ICO, {
       name: data.project.name ? data.project.name : undefined,
@@ -255,6 +250,7 @@ export const loadIcoFromRoute = async (route: RouteLocationNormalized, clear?: b
 export const loadNextcloudFromRoute = async (route: RouteLocationNormalized, clear?: boolean) => {
   // console.log("Nextcloud!");
   const nextcloudId = getRouteTypeValue(route);
+  if (!nextcloudId) throw new Error('Nextcloud ID is required');
 
   saveToRecentProjects(ProjectGroupNames.NEXTCLOUD, {
     id: nextcloudId,
@@ -271,6 +267,7 @@ export const loadNextcloudFromRoute = async (route: RouteLocationNormalized, cle
     const nextcloudUrl = getNextcloudDownloadUrlFromId(nextcloudId);
     data = await getNextcloudDataFromUrl(nextcloudUrl);
   }
+  if (!data) throw new Error('Failed to load Nextcloud data');
 
   saveToRecentProjects(ProjectGroupNames.NEXTCLOUD, {
     name: data.project && data.project.name ? data.project.name : undefined,
@@ -311,7 +308,7 @@ export const getHrefFromTypeId = ({
     fullPath: "/project", // Remplacer par le chemin complet si nécessaire
     hash: "",
     redirectedFrom: undefined,
-    meta: undefined
+    meta: {}
   };
 
   // Appel de router.resolve avec un objet contenant path ou name

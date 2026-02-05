@@ -35,6 +35,6 @@ import Highlighter from 'vue-highlight-words';
 
   export default {
     install(app: App) {
-      app.component('TextHighlight', Highlighter);
+      app.component('Highlighter', Highlighter);
     },
   };

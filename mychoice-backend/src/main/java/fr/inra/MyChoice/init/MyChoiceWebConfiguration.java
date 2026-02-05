@@ -45,11 +45,12 @@ public class MyChoiceWebConfiguration {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addViewControllers(ViewControllerRegistry registry) {
-				registry.addViewController("/project/{[path:[^\\\\.]*}").setViewName("forward:/index.html");
-				registry.addViewController("/arguments/{[path:[^\\\\\\\\.]*}").setViewName("forward:/index.html");
+				// Spring Boot 3.x compatible patterns
+				registry.addViewController("/project/**").setViewName("forward:/index.html");
+				registry.addViewController("/arguments/**").setViewName("forward:/index.html");
 				registry.addViewController("/project").setViewName("forward:/index.html");
 				registry.addViewController("/arguments").setViewName("forward:/index.html");
-				registry.addViewController("/{[path:[^\\.]*}").setViewName("forward:/index.html");
+				registry.addViewController("/").setViewName("forward:/index.html");
 			}
 		};
 	}

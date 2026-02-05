@@ -38,6 +38,7 @@ import Home from "@/views/Home.vue";
 import Main from "@/views/Main.vue";
 import Properties from "@/views/Properties.vue";
 import Stakeholders from "@/views/Stakeholders.vue";
+import ChartView from "@/views/ChartView.vue";
 
 import {
   clearProjectDataCacheFromRoute,
@@ -65,6 +66,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/project/stakeholder-view",
     component: Stakeholders,
     props: true,
+  },
+  {
+    name: "chart-view",
+    path: "/project/chart-view",
+    component: ChartView,
   },
 ];
 

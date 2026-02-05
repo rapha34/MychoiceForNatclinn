@@ -1,5 +1,13 @@
 <template>
-  <v-chip outlined x-small :title="title">{{count}}</v-chip>
+  <!-- <v-chip outlined x-small :title="title">{{count}}</v-chip> -->
+  <v-chip
+    variant="outlined"
+    size="x-small"
+    color="default"
+    title="title"
+  >
+    {{count}}
+  </v-chip>
 </template>
 
 <script lang="ts">

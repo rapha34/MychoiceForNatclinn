@@ -63,7 +63,7 @@ import { getNextcloudIdFromUrl } from "./xlsx";
 
 export const openSpreadsheet = async (spreadsheetUrl: string) => {
   const spreadsheetId = getSpreadsheetIdFromUrl(spreadsheetUrl);
-  const routeParams: Pick<RouteLocationNormalized, "query" | "name" | "path"> = {
+  const routeParams = {
     query: {
       [spreadsheetIdRouteQuery]: spreadsheetId,
     },
@@ -83,7 +83,7 @@ export const openSpreadsheet = async (spreadsheetUrl: string) => {
 };
 
 export const openIco = async (projectName: string) => {
-  const routeParams: Pick<RouteLocationNormalized, "query" | "name"> = {
+  const routeParams = {
     query: {
       [projectNameRouteQuery]: projectName,
     },
@@ -93,7 +93,7 @@ export const openIco = async (projectName: string) => {
   const route = router.resolve(routeParams);
   await router.push(route);
   // try {
-  await loadAll(route);
+  await loadAll(route as RouteLocationNormalized);
   // } catch (e) {
   // console.error(e);
   // state.errors.FAILED_TO_FETCH_ICO = true;
@@ -103,7 +103,7 @@ export const openIco = async (projectName: string) => {
 
 export const openNextcloudUrl = async (url: string) => {
   const nextcloudId = getNextcloudIdFromUrl(url);
-  const routeParams: Pick<RouteLocationNormalized, "query" | "name" | "path"> = {
+  const routeParams = {
     query: {
       [nextcloudIdRouteQuery]: nextcloudId,
     },
@@ -113,8 +113,8 @@ export const openNextcloudUrl = async (url: string) => {
   // routeParams.query[nextcloudIdRouteQuery] = nextcloudId;
   const route = router.resolve(routeParams);
   await router.push(routeParams);
-  // try {
-  await loadAll(route);
+  // try{
+  await loadAll(route as RouteLocationNormalized);
 };
 
 // export const getRecentProjects = () => {

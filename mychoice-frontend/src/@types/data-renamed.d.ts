@@ -42,6 +42,8 @@ export interface Project {
   alternatives: Alternative[];
   expertiseEntities: expertiseEntity[];
   sourceTypeEntities: SourceTypeEntity[];
+  products?: Product[];
+  compositions?: Composition[];
 }
 
 export interface Alternative {
@@ -69,6 +71,24 @@ export interface Argument {
   isProspective: string;
   sourceType: string;
   condition?: string;
+  tagInitiator?: string;
+}
+
+export interface Product {
+  nameAlternative: string;
+  productUri: string;
+  nameProduct: string;
+  tagProduct: string[]; // Liste de tags séparés par des virgules
+}
+
+export interface Composition {
+  uriCompose: string;
+  nameCompose: string;
+  typeComposant: 'Product' | 'Ingredient';
+  uriComposant: string;
+  nameComposant: string;
+  rang: number;
+  tagComposant: string[]; // Liste de tags séparés par des virgules
 }
 
 export interface Entities {

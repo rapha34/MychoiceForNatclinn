@@ -1,6 +1,6 @@
 <template>
 
-<tbody>
+<!-- <tbody> -->
       <template v-for="(aimItem, aimIndex) in aimItems"  >
       <tr v-for="(stakeholderItem, stakeholderIndex) in uniqBy(
             filterItemsBy(items, {
@@ -19,9 +19,7 @@
           
 
           <a :name="`${property}`" :id="property"></a>
-        <text-highlight class="inline-block" :searchWords="[state.searchInput]">{{
-          property
-        }}</text-highlight>
+          <Highlighter class="inline-block" :searchWords="[state.searchInput]" :text-to-highlight="property" />
 
         </td>
 
@@ -36,8 +34,6 @@
           <span >{{
               getAimById(aimItem.aim).name
             }}</span>
-            
-
         </td>
 
         <td stakeholder>
@@ -55,10 +51,12 @@
                 stakeholder: stakeholderItem.stakeholder
               })
             "
+            :alternative="alternativeId"
+            :icon="false"          
           />
         
       
-    </td>
+        </td>
 
 
 
@@ -141,7 +139,7 @@
       </template>
     </td> -->
   
-</tbody>
+<!-- </tbody> -->
 </template>
 
 <script lang="ts">
@@ -168,7 +166,10 @@ export default defineComponent({
 
   props: {
     items: Array as PropType<NormalizedArgument[]>,
-    property: {}
+    property: {
+      type: String,
+      required: true
+    }
   },
 
   setup(props) {
@@ -176,17 +177,19 @@ export default defineComponent({
     const {items, property} = toRefs(props)
 
     const stakeholderItems = computed(() => {
-        return uniqBy(items.value, "stakeholder");
-      })
+      return uniqBy(items.value, "stakeholder");
+    })
 
     const criterionItems = computed(() => {
-        return uniqBy(items.value, "criterion");
-      })
+      return uniqBy(items.value, "criterion");
+    })
 
-      const aimItems = computed(() => {
-        return uniqBy(items.value, "aim");
-      })
-      
+    const aimItems = computed(() => {
+      return uniqBy(items.value, "aim");
+    })
+    
+    console.log("aimItems")
+    console.log(aimItems.value)
 
     return {
       state,

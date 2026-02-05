@@ -1,6 +1,5 @@
-<template>
+<!-- <template>
   <td aim>
-    <!-- <router-link :to="`aim/${aim.id}`">{{aim.name}}</router-link> -->
     <div class="d-flex flex-column justify-space-between text-break">
       <div class="d-flex">{{aim.name}}</div>
       <div class="mt-1 flex-grow-1 flex-wrap d-flex">
@@ -12,18 +11,30 @@
           :alternative="alternativeId"
           :items="aimsItems[alternativeId]"
         />
-        <!-- <Acceptability
+      </div>
+    </div>
+    <ItemsCount :count="totalItems" />
+  </td>
+</template> -->
+<template>
+  <td aim>
+    <div class="d-flex flex-column justify-space-between text-break">
+      <div class="d-flex">{{ aim.name }}</div>
+      <div class="mt-1 d-flex flex-wrap flex-grow-1">
+        <Acceptability
+          v-for="(alternativeId, index) in c_alternativesIds"
+          :key="'aim-alternative-' + index + aimsItems[alternativeId]"
           class="mb-1 mr-1"
           :icon="true"
-          :alternative="1"
-          :items="alternativeItems[1]"
+          :alternative="alternativeId"
+          :items="aimsItems[alternativeId]"
         />
-        <Acceptability :icon="true" :alternative="2" :items="alternativeItems[2]" />-->
       </div>
     </div>
     <ItemsCount :count="totalItems" />
   </td>
 </template>
+
 
 <script lang="ts">
 import ItemsCount from "@/components/ItemsCount.vue";

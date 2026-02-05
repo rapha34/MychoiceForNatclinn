@@ -36,8 +36,9 @@ export const onFileDrop = (e: {
 };
 export const onFileChange = async () => {
   const file = dropFileInputRef.value?.files?.[0];
+  if (!file) return;
   const route = router.resolve(`/project?xlsx=${file.name}`);
-  await loadAll(route);
+  await loadAll(route as any);
   router.push(route);
 };
 export const getDropFileInputRef = computed(() => dropFileInputRef.value);

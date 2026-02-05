@@ -1,28 +1,25 @@
 <template>
   <tr tablelistfoot>
-    <!-- <th class="text-right" criterion>
-      <v-container>
-        <small
-          style="font-weight: normal;"
-        >{{ getFilteredItems.length }}/{{ getAllItems.length }} arguments</small>
-      </v-container>
-    </th>
-    <th class="text-left" aim></th>-->
     <th criterion-aim class="text-right" colspan="2">
       <v-container>
-        <small class="grey--text" style="font-weight: normal;">
+        <small class="text-grey" style="font-weight: normal;">
           Arguments:
           <b>{{ getFilteredItems.length }}/{{ getAllItems.length }}</b>
         </small>
       </v-container>
     </th>
 
-    <template v-for="alternativeId in subOptionsIds" :key="`subOption-${alternativeId}`">
+    <!-- <template v-for="alternativeId in subOptionsIds" :key="`subOption-${alternativeId}`">
       <th
         alternative
         :colspan="subOptionsIds.length"
+      > -->
+    <template v-for="alternativeId in alternativesIds" :key="`subOption-${alternativeId}`">
+      <th
+        alternative
+        :colspan=2
       >
-        <table style="width: 100%;">
+        <table style="width: 90%;">
           <tr>
             <td class="text-left">
               <v-icon
@@ -35,39 +32,18 @@
                     }).length
                   })
                 "
-                >mdi-emoticon-happy-outline</v-icon
               >
-              <!-- <small class="green--text">
-                {{
-                  getFilteredItemsBy({
-                    alternative: alternativeId,
-                    favorable: true
-                  }).length
-                }}
-              </small> -->
+                mdi-emoticon-happy-outline
+              </v-icon>
             </td>
             <td>
-              <!-- {{getAcceptabilityFromAlternativeId(alternativeId)}} -->
               Attitude: {{ totalAcceptability[alternativeId] }}
-              <!-- <Acceptability
-                :items="getFilteredItemsBy({
-              alternative: alternativeId
-          })"
-              />-->
               <ScoreIcon
                 :alternative="alternativeId"
                 :score="totalAcceptability[alternativeId]"
               />
             </td>
             <td class="text-right">
-              <!-- <small class="red--text">
-                {{
-                  getFilteredItemsBy({
-                    alternative: alternativeId,
-                    favorable: false
-                  }).length
-                }}
-              </small> -->
               <v-icon
                 color="red"
                 :title="
@@ -78,18 +54,12 @@
                     }).length
                   })
                 "
-                >mdi-emoticon-sad-outline</v-icon
               >
-              <!-- <div>{{getSubOptions[2].name}}</div> -->
+                mdi-emoticon-sad-outline
+              </v-icon>
             </td>
           </tr>
         </table>
-
-        <!-- <tr>
-            <td :colspan="subOptionsIds.length">
-              
-            </td>
-        </tr>-->
       </th>
     </template>
   </tr>
@@ -138,3 +108,16 @@ export default defineComponent({
   }
 });
 </script>
+
+<style>
+/* Footer sticky */
+.custom-table tfoot tr {
+  display: table-cells; 
+  position: sticky;
+  bottom: 0;
+  background: white;
+  z-index: 1;
+  border-top: 2px solid #ccc;
+  padding: 8px;
+}
+</style>

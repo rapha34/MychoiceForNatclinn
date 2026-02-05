@@ -65,6 +65,11 @@ export interface State {
     };
   };
   globalCardType: "label" | "stakeholder";
+  chartFilters?: {
+    selectedAlternative: string;
+    analysisPer: string;
+    selectedCriterion: string;
+  };
   dialog: boolean;
   compareDialog: boolean;
   openDialog: boolean;
@@ -184,6 +189,11 @@ export const state = reactive<State>({
     },
   },
   globalCardType: "label",
+  chartFilters: {
+    selectedAlternative: "all-merged",
+    analysisPer: "criteria",
+    selectedCriterion: "",
+  },
   dialog: DEFAULTS.dialog,
   compareDialog: DEFAULTS.compareDialog,
   openDialog: DEFAULTS.openDialog,

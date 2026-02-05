@@ -75,7 +75,8 @@ import {
   VToolbar,
   VAutocomplete,
   VTextField,
-  VSelect
+  VSelect,
+  VTable
 } from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
@@ -124,13 +125,35 @@ const vuetify = createVuetify({
     VToolbar,
     VAutocomplete,
     VTextField,
-    VSelect
+    VSelect,
+    VTable
   },
   directives,
   icons: {
     defaultSet: 'mdi',
     aliases,
     sets: { mdi },
+  },
+  theme: {
+    defaultTheme: 'light',
+    themes: {
+      light: {
+        colors: {
+          primary: '#4F4F4F',
+          secondary: '#00A3F6',
+          accent: '#8c9eff',
+          error: '#b71c1c',
+        },
+      },
+      dark: {
+        colors: {
+          primary: '#4F4F4F',
+          secondary: '#00A3A6',
+          accent: '#8c9eff',
+          error: '#b71c1c',
+        },
+      },
+    },
   },
 })
 

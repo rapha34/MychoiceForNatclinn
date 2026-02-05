@@ -1,39 +1,37 @@
 <template>
-  <v-container fluid v-if="state.project && state.data">
+  <v-container v-if="state.project && state.data" style="max-width: 1400px;">
     <Header />
 
     <v-card class="mt-2">
-      <v-simple-table class="properties-table" fixed-header :height="height">
-        <template v-slot:default>
-          <thead>
-            <tr>
-              <th>Property</th>
-              <th>Criterion</th>
-              <th>Aim</th>
-              <th
-                class="text-center"
-                :key="index"
-                v-for="(alternativeId, index) in c_alternativesIds"
-              >
-                {{ getAlternativeById(alternativeId).name }}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <PropertyListRow
-              :key="property"
-              :items="items"
-              :property="property"
-              v-for="(items, property) in getNormalizedItemsByUniqueItemProp(
-                'property'
-              )"
-            />
-          </tbody>
-        </template>
-      </v-simple-table>
+      <v-table class="properties-table" style="min-width: 1000px;">
+        <thead>
+          <tr>
+            <th class="text-start">Property</th>
+            <th class="text-start">Criterion</th>
+            <th class="text-start">Aim</th>
+            <th
+              v-for="(alternativeId, index) in c_alternativesIds"
+              :key="index"
+              class="text-center"
+            >
+              {{ getAlternativeById(alternativeId).name }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <PropertyListRow
+            v-for="(items, property) in getNormalizedItemsByUniqueItemProp('property')"
+            :key="property"
+            :items="items"
+            :property="property"
+          />
+        </tbody>
+      </v-table>
     </v-card>
   </v-container>
 </template>
+
+
 
 <script lang="ts">
 import PropertyListRow from "@/components/PropertiesList/PropertyListRow.vue";
@@ -53,7 +51,7 @@ export default defineComponent({
 
   setup(props) {
 
-    const height = ref(null)
+    const height = ref<number | null>(null)
 
 
     return {

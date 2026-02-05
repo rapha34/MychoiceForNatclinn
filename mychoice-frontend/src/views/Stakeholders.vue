@@ -1,38 +1,35 @@
 <template>
-  <v-container fluid v-if="state.project && state.data">
+  <v-container v-if="state.project && state.data" style="max-width: 1400px;">
     <Header />
 
     <v-card class="mt-2">
-      
-      <v-simple-table class="properties-table" fixed-header :height="height">
-        
-        <template v-slot:default>
+      <!-- Conteneur scrollable horizontalement -->
+      <div style="overflow-x: auto;">
+        <v-table class="properties-table" style="min-width: 1000px;">
           <thead>
             <tr>
-              <th criterion>Criterion</th>
-              <th aim>Aim</th>
-              <th stakeholder>Stakeholder</th>
-              <th alternative
-                class="text-center"
-                :key="index"
+              <th class="text-start">Criterion</th>
+              <th class="text-start">Aim</th>
+              <th class="text-start">Stakeholder</th>
+              <th
                 v-for="(alternativeId, index) in c_alternativesIds"
+                :key="`alt-${index}`"
+                class="text-center"
               >
                 {{ getAlternativeById(alternativeId).name }}
               </th>
             </tr>
           </thead>
-          
+          <tbody>
             <StakeholderListRow
-              :key="criterionId"
+              v-for="(items, criterionId) in getNormalizedItemsByUniqueItemProp('criterion')"
+              :key="`crit-${criterionId}`"
               :items="items"
               :property="getCriterionName(criterionId)"
-              v-for="(items, criterionId) in getNormalizedItemsByUniqueItemProp(
-                'criterion'
-              )"
             />
-          
-        </template>
-      </v-simple-table>
+          </tbody>
+        </v-table>
+      </div>
     </v-card>
   </v-container>
 </template>
@@ -47,69 +44,52 @@ import {
   state,
   getCriterionName
 } from "@/store";
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted, onUpdated, onBeforeUnmount } from "vue";
 
 export default defineComponent({
-
   props: {
     id: Number
   },
+  setup() {
+    const height = ref<number | null>(null);
 
-  setup(props) {
+    const setHeight = () => {
+      const tableFilters = document.querySelector("[table-filters]");
+      if (tableFilters) {
+        const tableFiltersRect = tableFilters.getBoundingClientRect();
+        height.value = window.innerHeight - tableFiltersRect.bottom - 24;
+      }
+    };
 
-    const height = ref(null)
-    
+    onMounted(() => {
+      setHeight();
+      window.addEventListener("resize", setHeight);
+    });
+
+    onUpdated(setHeight);
+
+    onBeforeUnmount(() => {
+      window.removeEventListener("resize", setHeight);
+    });
+
     return {
       state,
       height,
       c_alternativesIds,
-
       getCriterionName,
-      setHeight: () => {
-        const tableFilters = document.querySelector("[table-filters]");
-
-        if (tableFilters) {
-          const tableFiltersRect = tableFilters.getBoundingClientRect();
-          height.value = window.innerHeight - tableFiltersRect.bottom - 24;
-        }
-      },
       getNormalizedItemsByUniqueItemProp,
-      getAlternativeById
-    }
+      getAlternativeById,
+      setHeight
+    };
   },
-
-
-  // data: () => ({
-  //   state,
-  //   height: ""
-  // }),
   components: {
     Header,
     StakeholderListRow
-  },
-  // computed: {
-  //   alternativesIds
-  // },
-  mounted() {
-    this.$nextTick(this.setHeight);
-  },
-  updated() {
-    this.$nextTick(this.setHeight);
-  },
-  created() {
-    window.addEventListener("resize", this.setHeight);
-  },
-  destroyed() {
-    window.removeEventListener("resize", this.setHeight);
-  },
-  // methods: {
-    
-  // },
-  // props: ["id"]
+  }
 });
 </script>
 
-<style>
+<style scoped>
 .v-data-table thead th {
   text-transform: uppercase;
 }

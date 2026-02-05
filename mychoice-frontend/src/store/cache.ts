@@ -46,10 +46,14 @@ export const initialCacheState: LocalStorageCache = {
 export const LOCAL_STORAGE_CACHE_KEY = "MYCHOICE_CACHE";
 
 export const getLocalStorageCache = () => {
-  return (JSON.parse(localStorage.getItem(LOCAL_STORAGE_CACHE_KEY)) ||
+  const cachedData = localStorage.getItem(LOCAL_STORAGE_CACHE_KEY);
+  return (JSON.parse(cachedData || '{}') ||
     initialCacheState) as LocalStorageCache;
 };
-export const getProjectsCache = () => getLocalStorageCache()["projects"];
+export const getProjectsCache = () => {
+  const cache = getLocalStorageCache();
+  return cache?.projects || initialCacheState.projects;
+};
 
 export const getProjectFromCache = (
   type: keyof LocalStorageCache["projects"],
@@ -105,6 +109,7 @@ export const getRecentProjectsByTypeFromCache = (
 export const getAsFlattenProjects = (
   projects: LocalStorageCache["projects"]
 ) => {
+  if (!projects) return {};
   const recentProjects = {} as LocalStorageCacheProjectGroup;
   Object.entries(projects)
     // Limited for RESTRICTED version
@@ -260,6 +265,8 @@ export const isProjectCached = (route: RouteLocationNormalized) => {
 
 export const getProjectCacheFromRoute = (route: RouteLocationNormalized) => {
   const id = getRouteTypeValue(route);
+  if (!id) return undefined;
+  
   if (route.query[PROJECT_TYPE_ROUTES.GOOGLE_SPREADSHEET]) {
     return getProjectFromCache(ProjectGroupNames.GOOGLE_SPREADSHEET, id);
   }
@@ -276,6 +283,8 @@ export const getProjectCacheFromRoute = (route: RouteLocationNormalized) => {
 
 export const setProjectCache = (route: RouteLocationNormalized, data: Data) => {
   const id = getRouteTypeValue(route);
+  if (!id) return;
+  
   if (route.query[PROJECT_TYPE_ROUTES.GOOGLE_SPREADSHEET]) {
     saveProjectToCache(ProjectGroupNames.GOOGLE_SPREADSHEET, {
       id,
@@ -303,8 +312,8 @@ export const setProjectCache = (route: RouteLocationNormalized, data: Data) => {
 };
 
 export const getProjectDataCacheFromRoute = (route: RouteLocationNormalized) => {
-  const { data } = getProjectCacheFromRoute(route);
-  return data;
+  const result = getProjectCacheFromRoute(route);
+  return result?.data;
 };
 
 // export const isSpreadsheetCached = (spreadsheetId: string) => {

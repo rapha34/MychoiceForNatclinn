@@ -65,54 +65,116 @@ export const addTableListStickyEvent = function(
   observer.observe(element);
 };
 
+// export const saveStickyRects = () => {
+//   stickyRects.root = stickyElements!.root!.getBoundingClientRect();
+//   stickyRects.container = stickyElements!.container!.getBoundingClientRect();
+//   stickyRects.xStart = stickyElements!.xStart!.getBoundingClientRect();
+//   stickyRects.xEnd = stickyElements!.xEnd!.getBoundingClientRect();
+//   stickyRects.yStart = stickyElements!.yStart!.getBoundingClientRect();
+//   stickyRects.yEnd = stickyElements!.yEnd!.getBoundingClientRect();
+// };
+
 export const saveStickyRects = () => {
-  stickyRects.root = stickyElements!.root!.getBoundingClientRect();
-  stickyRects.container = stickyElements!.container!.getBoundingClientRect();
-  stickyRects.xStart = stickyElements!.xStart!.getBoundingClientRect();
-  stickyRects.xEnd = stickyElements!.xEnd!.getBoundingClientRect();
-  stickyRects.yStart = stickyElements!.yStart!.getBoundingClientRect();
-  stickyRects.yEnd = stickyElements!.yEnd!.getBoundingClientRect();
+  if (stickyElements.root) stickyRects.root = stickyElements.root.getBoundingClientRect();
+  if (stickyElements.container) stickyRects.container = stickyElements.container.getBoundingClientRect();
+  if (stickyElements.xStart) stickyRects.xStart = stickyElements.xStart.getBoundingClientRect();
+  if (stickyElements.xEnd) stickyRects.xEnd = stickyElements.xEnd.getBoundingClientRect();
+  if (stickyElements.yStart) stickyRects.yStart = stickyElements.yStart.getBoundingClientRect();
+  if (stickyElements.yEnd) stickyRects.yEnd = stickyElements.yEnd.getBoundingClientRect();
 };
+
+
+// export const initStickyElements = () => {
+//   stickyElements.root = document.querySelector(".tablelist");
+//   stickyElements.container = document.querySelector(".tablelist-container");
+
+//   stickyElements.xStart = document.querySelector(
+//     ".tablelist tbody td[criterion]"
+//   );
+//   stickyElements.xEnd = document.querySelector(".tablelist tbody td[aim]");
+//   stickyElements.yStart = document.querySelector(
+//     ".tablelist thead th[criterion]"
+//   );
+//   stickyElements.yEnd = document.querySelector(
+//     ".tablelist tfoot th[criterion-aim]"
+//   );
+//   stickyElements.xShadow = document.querySelector(".tablelist-x-shadow");
+//   stickyElements.yShadow = document.querySelector(".tablelist-y-shadow");
+// };
 
 export const initStickyElements = () => {
   stickyElements.root = document.querySelector(".tablelist");
   stickyElements.container = document.querySelector(".tablelist-container");
 
-  stickyElements.xStart = document.querySelector(
-    ".tablelist tbody td[criterion]"
-  );
+  stickyElements.xStart = document.querySelector(".tablelist tbody td[criterion]");
   stickyElements.xEnd = document.querySelector(".tablelist tbody td[aim]");
-  stickyElements.yStart = document.querySelector(
-    ".tablelist thead th[criterion]"
-  );
-  stickyElements.yEnd = document.querySelector(
-    ".tablelist tfoot th[criterion-aim]"
-  );
+  stickyElements.yStart = document.querySelector(".tablelist thead th[criterion]");
+  stickyElements.yEnd = document.querySelector(".tablelist tfoot th[criterion-aim]");
+
   stickyElements.xShadow = document.querySelector(".tablelist-x-shadow");
   stickyElements.yShadow = document.querySelector(".tablelist-y-shadow");
+
+  // Log de debug utile pour développement
+  if (!stickyElements.xEnd) console.warn("⚠️ .tablelist tbody td[aim] introuvable");
+  if (!stickyElements.yEnd) console.warn("⚠️ .tablelist tfoot th[criterion-aim] introuvable");
 };
+
+
+// export const resizeYTableListShadow = () => {
+//   if (stickyElements.yShadow) {
+//     stickyElements.yShadow.setAttribute(
+//       "style",
+//       `top:${stickyRects.yStart!.bottom - 1}px; left:${
+//         stickyRects.yStart!.left
+//         //}px; width:${stickyRects.root!.width}px;`
+//       }px; width:calc(100% - ${stickyRects.yStart!.left * 2}px);`
+//     );
+//   }
+// };
 
 export const resizeYTableListShadow = () => {
-  if (stickyElements.yShadow) {
+  if (stickyElements.yShadow && stickyRects.yStart && stickyRects.root) {
+    const top = stickyRects.yStart.bottom - 1;
+    const left = stickyRects.yStart.left;
+    const width = `calc(100% - ${left * 2}px)`;
+
     stickyElements.yShadow.setAttribute(
       "style",
-      `top:${stickyRects.yStart!.bottom - 1}px; left:${
-        stickyRects.yStart!.left
-        //}px; width:${stickyRects.root!.width}px;`
-      }px; width:calc(100% - ${stickyRects.yStart!.left * 2}px);`
+      `top:${top}px; left:${left}px; width:${width};`
     );
   }
 };
 
+
+
+// export const resizeXTableListShadow = () => {
+//   if (stickyElements.xShadow) {
+//     stickyElements.xShadow.setAttribute(
+//       "style",
+//       `left:${stickyRects.xEnd!.right}px;  height:${stickyRects.yEnd!.top -
+//         stickyRects.container!.top}px; top:${stickyRects.container!.top}px;`
+//     );
+//   }
+// };
+
 export const resizeXTableListShadow = () => {
-  if (stickyElements.xShadow) {
+  if (
+    stickyElements.xShadow &&
+    stickyRects.xEnd &&
+    stickyRects.yEnd &&
+    stickyRects.container
+  ) {
+    const left = stickyRects.xEnd.right;
+    const height = stickyRects.yEnd.top - stickyRects.container.top;
+    const top = stickyRects.container.top;
+
     stickyElements.xShadow.setAttribute(
       "style",
-      `left:${stickyRects.xEnd!.right}px;  height:${stickyRects.yEnd!.top -
-        stickyRects.container!.top}px; top:${stickyRects.container!.top}px;`
+      `left:${left}px; height:${height}px; top:${top}px;`
     );
   }
 };
+
 
 export const initTableListStickyEvents = () => {
   if (stickyElements.yStart) {

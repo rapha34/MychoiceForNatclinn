@@ -40,7 +40,7 @@ import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.inra.MyChoice.util.C3PODataSource;
+import fr.inra.MyChoice.util.HikariCPDataSource;
 
 public abstract class Dao {
 
@@ -90,7 +90,7 @@ public abstract class Dao {
 	 * @throws SQLException if a database access error occurs
 	 */
 	protected Connection getConnection() throws SQLException {
-		return C3PODataSource.getConnection();
+		return HikariCPDataSource.getConnection();
 
 	}
 

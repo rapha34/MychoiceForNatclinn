@@ -1,11 +1,4 @@
-<template>
-  <!-- <v-chip
-    x-small
-    dark
-    :color="getColorName(getAcceptabilityName(acceptability))"
-    :title="acceptability"
-  ></v-chip>-->
-
+<!-- <template>
   <ScoreIcon
     :title="
       `${
@@ -20,15 +13,18 @@
     :icon="icon"
     :score="acceptability"
   />
-
-  <!-- <span
-    v-if="items.length"
-    :title="acceptability"
-    :class="'acceptability '+getAcceptabilityName(acceptability)"
-  >-->
-  <!-- <span :key="index" v-for="(item, index) in items">{{item.favorable}}</span> -->
-  <!-- </span> -->
+</template> -->
+<!-- <template>
+  <ScoreIcon
+    :title="acceptability !== null
+      ? `${pluralize('{count} {argument:count}', { count: items.length })} - ${acceptability * 100}% pro`
+      : ''"
+    :alternative="alternative"
+    :icon="icon"
+    :score="acceptability"
+  />
 </template>
+
 
 <script lang="ts">
 import { NormalizedArgument } from "@/@types";
@@ -77,4 +73,36 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss"></style>
+<style lang="scss"></style> -->
+<template>
+  <ScoreIcon
+    :title="scoreTitle"
+    :alternative="alternative"
+    :icon="icon"
+    :score="acceptability"
+  />
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import { NormalizedArgument } from '@/@types'
+import { getAcceptabilityFromProCon, pluralize } from '@/store'
+import ScoreIcon from './ScoreIcon.vue'
+
+const props = defineProps<{
+  items: NormalizedArgument[]
+  alternative: number
+  icon: boolean
+}>()
+
+const acceptability = computed(() => getAcceptabilityFromProCon(props.items))
+
+const scoreTitle = computed(() => {
+  return acceptability.value !== null
+    ? `${pluralize('{count} {argument:count}', {
+        count: props.items.length
+      })} - ${acceptability.value * 100}% pro`
+    : ''
+})
+</script>
+

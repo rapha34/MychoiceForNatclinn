@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <td
     :class="getLabels().length ? '' : 'is-empty'"
     alternative
@@ -34,7 +34,43 @@
     />
   </template>
   </td>
+</template> -->
+<template>
+  <td
+    :class="getLabels().length ? '' : 'is-empty'"
+    :key="`${alternativeId}-${subOptionId}`"
+  >
+    <template v-if="is1stLevelStakeholdersMode">
+      <TableListCard
+        v-for="(value, key) in getCardsByStakeholder()"
+        :key="`superset-${aim.id}-stakeholder-${key}`"
+        :superset="{
+          criterion: criterionId,
+          aim: aim.id,
+          alternative: alternativeId,
+          subOption: subOptionId,
+          stakeholder: Number(key),
+        }"
+      />
+    </template>
+
+    <template v-else>
+      <TableListCard
+        v-for="(label, index) in getLabels()"
+        :key="`superset-${label.property}-${label.value}-${index}`"
+        :superset="{
+          criterion: criterionId,
+          aim: aim.id,
+          alternative: alternativeId,
+          subOption: subOptionId,
+          property: label.property,
+          value: label.value,
+        }"
+      />
+    </template>
+  </td>
 </template>
+
 
 <script>
 import { getUniqueFilteredLabelsBy, getFilteredItemsBy, getFilteredItemsGroupByProp, is1stLevelStakeholdersMode } from "@/store";

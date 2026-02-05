@@ -3,24 +3,22 @@
     <v-icon
       :title="title"
       v-if="!icon"
-      x-small
+      size="x-small"
       :color="getColorName(getAcceptabilityName(score))"
       >mdi-circle</v-icon
     >
-
     <v-chip
+      variant="outlined"
+      size="x-small"
       :title="title"
-      outlined
-      dark
-      small
       v-if="icon"
       style="padding: 0;"
       :color="getColorName(getAcceptabilityName(score))"
     >
       <v-avatar>
-        <v-icon small v-if="state.data">{{
-          state.data.alternatives[alternative].icon
-        }}</v-icon>
+        <v-icon size="small" v-if="state.data && state.data.alternatives[alternative]" :color="getColorName(getAcceptabilityName(score))">
+          {{ state.data.alternatives[alternative].icon }}
+        </v-icon>
       </v-avatar>
     </v-chip>
   </span>
@@ -34,13 +32,21 @@ export default defineComponent({
 
   props: {
     score: {
-      type: Number || null
+      type: Number as () => number | null,
+      default: null
     },
-    title: {}, 
+    title: {
+      type: String,
+      default: ""
+    },
     alternative: {
-      type: Number
+      type: Number as () => number,
+      required: true
     },
-    icon: {}
+    icon: {
+      type: Boolean,
+      default: false
+    }
   },
 
   setup(props) {
@@ -59,7 +65,8 @@ export default defineComponent({
         } else if (name === "mix") {
           return "orange";
         } else {
-          return "rgba(0,0,0,.2)";
+          // return "rgba(0,0,0,.2)";
+          return "rgba(0,0,0,1)";  // Opacité pleine
         }
       },
       getAcceptabilityName

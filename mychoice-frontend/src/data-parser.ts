@@ -103,8 +103,8 @@ export const getAimsWithParentCriterion = (
     [id: number]: { criterion?: number };
   } = {};
   aimsTuples.forEach((tuple, index) => {
-    const aimId = tuple[0];
-    const criterionId = getIdFrom(criterions, tuple[1], "nameCriterion");
+    const aimId = tuple[0] as string;
+    const criterionId = getIdFrom(criterions, tuple[1] as string, "nameCriterion");
     index++;
     object[index] = { id: index, name: aimId, criterion: criterionId };
   });
@@ -311,7 +311,7 @@ export const getNormalizedData = (
 
   /* console.log(normalizedData, "DATA"); */
 
-  return normalizedData;
+  return normalizedData as NormalizedData;
 };
 
 export const getInterplayItems = function(items: Argument[]) {

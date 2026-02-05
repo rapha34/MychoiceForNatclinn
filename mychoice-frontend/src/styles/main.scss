@@ -30,18 +30,39 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
 */
+$superset-bg: #7f7f7f;
 
 @import 'tablelist';
 @import 'superset';
 
 html {
   overscroll-behavior-x: none;
-
 }
+html, body, #app, .v-application {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+// Flex layout end-to-end
+.v-application,
+.v-main,
 .v-main__wrap {
   display: flex;
-  
+  flex-direction: column;
+  min-height: 100%;
 }
+
+.v-main__wrap > * {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+// .v-main__wrap {
+//   display: flex;
+// }
+// .v-main {
+// //   // display: flex;
+// // }
 .full {
   flex: 1 1 auto;
   display: flex;
@@ -61,9 +82,16 @@ html {
   overflow-x: auto;
 }
 
-.v-card--link:focus:before {
+// .v-card--link:focus:before {
+//   opacity: 0.01 !important;
+// }
+
+.v-card--link:focus::before {
+  content: "";
+  display: block;
   opacity: 0.01 !important;
 }
+
 
 .v-application .no-mb-last:last-of-type {
   margin-bottom: 0 !important;
@@ -146,10 +174,17 @@ display: flex;
   display: block;
   min-height: 1em;
 }
-main.v-main__wrap header .v-toolbar__content {
+// main.v-main__wrap header .v-toolbar__content {
+//   padding-left: 12px;
+//   padding-right: 12px;
+// }
+
+.v-main header .v-toolbar__content {
   padding-left: 12px;
   padding-right: 12px;
 }
+
+
 header .v-toolbar__content {
   // justify-content: space-between;
 }
@@ -189,6 +224,53 @@ header .v-toolbar__content {
       background-color: rgba(red, 0.1);
     }
   }
-
+  
+}
+// fond grisé
+.v-img.my-v-img {
+  background-color: $superset-bg;
+}
+// vs en noir
+.my-span-vs {
+  color: #000;
 }
 
+// Amélioration du centrage et de la mise en page (comme sur netlify)
+.v-container {
+  &:not(.tablelist-container) {
+    max-width: 2880px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+// Containers spécifiques avec largeur maximale
+.view-container .v-container {
+  max-width: 2880px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+// Layout page générique (full width background + contenu centré)
+.page-bg {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  width: 100%;
+}
+
+.page-container {
+  width: 100%;
+  max-width: 2880px;
+  margin: 0 auto;
+  padding: 0 16px;
+  flex: 1 1 auto;
+}
+
+.page-container--home {
+  max-width: 2880px;
+}
+
+.page-row {
+  width: 100%;
+}

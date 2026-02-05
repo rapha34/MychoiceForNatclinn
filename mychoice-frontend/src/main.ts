@@ -34,7 +34,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import vuetify from './plugins/vuetify';
-import textHighlight from './plugins/text-highlight';
+import Highlighter from './plugins/text-highlight';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import '@mdi/font/css/materialdesignicons.css';
 
@@ -46,6 +46,6 @@ import { onAppInit } from './store/events';
   const app = createApp(App);
   app.use(router);
   app.use(vuetify);
-  app.use(textHighlight); // ← Enregistre TextHighlight globalement
+  app.use(Highlighter); // ← Enregistre TextHighlight globalement
   app.mount('#app');
 })();

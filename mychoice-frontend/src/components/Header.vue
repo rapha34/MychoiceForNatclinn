@@ -1,273 +1,346 @@
 <template>
-  <v-row table-filters>
+  <v-row class="table-filters">
     <v-col class="flex-grow-0" style="align-self: center;">
-      <v-row>
-        <v-toolbar color="transparent" flat>
-          <!-- <v-btn icon>
-            <v-icon>mdi-arrow-left</v-icon>
-          </v-btn>-->
-          <!-- <v-toolbar-title>{{state.project.name}}</v-toolbar-title> -->
+      <v-toolbar color="transparent" density="comfortable" class="pr-2 toolbar-filters">
+        <div class="me-2 d-flex align-center">
 
-          <!-- <v-btn icon :to="{ path: '/', query: $router.currentRoute.query }">
-            <v-icon>mdi-table</v-icon>
-          </v-btn>
-          <v-btn icon :to="{ path: '/properties', query: $router.currentRoute.query }">
-            <v-icon>mdi-format-list-bulleted</v-icon>
-          </v-btn>-->
-
-          <v-btn-toggle
-            light
-            color="transparent"
-            background-color="transparent"
-            @change="switchToView"
-            mandatory
-            :value="$router.currentRoute.name"
-          >
-          <v-menu offset-y bottom >
-      <template v-slot:activator="{ on: menu, attrs }">
-            <v-tooltip top>
-              <template v-slot:activator="{ on: tooltip  }">
-                <v-btn
-                  :color="$router.currentRoute.name === 'global-view' ? '' : ''"
-                  v-on="tooltip || {}"
-                  v-bind="attrs"
-                  :value="'global-view'"
-                >
-                  <v-icon
-                    :color="
-                      $router.currentRoute.name === 'global-view'
-                        ? 'primary'
-                        : 'grey'
-                    "
-                  >mdi-table</v-icon>
-                <v-btn x-small icon color="transparent" :value="'global-view'" v-on="menu || {}" v-bind="attrs">
-                  <v-icon :color="
-                      $router.currentRoute.name === 'global-view'
-                        ? 'primary'
-                        : 'grey'
-                    ">mdi-chevron-down</v-icon>
+          <!-- Global View Toggle with Menu -->
+          <v-tooltip text="Global view" location="top">
+            <template #activator="{ props: tooltipProps }">
+              <v-menu location="bottom">
+                <template #activator="{ props: menuProps }">
+                  <v-btn
+                    icon
+                    class="toolbar-icon-btn"
+                    v-bind="{ ...tooltipProps, ...menuProps }"
+                    :variant="isActiveRoute('global-view') ? 'flat' : 'text'"
+                    @click="switchToView('global-view')"
+                  >
+                    <v-icon :icon="'mdi-table'" :color="isActiveRoute('global-view') ? 'primary' : 'grey'" />
+                    <v-icon :icon="'mdi-chevron-down'" :color="isActiveRoute('global-view') ? 'primary' : 'grey'" />
                   </v-btn>
-                </v-btn>
-              </template>
-              <span>Global view</span>
-            </v-tooltip>
+                </template>
+                <v-list>
+                  <v-list-item
+                    v-if="!is1stLevelStakeholdersMode"
+                    @click="state.globalCardType = 'stakeholder'"
+                  >
+                    <v-list-item-title>By Stakeholder</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item
+                    v-else
+                    @click="state.globalCardType = 'label'"
+                  >
+                    <v-list-item-title>By Label</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
             </template>
-            <v-list>
-              <v-list-item v-if="!is1stLevelStakeholdersMode"
-              @click="state.globalCardType = 'stakeholder'"
-              >
-                <v-list-item-title>By Stakeholder</v-list-item-title>
-              </v-list-item>
-              <v-list-item v-if="is1stLevelStakeholdersMode"
-              @click="state.globalCardType = 'label'"
-              >
-                <v-list-item-title>By Label</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+          </v-tooltip>
 
-  
+          <!-- Stakeholder View -->
+          <v-tooltip text="Stakeholder view" location="top">
+            <template #activator="{ props }">
+              <v-btn
+                icon
+                class="toolbar-icon-btn"
+                v-bind="props"
+                :variant="isActiveRoute('stakeholder-view') ? 'flat' : 'text'"
+                @click="switchToView('stakeholder-view')"
+              >
+                <v-icon :icon="'mdi-account-multiple'" :color="isActiveRoute('stakeholder-view') ? 'primary' : 'grey'" />
+              </v-btn>
+            </template>
+          </v-tooltip>
 
-            <v-tooltip top>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  text
-                  :color="
-                    $router.currentRoute.name === 'stakeholder-view' ? '' : ''
-                  "
-                  v-on="on"
-                  :value="'stakeholder-view'"
-                >
-                  <v-icon
-                    :color="
-                      $router.currentRoute.name === 'stakeholder-view'
-                        ? 'primary'
-                        : 'grey'
-                    "
-                  >mdi-account-multiple</v-icon>
-                </v-btn>
-              </template>
-              <span>Stakeholder view</span>
-            </v-tooltip>
-            <v-tooltip top>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  text
-                  :color="
-                    $router.currentRoute.name === 'property-view' ? '' : ''
-                  "
-                  v-on="on"
-                  :value="'property-view'"
-                >
-                  <v-icon
-                    :color="
-                      $router.currentRoute.name === 'property-view'
-                        ? 'primary'
-                        : 'grey'
-                    "
-                  >mdi-format-list-bulleted</v-icon>
-                </v-btn>
-              </template>
-              <span>Property view</span>
-            </v-tooltip>
-          </v-btn-toggle>
-          <!-- <v-spacer></v-spacer> -->
-          <v-select
-            :items="getSelectModes"
-            v-model="state.mode"
-            hide-selected
-            label="Select mode"
-            hide-details
-            solo
-            style="min-width: 200px;"
-            class="ml-6 flex-grow-1"
-          ></v-select>
-          <!-- <v-divider vertical></v-divider> -->
-          <!-- <v-select
-            class
-            hide-details
-            append-icon="mdi-filter-variant"
-            label="Mode"
-            outlined
-            light
-            dense
-            :items="getSelectModes"
-            v-model="state.mode"
-          ></v-select>-->
-          <!-- <v-spacer></v-spacer> -->
-        </v-toolbar>
-      </v-row>
+          <!-- Property View -->
+          <v-tooltip text="Property view" location="top">
+            <template #activator="{ props }">
+              <v-btn
+                icon
+                class="toolbar-icon-btn"
+                v-bind="props"
+                :variant="isActiveRoute('property-view') ? 'flat' : 'text'"
+                @click="switchToView('property-view')"
+              >
+                <v-icon :icon="'mdi-format-list-bulleted'" :color="isActiveRoute('property-view') ? 'primary' : 'grey'" />
+              </v-btn>
+            </template>
+          </v-tooltip>
+
+          <!-- Chart View -->
+          <v-tooltip text="Chart view" location="top">
+            <template #activator="{ props }">
+              <v-btn
+                icon
+                class="toolbar-icon-btn"
+                v-bind="props"
+                :variant="isActiveRoute('chart-view') ? 'flat' : 'text'"
+                @click="switchToView('chart-view')"
+              >
+                <v-icon :icon="'mdi-chart-bar'" :color="isActiveRoute('chart-view') ? 'primary' : 'grey'" />
+              </v-btn>
+            </template>
+          </v-tooltip>
+        </div>
+
+        <!-- Mode Selector -->
+        <v-select
+          :items="getSelectModesComputed"
+          item-title="text"
+          item-value="value"
+          v-model="state.mode"
+          label="Select mode"
+          hide-details
+          class="ml-6 flex-grow-1 toolbar-select"
+          color="secondary"
+          variant="outlined"
+          density="comfortable"
+          style="min-width: 200px;"
+        />
+      </v-toolbar>
     </v-col>
 
-    <v-col class="py-0 px-6">
+    <!-- Autocomplete Filters (Default Views) -->
+    <v-col class="px-6" v-if="!isActiveRoute('chart-view')">
       <v-row>
         <v-col>
           <v-autocomplete
             clearable
-            flat
             item-color="secondary"
             color="secondary"
-            :label="`Stakeholders`"
+            label="Stakeholders"
             v-model="state.selectedStakeholders"
-            :items="orderByPropName(getSelectStakeholders, 'text')"
+            :items="orderedStakeholders"
+            item-title="text"
             multiple
-            :hint="
-              `${state.selectedStakeholders.length}/${getSelectStakeholders.length}`
-            "
+            :hint="`${state.selectedStakeholders.length}/${getSelectStakeholders.length}`"
             persistent-hint
             autocomplete="off"
             id="selected-stakeholders"
-          ></v-autocomplete>
+            density="comfortable"
+          />
         </v-col>
-
         <v-col>
           <v-autocomplete
             clearable
-            flat
             item-color="secondary"
             color="secondary"
             label="Criteria"
             v-model="state.selectedCriterions"
-            :items="orderByPropName(getSelectCriterions, 'text')"
+            :items="orderedCriterions"
+            item-title="text"
             multiple
-            :hint="
-              `${state.selectedCriterions.length}/${getSelectCriterions.length}`
-            "
+            :hint="`${state.selectedCriterions.length}/${getSelectCriterions.length}`"
             persistent-hint
             autocomplete="off"
             id="selected-criteria"
-          ></v-autocomplete>
+            density="comfortable"
+          />
         </v-col>
         <v-col>
           <v-autocomplete
             clearable
-            flat
             item-color="secondary"
             color="secondary"
             label="Aims"
             v-model="state.selectedAims"
-            :items="orderByPropName(getSelectAims, 'text')"
+            :items="orderedAims"
+            item-title="text"
+            multiple
             :hint="`${state.selectedAims.length}/${getSelectAims.length}`"
             persistent-hint
-            multiple
             autocomplete="off"
             id="selected-aims"
-          ></v-autocomplete>
+            density="comfortable"
+          />
         </v-col>
       </v-row>
     </v-col>
 
-    <v-col class="flex-grow-0" style="min-width: 200px;">
-      <v-text-field
-        flat
-        item-color="secondary"
-        color="secondary"
-        label="Search"
-        :value="state.searchInput"
-        @input="debounceInput"
-      >
-        <v-icon v-show="state.searchInput" @click="clearSearch" slot="append">mdi-close</v-icon>
-        <v-icon slot="append">mdi-magnify</v-icon>
-      </v-text-field>
+    <!-- Chart View Filters -->
+    <v-col class="px-6" v-if="isActiveRoute('chart-view')">
+      <v-row>
+        <v-col cols="12" md="4">
+          <v-select
+            item-color="secondary"
+            color="secondary"
+            label="Alternative"
+            v-model="chartSelectedAlternative"
+            :items="alternativeOptions"
+            density="comfortable"
+            variant="outlined"
+          />
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-select
+            item-color="secondary"
+            color="secondary"
+            label="Analysis per"
+            v-model="chartAnalysisPer"
+            :items="analysisPerOptions"
+            density="comfortable"
+            variant="outlined"
+          />
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-select
+            item-color="secondary"
+            color="secondary"
+            label="All criteria"
+            v-model="chartSelectedCriterion"
+            :items="orderedCriterions"
+            item-title="text"
+            item-value="value"
+            clearable
+            density="comfortable"
+            variant="outlined"
+          />
+        </v-col>
+      </v-row>
+    </v-col>
+
+      <!-- Search Field (Default Views only) -->
+      <v-col class="flex-grow-0" style="min-width: 200px;" v-if="!isActiveRoute('chart-view')">
+        <v-text-field
+          color="secondary"
+          label="Search"
+          :model-value="state.searchInput"
+          @update:modelValue="debounceInput"
+          clearable
+          density="comfortable"
+        >
+          <template #append-inner>
+            <v-icon
+              icon="mdi-magnify"
+              class="cursor-pointer"
+              @click="clearSearch"
+            />
+          </template>
+        </v-text-field>
     </v-col>
   </v-row>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
+import { computed, watch, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { debounce } from 'lodash'
+
 import {
   getSelectStakeholders,
   getSelectAims,
   getSelectCriterions,
   state,
-  getFilteredItems,
-  getAllItems,
-  orderByPropName,
   getSelectModes,
   loadAll,
   switchToView,
   is1stLevelStakeholdersMode,
-} from "@/store";
-import { debounce } from "lodash";
-import { computed, defineComponent } from "vue";
+  orderByPropName,
+} from '@/store'
 
-export default defineComponent({
-  setup() {
-    return  {
-      state,
+const router = useRouter()
 
-      clearSearch: () => {
-        state.searchInput = "";
-      },
-      switchToView: function(routeName: string) {
-        return switchToView(routeName);
-      },
-      debounceInput: debounce(value => {
-        state.searchInput = value;
-      }, 200),
+const isActiveRoute = (name: string) => router.currentRoute.value.name === name
 
-      orderByPropName,
-      is1stLevelStakeholdersMode,
-      getSelectModes: computed(() => getSelectModes()),
-      getAllItems: computed(() => getAllItems()),
-      getSelectStakeholders: computed(() => getSelectStakeholders()),
-      getSelectAims: computed(() => getSelectAims()),
-      getSelectCriterions: computed(() => getSelectCriterions()),
-      getFilteredItems: computed(() => getFilteredItems()),
-      
-      mode: computed(() => {
-        return state.mode;
-      })
-    }
-  },
-  
-  
-  
-  watch: {
-    async mode() {
-      
-      await loadAll(this.$router.currentRoute.value, false);
-    },
-    
+// Chart View filters - expose globally in state
+if (!state.chartFilters) {
+  state.chartFilters = {
+    selectedAlternative: 'all-merged',
+    analysisPer: 'criteria',
+    selectedCriterion: '',
   }
-});
+}
+
+const chartSelectedAlternative = computed({
+  get: () => state.chartFilters?.selectedAlternative || 'all-merged',
+  set: (value) => {
+    if (state.chartFilters) {
+      state.chartFilters.selectedAlternative = value
+    }
+  }
+})
+
+const chartAnalysisPer = computed({
+  get: () => state.chartFilters?.analysisPer || 'criteria',
+  set: (value) => {
+    if (state.chartFilters) {
+      state.chartFilters.analysisPer = value
+    }
+  }
+})
+
+const chartSelectedCriterion = computed({
+  get: () => state.chartFilters?.selectedCriterion || '',
+  set: (value) => {
+    if (state.chartFilters) {
+      state.chartFilters.selectedCriterion = value
+    }
+  }
+})
+
+const alternativeOptions = computed(() => {
+  const alternatives = state.project?.alternatives?.map(alt => ({
+    title: alt.name,
+    value: alt.name,
+  })) || []
+  return [
+    ...alternatives,
+    { title: 'All alternatives (merged)', value: 'all-merged' },
+    { title: 'All alternatives (separated)', value: 'all-separated' },
+  ]
+})
+
+const analysisPerOptions = [
+  { title: 'Criteria', value: 'criteria' },
+  { title: 'Stakeholder', value: 'stakeholder' },
+]
+
+const clearSearch = () => {
+  state.searchInput = ''
+}
+
+const debounceInput = debounce((value: string) => {
+  state.searchInput = value
+}, 200)
+
+const getSelectModesComputed = computed(() => getSelectModes())
+
+const orderedStakeholders = computed(() =>
+  orderByPropName(getSelectStakeholders(), 'text')
+)
+const orderedCriterions = computed(() =>
+  orderByPropName(getSelectCriterions(), 'text')
+)
+const orderedAims = computed(() =>
+  orderByPropName(getSelectAims(), 'text')
+)
+
+watch(
+  () => state.mode,
+  async () => {
+    await loadAll(router.currentRoute.value, false)
+  }
+)
 </script>
+
+<style scoped>
+.toolbar-filters :deep(.toolbar-icon-btn) {
+  border: 1px solid rgba(var(--v-theme-secondary), 0.35);
+  border-radius: 6px;
+  height: 40px;
+  width: 40px;
+}
+
+.toolbar-filters :deep(.toolbar-icon-btn:hover) {
+  background-color: rgba(var(--v-theme-secondary), 0.08);
+}
+
+.toolbar-filters :deep(.toolbar-icon-btn.v-btn--variant-flat) {
+  background-color: rgba(var(--v-theme-secondary), 0.12);
+}
+
+.toolbar-select {
+  max-width: 320px;
+}
+</style>
