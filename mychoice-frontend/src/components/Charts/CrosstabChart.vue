@@ -4,22 +4,26 @@
       <thead>
         <tr>
           <th class="text-left">Criteria / Stakeholders</th>
-          <th v-for="stakeholder in stakeholders" :key="stakeholder" class="text-center">
-            {{ stakeholder }}
+          <th v-for="stakeholder in stakeholders" :key="stakeholder.id" class="text-center">
+            {{ stakeholder.name }}
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="criterion in criterions" :key="criterion">
-          <td class="font-weight-medium">{{ criterion }}</td>
-          <td v-for="stakeholder in stakeholders" :key="`${criterion}-${stakeholder}`" class="text-center">
-            <v-chip
-              :color="getColor(getCellCount(criterion, stakeholder))"
-              text-color="white"
-              size="small"
-            >
-              {{ getCellCount(criterion, stakeholder) }}
-            </v-chip>
+        <tr v-for="criterion in criterions" :key="criterion.id">
+          <td class="font-weight-medium">{{ criterion.name }}</td>
+          <td 
+            v-for="stakeholder in stakeholders" 
+            :key="`${criterion.id}-${stakeholder.id}`" 
+            class="text-center count-cell"
+            :style="{ backgroundColor: getCountColor(getCellCount(criterion.id, stakeholder.id)) }"
+          >
+            <div class="cell-content">
+              <div class="count">{{ getCellCount(criterion.id, stakeholder.id) }}</div>
+              <div class="attitude" v-if="getCellCount(criterion.id, stakeholder.id) > 0">
+                {{ getAttitude(criterion.id, stakeholder.id).toFixed(2) }}
+              </div>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -29,7 +33,7 @@
 
 <script lang="ts">
 import { defineComponent, computed, PropType } from "vue";
-import { NormalizedArgument } from "@/@types";
+import { NormalizedArgument, NormalizedObject } from "@/@types";
 
 export default defineComponent({
   name: "CrosstabChart",
@@ -38,36 +42,54 @@ export default defineComponent({
       type: Array as PropType<NormalizedArgument[]>,
       required: true,
     },
+    stakeholdersMap: {
+      type: Object as PropType<NormalizedObject | null>,
+      default: null,
+    },
+    criterionsMap: {
+      type: Object as PropType<NormalizedObject | null>,
+      default: null,
+    },
   },
   setup(props) {
     const stakeholders = computed(() => {
-      const unique = new Set(props.arguments.map(arg => arg.stakeholder).filter(Boolean));
-      return Array.from(unique).sort((a, b) => a - b);
+      if (!props.stakeholdersMap) return [];
+      return Object.values(props.stakeholdersMap).sort((a, b) => a.name.localeCompare(b.name));
     });
 
     const criterions = computed(() => {
-      const unique = new Set(props.arguments.map(arg => arg.criterion).filter(Boolean));
-      return Array.from(unique).sort((a, b) => a - b);
+      if (!props.criterionsMap) return [];
+      return Object.values(props.criterionsMap).sort((a, b) => a.name.localeCompare(b.name));
     });
 
-    const getCellCount = (criterion: number, stakeholder: number) => {
+    const getAttitude = (criterionId: number, stakeholderId: number) => {
+      const filtered = props.arguments.filter(
+        arg => arg.criterion === criterionId && arg.stakeholder === stakeholderId
+      );
+      if (filtered.length === 0) return 0.5;
+      const favorable = filtered.filter(arg => arg.favorable).length;
+      return (favorable + 1) / (filtered.length + 2);
+    };
+
+    const getCellCount = (criterionId: number, stakeholderId: number) => {
       return props.arguments.filter(
-        arg => arg.criterion === criterion && arg.stakeholder === stakeholder
+        arg => arg.criterion === criterionId && arg.stakeholder === stakeholderId
       ).length;
     };
 
-    const getColor = (count: number) => {
-      if (count === 0) return "#E0E0E0";
-      if (count <= 2) return "#FFEB3B";
-      if (count <= 5) return "#FF9800";
-      return "#F44336";
+    const getCountColor = (count: number) => {
+      if (count === 0) return "#ffffff";
+      if (count <= 2) return "#ffc107";
+      if (count <= 5) return "#ff9800";
+      return "#f44336";
     };
 
     return {
       stakeholders,
       criterions,
       getCellCount,
-      getColor,
+      getCountColor,
+      getAttitude,
     };
   },
 });
@@ -93,5 +115,28 @@ export default defineComponent({
 :deep(.v-table td) {
   padding: 8px;
   min-width: 80px;
+}
+
+.count-cell {
+  padding: 4px 8px !important;
+}
+
+.cell-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.count {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.attitude {
+  font-size: 11px;
+  font-weight: 500;
+  color: #666;
 }
 </style>

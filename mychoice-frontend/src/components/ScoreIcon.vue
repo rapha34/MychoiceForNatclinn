@@ -9,14 +9,14 @@
     >
     <v-chip
       variant="outlined"
-      size="x-small"
+      size="small"
       :title="title"
       v-if="icon"
       style="padding: 0;"
       :color="getColorName(getAcceptabilityName(score))"
     >
       <v-avatar>
-        <v-icon size="small" v-if="state.data && state.data.alternatives[alternative]" :color="getColorName(getAcceptabilityName(score))">
+        <v-icon size="medium" v-if="state.data && state.data.alternatives[alternative]" :color="getColorName(getAcceptabilityName(score))">
           {{ state.data.alternatives[alternative].icon }}
         </v-icon>
       </v-avatar>

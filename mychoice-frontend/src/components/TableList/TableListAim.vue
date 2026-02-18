@@ -116,3 +116,10 @@ export default defineComponent({
 });
 </script>
 
+<style scoped>
+[aim] {
+  max-width: 200px;
+  width: 200px;
+}
+</style>
+

@@ -10,7 +10,7 @@
     <!-- Table List -->
     <div class="tablelist-section">
       <v-container class="tablelist-container" fluid style="max-width: 1600px;">
-        <v-card elevation="0" rounded="lg">
+        <v-card class="tablelist-card" elevation="0" rounded="lg">
           <div class="tablelist-x-shadow"></div>
           <div class="tablelist-y-shadow"></div>
           <TableList :key="state.project?.name" />
@@ -125,17 +125,37 @@ export default defineComponent({
 .view-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* au lieu de height */
+  height: calc(100vh - var(--v-layout-top, 0px));
+  overflow: hidden;
   /* padding-bottom: 120px; pour le bouton flottant */
 }
 
 .header-section {
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: white;
 }
 
 .tablelist-section {
-  flex-shrink: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   margin: 0 0 0 0;
+  overflow: hidden;
+  height: 100%;
+}
+
+.tablelist-container {
+  height: 100%;
+  display: flex;
+}
+
+.tablelist-card {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .bottom-padding {

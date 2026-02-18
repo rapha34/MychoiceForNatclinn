@@ -170,6 +170,7 @@
             :items="alternativeOptions"
             density="comfortable"
             variant="outlined"
+            :disabled="isAlternativesComparisonChart"
           />
         </v-col>
         <v-col cols="12" md="4">
@@ -181,6 +182,7 @@
             :items="analysisPerOptions"
             density="comfortable"
             variant="outlined"
+            :disabled="isCrosstabChart"
           />
         </v-col>
         <v-col cols="12" md="4">
@@ -195,6 +197,7 @@
             clearable
             density="comfortable"
             variant="outlined"
+            :disabled="isArgumentCountChart || isAlternativesComparisonChart || isCrosstabChart"
           />
         </v-col>
       </v-row>
@@ -233,11 +236,17 @@ import {
   getSelectCriterions,
   state,
   getSelectModes,
+  getProjectTypeFromRoute,
+  PROJECT_TYPE_ROUTES,
   loadAll,
   switchToView,
   is1stLevelStakeholdersMode,
   orderByPropName,
 } from '@/store'
+
+const props = defineProps<{
+  chartSelectedChart?: string
+}>()
 
 const router = useRouter()
 
@@ -245,15 +254,23 @@ const isActiveRoute = (name: string) => router.currentRoute.value.name === name
 
 // Chart View filters - expose globally in state
 if (!state.chartFilters) {
+  const alternativesMap = state.data?.alternatives || {}
+  const alternatives = Object.values(alternativesMap)
+  const firstAlternative = alternatives[0]?.name || 'all-merged'
   state.chartFilters = {
-    selectedAlternative: 'all-merged',
+    selectedAlternative: firstAlternative,
     analysisPer: 'criteria',
     selectedCriterion: '',
   }
 }
 
 const chartSelectedAlternative = computed({
-  get: () => state.chartFilters?.selectedAlternative || 'all-merged',
+  get: () => {
+    const alternativesMap = state.data?.alternatives || {}
+    const alternatives = Object.values(alternativesMap)
+    const firstAlternative = alternatives[0]?.name || 'all-merged'
+    return state.chartFilters?.selectedAlternative || firstAlternative
+  },
   set: (value) => {
     if (state.chartFilters) {
       state.chartFilters.selectedAlternative = value
@@ -280,15 +297,23 @@ const chartSelectedCriterion = computed({
 })
 
 const alternativeOptions = computed(() => {
-  const alternatives = state.project?.alternatives?.map(alt => ({
+  const alternativesMap = state.data?.alternatives || {};
+  const alternatives = Object.values(alternativesMap).map(alt => ({
     title: alt.name,
     value: alt.name,
-  })) || []
-  return [
+  }))
+  const allOptions = [
     ...alternatives,
     { title: 'All alternatives (merged)', value: 'all-merged' },
     { title: 'All alternatives (separated)', value: 'all-separated' },
   ]
+  
+  // Filter out "All alternatives" options for crosstab chart
+  if (isCrosstabChart.value) {
+    return alternatives
+  }
+  
+  return allOptions
 })
 
 const analysisPerOptions = [
@@ -316,10 +341,67 @@ const orderedAims = computed(() =>
   orderByPropName(getSelectAims(), 'text')
 )
 
+const isArgumentCountChart = computed(
+  () => isActiveRoute('chart-view') && props.chartSelectedChart === 'argument-count'
+)
+
+const isAlternativesComparisonChart = computed(
+  () => isActiveRoute('chart-view') && props.chartSelectedChart === 'alternatives-comparison'
+)
+
+const isCrosstabChart = computed(
+  () => isActiveRoute('chart-view') && props.chartSelectedChart === 'crosstab'
+)
+
+// Initialize selectedAlternative to first alternative when alternatives load
+watch(
+  () => state.data?.alternatives,
+  (alternativesMap) => {
+    if (alternativesMap) {
+      const alternatives = Object.values(alternativesMap);
+      if (alternatives && alternatives.length > 0) {
+        if (!state.chartFilters?.selectedAlternative || state.chartFilters.selectedAlternative === 'all-merged') {
+          if (state.chartFilters) {
+            state.chartFilters.selectedAlternative = alternatives[0].name
+          }
+        }
+      }
+    }
+  },
+  { immediate: true }
+)
+
 watch(
   () => state.mode,
   async () => {
-    await loadAll(router.currentRoute.value, false)
+    const currentRoute = router.currentRoute.value
+    if (getProjectTypeFromRoute(currentRoute)) {
+      await loadAll(currentRoute, false)
+      return
+    }
+
+    const query: Record<string, string> = {}
+    if (state.spreadsheet) {
+      query[PROJECT_TYPE_ROUTES.GOOGLE_SPREADSHEET] = state.spreadsheet
+    } else if (state.project?.name) {
+      query[PROJECT_TYPE_ROUTES.ICO] = state.project.name
+    }
+
+    if (Object.keys(query).length === 0) {
+      await loadAll(currentRoute, false)
+      return
+    }
+
+    await loadAll(
+      {
+        ...currentRoute,
+        query: {
+          ...currentRoute.query,
+          ...query,
+        },
+      },
+      false
+    )
   }
 )
 </script>

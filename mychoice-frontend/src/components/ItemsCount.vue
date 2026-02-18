@@ -6,7 +6,7 @@
     color="default"
     title="title"
   >
-    {{count}}
+    <strong>{{count}}</strong>
   </v-chip>
 </template>
 

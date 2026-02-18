@@ -126,35 +126,38 @@ export default defineComponent({
 
 <style scoped>
 .table-wrapper {
-  height: 80vh;
+  height: 100%;
   overflow: auto;
   border: 1px solid #ccc;
+  position: relative;
+  flex: 1 1 auto;
 }
 
 /* Table */
 .custom-table {
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   width: 100vw;
   min-width: 100%;
 }
 
 /* Header sticky */
-.custom-table thead th {
+:deep(.custom-table thead th) {
   position: sticky;
   top: 0;
   background: white;
-  z-index: 2;
+  z-index: 3;
   border-bottom: 2px solid #ccc;
   padding: 8px;
-  text-align: left;
+  text-align: center;
 }
 
 /* Footer sticky */
 .custom-table tfoot td {
   position: sticky;
-  bottom: 0;
+  bottom: -8px;
   background: white;
-  z-index: 1;
+  z-index: 2;
   border-top: 2px solid #ccc;
   padding: 8px;
 }
@@ -163,6 +166,11 @@ export default defineComponent({
 .custom-table td {
   padding: 8px;
   border-bottom: 1px solid #eee;
+  border-right: 1px solid #eee;
+}
+
+.custom-table th {
+  border-right: 1px solid #ccc;
 }
 </style>
 

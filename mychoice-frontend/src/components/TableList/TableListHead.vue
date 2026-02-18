@@ -1,21 +1,22 @@
 <template>
   <tr class="text-uppercase">
-    <th class="criterion">Criterion</th>
-    <th class="aim">Aim</th>
+    <th class="criterion table-head-cell">Criterion</th>
+    <th class="aim table-head-cell">Aim</th>
     <th
       v-for="alternativeId in alternativesIds"
       :key="`alternative-${alternativeId}`"
       :colspan="subOptionsIds.length"
-      class="alternative"
+      class="alternative table-head-cell"
       @click="openProductDialog(alternativeId)"
-      style="cursor: pointer; position: relative;"
-      :style="{ backgroundColor: selectedAlternativeId === alternativeId ? '#e3f2fd' : 'transparent' }"
+      style="cursor: pointer;"
     >
-      <v-icon v-if="state.data?.alternatives?.[alternativeId]?.icon" class="mr-2">
-        {{ state.data.alternatives[alternativeId].icon }}
-      </v-icon>
-      <span class="alternative-name">{{ getAlternatives[alternativeId]?.name || 'Unnamed' }}</span>
-      <v-icon v-if="hasProductInfo(alternativeId)"  size="x-small" class="ml-2 text-info"></v-icon>
+      <span class="alternative-content">
+        <v-icon v-if="state.data?.alternatives?.[alternativeId]?.icon" class="mr-2">
+          {{ state.data.alternatives[alternativeId].icon }}
+        </v-icon>
+        <span class="alternative-name">{{ getAlternatives[alternativeId]?.name || 'Unnamed' }}</span>
+        <v-icon v-if="hasProductInfo(alternativeId)"  size="x-small" class="ml-2 text-info"></v-icon>
+      </span>
     </th>
   </tr>
 
@@ -82,19 +83,37 @@ export default defineComponent({
 <style scoped>
 
 /* Header sticky */
-.custom-table thead th {
+.table-head-cell {
   position: sticky;
   top: 0;
   background: white;
   z-index: 2;
   border-bottom: 2px solid #ccc;
-  padding: 8px;
-  text-align: left;
+  padding: 12px 8px;
+  text-align: center;
+  min-height: 40px;
+  vertical-align: middle;
+}
+
+.criterion {
+  max-width: 150px;
+  width: 150px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.aim {
+  max-width: 200px;
+  width: 200px;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .alternative {
   transition: background-color 0.2s ease;
   user-select: none;
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
 .alternative:hover {
@@ -106,8 +125,15 @@ export default defineComponent({
   overflow: hidden;
   text-overflow: ellipsis;
   display: inline-block;
-  max-width: 200px;
-  vertical-align: middle;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.alternative-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 </style>
 

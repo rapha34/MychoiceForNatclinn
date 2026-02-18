@@ -1,5 +1,8 @@
 <template>
   <div class="bar-chart-container">
+    <!-- Alternative title header (always shown) -->
+    <div class="alternative-title-header">{{ alternativeLabel }}</div>
+
     <!-- Mode merged: single chart -->
     <template v-if="selectedAlternative !== 'all-separated'">
       <div class="chart-wrapper">
@@ -8,8 +11,8 @@
         </div>
         <div class="attitude-column">
           <div class="attitude-header">Attitude</div>
-          <div v-for="row in tableRows" :key="row.key" class="attitude-item">
-            <div class="attitude-value">{{ row.attitude }}</div>
+          <div v-for="row in tableRows" :key="row.key" class="attitude-item" :style="{ backgroundColor: getCellColor(row.attitude) }">
+            <div class="attitude-value" :style="{ color: row.attitude === '0.00' || (parseFloat(row.attitude) >= 0.35 && parseFloat(row.attitude) < 0.60) ? '#333' : '#fff' }">{{ row.attitude }}</div>
           </div>
         </div>
       </div>
@@ -24,7 +27,7 @@
           class="alternative-chart-card"
         >
           <h3 class="alternative-title">{{ altData.name }}</h3>
-          <div class="chart-wrapper">
+          <div class="chart-wrapper-separated">
             <div class="chart-area">
               <svg
                 :ref="(el) => setSvgRef(String(altId), el)"
@@ -33,10 +36,10 @@
                 class="horizontal-bars"
               ></svg>
             </div>
-            <div class="attitude-column">
+            <div class="attitude-column-right" :style="{ height: altData.chartHeight + 'px' }">
               <div class="attitude-header">Attitude</div>
-              <div v-for="row in altData.tableRows" :key="row.key" class="attitude-item">
-                <div class="attitude-value">{{ row.attitude }}</div>
+              <div v-for="row in altData.tableRows" :key="row.key" class="attitude-item" :style="{ backgroundColor: getCellColor(row.attitude) }">
+                <div class="attitude-value" :style="{ color: row.attitude === '0.00' || (parseFloat(row.attitude) >= 0.35 && parseFloat(row.attitude) < 0.60) ? '#333' : '#fff' }">{{ row.attitude }}</div>
               </div>
             </div>
           </div>
@@ -49,6 +52,7 @@
 <script lang="ts">
 import { defineComponent, PropType, computed, ref, onMounted, watch, nextTick } from "vue";
 import { NormalizedArgument, NormalizedObject } from "@/@types";
+import { calculateSimpleAttitude } from "@/store/attitude";
 
 export default defineComponent({
   name: "BarChart",
@@ -86,7 +90,12 @@ export default defineComponent({
     const chartRef = ref<SVGSVGElement | null>(null);
     const separatedChartRefs = ref<Map<string, SVGSVGElement | null>>(new Map());
     const width = 600;
-    const height = computed(() => Math.max(300, tableRows.value.length * 40));
+    const height = computed(() => {
+      const rowHeight = 40;
+      const headerHeight = 60;
+      const rows = tableRows.value.length;
+      return headerHeight + (rows * rowHeight);
+    });
 
     const groupByLabel = computed(() =>
       props.analysisPer === "stakeholder" ? "Stakeholders" : "Criteria"
@@ -168,7 +177,7 @@ export default defineComponent({
         const rows = Array.from(grouped.entries())
           .map(([key, values]) => {
             const total = values.favorable + values.unfavorable;
-            const attitude = total === 0 ? 0 : values.favorable / total;
+            const attitude = (values.favorable + 1) / (total + 2);
             return {
               key,
               label: resolveLabel(key),
@@ -225,7 +234,8 @@ export default defineComponent({
       return Array.from(grouped.entries())
         .map(([key, values]) => {
           const total = values.favorable + values.unfavorable;
-          const attitude = total === 0 ? 0 : values.favorable / total;
+          // Use the formula-based attitude: (favorable + 1) / (total + 2)
+          const attitude = (values.favorable + 1) / (total + 2);
           return {
             key,
             label: resolveLabel(key),
@@ -242,7 +252,7 @@ export default defineComponent({
 
       if (rows.length === 0) return;
 
-      const margin = { left: 150, right: 20, top: 20, bottom: 20 };
+      const margin = { left: 280, right: 20, top: 60, bottom: 0 };
       const chartWidth = width - margin.left - margin.right;
       const contentHeight = chartHeight - margin.top - margin.bottom;
       const pairHeight = contentHeight / rows.length;
@@ -277,19 +287,45 @@ export default defineComponent({
         const favorableBar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
         favorableBar.setAttribute("x", "0");
         favorableBar.setAttribute("y", String(favorableYPos));
-        favorableBar.setAttribute("width", String(favorableWidth));
+        
+        // If favorable is 0, show a minimal bar with transparency
+        if (row.favorable === 0) {
+          favorableBar.setAttribute("width", "12");
+          favorableBar.setAttribute("opacity", "0.4");
+        } else {
+          favorableBar.setAttribute("width", String(favorableWidth));
+          favorableBar.setAttribute("opacity", "1");
+        }
+        
         favorableBar.setAttribute("height", String(barHeight));
         favorableBar.setAttribute("fill", favorableColor);
         g.appendChild(favorableBar);
 
         // Favorable count text
         const favorableText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        favorableText.setAttribute("x", String(favorableWidth / 2));
+        let favorableTextX: number;
+        let favorableTextFill: string;
+        
+        if (row.favorable === 0) {
+          // For zero: place text at the start with black color
+          favorableTextX = 5;
+          favorableTextFill = "black";
+        } else if (favorableWidth > 35) {
+          // For larger bars: place text inside with white color
+          favorableTextX = 5;
+          favorableTextFill = "white";
+        } else {
+          // For small bars: place text after the bar with black color and light background
+          favorableTextX = favorableWidth + 8;
+          favorableTextFill = "black";
+        }
+        
+        favorableText.setAttribute("x", String(favorableTextX));
         favorableText.setAttribute("y", String(favorableYPos + barHeight / 2 + 4));
-        favorableText.setAttribute("text-anchor", "middle");
+        favorableText.setAttribute("text-anchor", "start");
         favorableText.setAttribute("font-size", "11");
         favorableText.setAttribute("font-weight", "bold");
-        favorableText.setAttribute("fill", "white");
+        favorableText.setAttribute("fill", favorableTextFill);
         favorableText.textContent = String(row.favorable);
         g.appendChild(favorableText);
 
@@ -297,31 +333,95 @@ export default defineComponent({
         const unfavorableBar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
         unfavorableBar.setAttribute("x", "0");
         unfavorableBar.setAttribute("y", String(unfavorableYPos));
-        unfavorableBar.setAttribute("width", String(unfavorableWidth));
+        
+        // If unfavorable is 0, show a minimal bar with transparency
+        if (row.unfavorable === 0) {
+          unfavorableBar.setAttribute("width", "12");
+          unfavorableBar.setAttribute("opacity", "0.4");
+        } else {
+          unfavorableBar.setAttribute("width", String(unfavorableWidth));
+          unfavorableBar.setAttribute("opacity", "1");
+        }
+        
         unfavorableBar.setAttribute("height", String(barHeight));
         unfavorableBar.setAttribute("fill", unfavorableColor);
         g.appendChild(unfavorableBar);
 
         // Unfavorable count text
         const unfavorableText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        unfavorableText.setAttribute("x", String(unfavorableWidth / 2));
+        let unfavorableTextX: number;
+        let unfavorableTextFill: string;
+        
+        if (row.unfavorable === 0) {
+          // For zero: place text at the start with black color
+          unfavorableTextX = 5;
+          unfavorableTextFill = "black";
+        } else if (unfavorableWidth > 35) {
+          // For larger bars: place text inside with white color
+          unfavorableTextX = 5;
+          unfavorableTextFill = "white";
+        } else {
+          // For small bars: place text after the bar with black color
+          unfavorableTextX = unfavorableWidth + 8;
+          unfavorableTextFill = "black";
+        }
+        
+        unfavorableText.setAttribute("x", String(unfavorableTextX));
         unfavorableText.setAttribute("y", String(unfavorableYPos + barHeight / 2 + 4));
-        unfavorableText.setAttribute("text-anchor", "middle");
+        unfavorableText.setAttribute("text-anchor", "start");
         unfavorableText.setAttribute("font-size", "11");
         unfavorableText.setAttribute("font-weight", "bold");
-        unfavorableText.setAttribute("fill", "white");
+        unfavorableText.setAttribute("fill", unfavorableTextFill);
         unfavorableText.textContent = String(row.unfavorable);
         g.appendChild(unfavorableText);
 
-        // Label (on the left)
-        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        label.setAttribute("x", "-10");
-        label.setAttribute("y", String(pairCenter + 4));
-        label.setAttribute("text-anchor", "end");
-        label.setAttribute("font-size", "12");
-        label.setAttribute("color", "#333");
-        label.textContent = row.label.length > 20 ? row.label.substring(0, 20) + "..." : row.label;
-        g.appendChild(label);
+        // Label (on the left) - split on 2 lines if needed
+        let line1 = row.label;
+        let line2 = "";
+        
+        if (row.label.length > 40) {
+          // Find a good split point (around middle or at a space)
+          const midPoint = 20;
+          let splitPoint = midPoint;
+          
+          // Try to find a space near the midpoint
+          for (let i = midPoint; i < row.label.length && i < midPoint + 10; i++) {
+            if (row.label[i] === ' ') {
+              splitPoint = i;
+              break;
+            }
+          }
+          
+          line1 = row.label.substring(0, splitPoint).trim();
+          line2 = row.label.substring(splitPoint).trim();
+          
+          // If line2 is still too long, truncate it
+          if (line2.length > 25) {
+            line2 = line2.substring(0, 25) + "...";
+          }
+        }
+        
+        // First line
+        const label1 = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label1.setAttribute("x", "-20");
+        label1.setAttribute("y", String(pairCenter - 4));
+        label1.setAttribute("text-anchor", "end");
+        label1.setAttribute("font-size", "12");
+        label1.setAttribute("color", "#333");
+        label1.textContent = line1;
+        g.appendChild(label1);
+        
+        // Second line (if needed)
+        if (line2) {
+          const label2 = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          label2.setAttribute("x", "-20");
+          label2.setAttribute("y", String(pairCenter + 10));
+          label2.setAttribute("text-anchor", "end");
+          label2.setAttribute("font-size", "12");
+          label2.setAttribute("color", "#333");
+          label2.textContent = line2;
+          g.appendChild(label2);
+        }
       });
 
       // Legend
@@ -415,6 +515,16 @@ export default defineComponent({
       { deep: true }
     );
 
+    // Get cell background color based on attitude value
+    const getCellColor = (attitude: number): string => {
+      const attitudeNum = parseFloat(String(attitude));
+      if (attitudeNum === 0) return "#ffffff";
+      if (attitudeNum < 0.35) return "#f44336"; // Red
+      if (attitudeNum < 0.50) return "#ff9800"; // Orange
+      if (attitudeNum < 0.60) return "#ffc107"; // Amber
+      return "#4caf50"; // Green
+    };
+
     return {
       chartRef,
       width,
@@ -426,6 +536,7 @@ export default defineComponent({
       setSvgRef,
       renderChart,
       renderSeparatedCharts,
+      getCellColor,
     };
   },
 });
@@ -436,6 +547,13 @@ export default defineComponent({
   width: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.alternative-title-header {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
 }
 
 .chart-wrapper {
@@ -464,10 +582,10 @@ export default defineComponent({
 .attitude-header {
   font-weight: 600;
   font-size: 12px;
-  padding: 20px 8px;
+  padding: 0 8px;
   background-color: #f5f5f5;
   margin-bottom: 0;
-  height: 20px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -477,7 +595,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 50px;
+  min-height: 40px;
   border-bottom: 1px solid #eee;
   padding: 0 8px;
 }
@@ -486,6 +604,67 @@ export default defineComponent({
   font-size: 13px;
   font-weight: 500;
   color: #333;
+}
+
+.chart-wrapper-separated {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.attitude-column-left {
+  display: flex;
+  flex-direction: column;
+  min-width: 80px;
+  text-align: center;
+  flex-shrink: 0;
+  border-right: 1px solid #ddd;
+  background: #fafafa;
+}
+
+.attitude-column-right {
+  display: flex;
+  flex-direction: column;
+  min-width: 80px;
+  text-align: center;
+  flex-shrink: 0;
+  border-left: 1px solid #ddd;
+  background: #fafafa;
+}
+
+.attitude-column-left .attitude-header,
+.attitude-column-right .attitude-header {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  padding: 12px 0;
+  height: 60px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.attitude-column-left .attitude-item,
+.attitude-column-right .attitude-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #ddd;
+  padding: 4px 0;
+}
+
+.attitude-column-left .attitude-value,
+.attitude-column-right .attitude-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+}
+
+.chart-area {
+  overflow-x: auto;
+  flex: 1;
 }
 
 .separated-charts-container {

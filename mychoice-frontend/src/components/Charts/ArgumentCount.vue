@@ -190,6 +190,14 @@ export default defineComponent({
     });
 
     // Pour le mode séparé: créer un graphique par alternative
+    const sortEntriesByCount = (
+      entries: Array<[string, { favorable: number; unfavorable: number }]>
+    ) =>
+      entries.sort(
+        ([, a], [, b]) =>
+          b.favorable + b.unfavorable - (a.favorable + a.unfavorable)
+      );
+
     const separatedChartsData = computed(() => {
       const result: Record<string, any> = {};
       const alternatives = props.alternativesMap || {};
@@ -231,7 +239,7 @@ export default defineComponent({
           "#009688", "#CDDC39", "#FF5722", "#673AB7", "#795548"
         ];
 
-        const entries = Object.entries(grouped);
+        const entries = sortEntriesByCount(Object.entries(grouped));
         const legendItems = entries.map(([label, values], index) => {
           const value = values.favorable + values.unfavorable;
           return {
@@ -265,7 +273,7 @@ export default defineComponent({
     ];
 
     const legendItems = computed(() => {
-      const entries = Object.entries(chartData.value);
+      const entries = sortEntriesByCount(Object.entries(chartData.value));
       const total = entries.reduce(
         (sum, [, values]) => sum + values.favorable + values.unfavorable,
         0
@@ -291,7 +299,7 @@ export default defineComponent({
       const svg = chartRef.value;
       svg.innerHTML = "";
 
-      const entries = Object.entries(chartData.value);
+      const entries = sortEntriesByCount(Object.entries(chartData.value));
       if (entries.length === 0) return;
 
       const total = entries.reduce(
@@ -321,13 +329,30 @@ export default defineComponent({
 
         // Draw pie slice
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        const d = [
-          `M ${centerX} ${centerY}`,
-          `L ${startX} ${startY}`,
-          `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endX} ${endY}`,
-          "Z",
-        ].join(" ");
         
+        // Special case: full circle (when slice angle ≈ 2π)
+        // SVG can't render an arc from a point to itself, so we draw two semicircles
+        let d: string;
+        if (sliceAngle >= 2 * Math.PI - 0.01) {
+          const midAngle = currentAngle + Math.PI;
+          const midX = centerX + radius * Math.cos(midAngle);
+          const midY = centerY + radius * Math.sin(midAngle);
+          d = [
+            `M ${centerX} ${centerY}`,
+            `L ${startX} ${startY}`,
+            `A ${radius} ${radius} 0 1 1 ${midX} ${midY}`,
+            `A ${radius} ${radius} 0 1 1 ${startX} ${startY}`,
+            "Z",
+          ].join(" ");
+        } else {
+          d = [
+            `M ${centerX} ${centerY}`,
+            `L ${startX} ${startY}`,
+            `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endX} ${endY}`,
+            "Z",
+          ].join(" ");
+        }
+
         path.setAttribute("d", d);
         path.setAttribute("fill", colors[index % colors.length]);
         path.setAttribute("stroke", "white");
@@ -345,7 +370,7 @@ export default defineComponent({
 
         svg.innerHTML = "";
 
-        const entries = Object.entries(altData.chartData);
+        const entries = sortEntriesByCount(Object.entries(altData.chartData));
         if (entries.length === 0) return;
 
         const total = entries.reduce(
@@ -374,12 +399,29 @@ export default defineComponent({
           const largeArcFlag = sliceAngle > Math.PI ? 1 : 0;
 
           const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-          const d = [
-            `M ${centerX} ${centerY}`,
-            `L ${startX} ${startY}`,
-            `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endX} ${endY}`,
-            "Z",
-          ].join(" ");
+          
+          // Special case: full circle (when slice angle ≈ 2π)
+          // SVG can't render an arc from a point to itself, so we draw two semicircles
+          let d: string;
+          if (sliceAngle >= 2 * Math.PI - 0.01) {
+            const midAngle = currentAngle + Math.PI;
+            const midX = centerX + radius * Math.cos(midAngle);
+            const midY = centerY + radius * Math.sin(midAngle);
+            d = [
+              `M ${centerX} ${centerY}`,
+              `L ${startX} ${startY}`,
+              `A ${radius} ${radius} 0 1 1 ${midX} ${midY}`,
+              `A ${radius} ${radius} 0 1 1 ${startX} ${startY}`,
+              "Z",
+            ].join(" ");
+          } else {
+            d = [
+              `M ${centerX} ${centerY}`,
+              `L ${startX} ${startY}`,
+              `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endX} ${endY}`,
+              "Z",
+            ].join(" ");
+          }
           
           path.setAttribute("d", d);
           path.setAttribute("fill", colors[index % colors.length]);
@@ -404,6 +446,7 @@ export default defineComponent({
 
     watch(() => props.selectedAlternative, async () => {
       // Quand on change le mode (merged/separated), re-trigger le rendu
+
       await nextTick();
       if (props.selectedAlternative !== 'all-separated') {
         renderChart();
@@ -412,17 +455,53 @@ export default defineComponent({
       }
     });
 
-    watch(() => [chartData.value, props.analysisPer], () => {
-      if (props.selectedAlternative !== 'all-separated') {
-        renderChart();
-      }
-    }, { deep: true });
+    watch(
+      () => [chartData.value, props.analysisPer],
+      async () => {
 
-    watch(() => [separatedChartsData.value, props.analysisPer], () => {
-      if (props.selectedAlternative === 'all-separated') {
-        renderSeparatedCharts();
-      }
-    }, { deep: true });
+        if (props.selectedAlternative !== 'all-separated') {
+          await nextTick();
+          renderChart();
+        }
+      },
+      { deep: true, flush: 'post' }
+    );
+
+    watch(
+      () => legendItems.value,
+      async () => {
+
+        if (props.selectedAlternative !== 'all-separated') {
+          await nextTick();
+          renderChart();
+        }
+      },
+      { deep: true, flush: 'post' }
+    );
+
+    watch(
+      () => props.arguments,
+      async () => {
+        await nextTick();
+        if (props.selectedAlternative !== 'all-separated') {
+          renderChart();
+        } else {
+          renderSeparatedCharts();
+        }
+      },
+      { deep: true, flush: 'post' }
+    );
+
+    watch(
+      () => [separatedChartsData.value, props.analysisPer],
+      async () => {
+        if (props.selectedAlternative === 'all-separated') {
+          await nextTick();
+          renderSeparatedCharts();
+        }
+      },
+      { deep: true, flush: 'post' }
+    );
 
     return {
       chartRef,
@@ -475,6 +554,11 @@ export default defineComponent({
   display: flex;
   align-items: center;
   gap: 24px;
+}
+
+.debug-panel {
+  margin-top: 12px;
+  color: #666;
 }
 
 .pie-chart-legend {

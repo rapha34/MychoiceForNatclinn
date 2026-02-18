@@ -75,5 +75,7 @@ export default defineComponent({
 <style scoped>
 .criterion {
   vertical-align: top;
+  max-width: 150px;
+  width: 150px;
 }
 </style>

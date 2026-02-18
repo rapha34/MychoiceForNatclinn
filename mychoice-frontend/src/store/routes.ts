@@ -64,10 +64,9 @@ export const pushRouteWithQuery = (routeParams: Partial<RouteLocationNormalized>
 };
 
 export const switchToView = (routeName: RouteLocationNormalized["name"]) => {
-  const route = {
-    name: routeName
-  };
-  router.push(route);
+  pushRouteWithQuery({
+    name: routeName,
+  });
 };
 
 export enum PROJECT_TYPE_ROUTES {

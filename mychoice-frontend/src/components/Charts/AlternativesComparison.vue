@@ -1,12 +1,50 @@
 <template>
   <div class="alternatives-comparison">
-    <svg ref="chartRef" :width="width" :height="height"></svg>
+    <div class="table-wrapper">
+      <v-table class="heatmap-table">
+        <thead>
+          <tr>
+            <th class="criteria-header">{{ rowLabel }}</th>
+            <th
+              v-for="alt in alternatives"
+              :key="alt.id"
+              class="alternative-header"
+            >
+              {{ alt.name }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row in rows" :key="row.id">
+            <td class="criterion-name">{{ row.name }}</td>
+            <td
+              v-for="alt in alternatives"
+              :key="alt.id"
+              class="attitude-cell"
+              :style="{ backgroundColor: getCellColor(getAttitude(row.id, alt.id)) }"
+            >
+              {{ getAttitude(row.id, alt.id).toFixed(2) }}
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
+    </div>
+    <!-- <div class="export-section">
+      <v-btn
+        variant="outlined"
+        color="primary"
+        @click="exportToPDF"
+      >
+        EXPORT TO PDF
+      </v-btn>
+    </div> -->
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, watch, PropType, computed } from "vue";
-import { NormalizedArgument } from "@/@types";
+import { defineComponent, PropType, computed } from "vue";
+import { NormalizedArgument, NormalizedObject } from "@/@types";
+import { calculateSimpleAttitude } from "@/store/attitude";
 
 export default defineComponent({
   name: "AlternativesComparison",
@@ -15,121 +53,92 @@ export default defineComponent({
       type: Array as PropType<NormalizedArgument[]>,
       required: true,
     },
+    criterionsMap: {
+      type: Object as PropType<NormalizedObject | null>,
+      default: null,
+    },
+    alternativesMap: {
+      type: Object as PropType<NormalizedObject | null>,
+      default: null,
+    },
+    stakeholdersMap: {
+      type: Object as PropType<NormalizedObject | null>,
+      default: null,
+    },
+    analysisPer: {
+      type: String,
+      default: "criteria",
+    },
   },
   setup(props) {
-    const chartRef = ref<SVGSVGElement | null>(null);
-    const width = 800;
-    const height = 400;
-
-    const chartData = computed(() => {
-      const grouped: Record<string, { favorable: number; unfavorable: number }> = {};
-      
-      props.arguments.forEach((arg) => {
-        const alt = arg.alternative || "Unknown";
-        if (!grouped[alt]) {
-          grouped[alt] = { favorable: 0, unfavorable: 0 };
-        }
-        if (arg.favorable) {
-          grouped[alt].favorable++;
-        } else {
-          grouped[alt].unfavorable++;
-        }
-      });
-
-      return grouped;
+    // Determine row and column headers based on analysisPer
+    const rowLabel = computed(() => {
+      return props.analysisPer === "stakeholder" ? "Stakeholders" : "Criteria";
     });
 
-    const renderChart = () => {
-      if (!chartRef.value) return;
+    // Get sorted list of alternatives (always columns)
+    const alternatives = computed(() => {
+      if (!props.alternativesMap) return [];
+      return Object.values(props.alternativesMap).sort((a, b) => a.id - b.id);
+    });
 
-      const svg = chartRef.value;
-      svg.innerHTML = "";
+    // Get sorted list of rows (criteria or stakeholders depending on analysisPer)
+    const rows = computed(() => {
+      if (props.analysisPer === "stakeholder") {
+        if (!props.stakeholdersMap) return [];
+        return Object.values(props.stakeholdersMap).sort((a, b) => a.id - b.id);
+      } else {
+        if (!props.criterionsMap) return [];
+        return Object.values(props.criterionsMap).sort((a, b) => a.id - b.id);
+      }
+    });
 
-      const entries = Object.entries(chartData.value);
-      if (entries.length === 0) return;
-
-      const margin = { top: 20, right: 20, bottom: 60, left: 60 };
-      const chartWidth = width - margin.left - margin.right;
-      const chartHeight = height - margin.top - margin.bottom;
-
-      const maxValue = Math.max(
-        ...entries.map(([, values]) => values.favorable + values.unfavorable)
-      );
-
-      const barWidth = chartWidth / entries.length / 2.5;
-      const spacing = chartWidth / entries.length;
-
-      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      g.setAttribute("transform", `translate(${margin.left},${margin.top})`);
-
-      // Draw bars
-      entries.forEach(([label, values], index) => {
-        const x = index * spacing;
-        const favorableHeight = (values.favorable / maxValue) * chartHeight;
-        const unfavorableHeight = (values.unfavorable / maxValue) * chartHeight;
-
-        // Favorable bar
-        const favorableBar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        favorableBar.setAttribute("x", String(x));
-        favorableBar.setAttribute("y", String(chartHeight - favorableHeight));
-        favorableBar.setAttribute("width", String(barWidth));
-        favorableBar.setAttribute("height", String(favorableHeight));
-        favorableBar.setAttribute("fill", "#4CAF50");
-        g.appendChild(favorableBar);
-
-        // Unfavorable bar
-        const unfavorableBar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        unfavorableBar.setAttribute("x", String(x + barWidth + 5));
-        unfavorableBar.setAttribute("y", String(chartHeight - unfavorableHeight));
-        unfavorableBar.setAttribute("width", String(barWidth));
-        unfavorableBar.setAttribute("height", String(unfavorableHeight));
-        unfavorableBar.setAttribute("fill", "#F44336");
-        g.appendChild(unfavorableBar);
-
-        // Label
-        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.setAttribute("x", String(x + barWidth));
-        text.setAttribute("y", String(chartHeight + 20));
-        text.setAttribute("text-anchor", "middle");
-        text.setAttribute("font-size", "12");
-        text.setAttribute("transform", `rotate(45, ${x + barWidth}, ${chartHeight + 20})`);
-        text.textContent = label.length > 12 ? label.substring(0, 12) + "..." : label;
-        g.appendChild(text);
-      });
-
-      // Y-axis
-      const yAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      yAxis.setAttribute("x1", "0");
-      yAxis.setAttribute("y1", "0");
-      yAxis.setAttribute("x2", "0");
-      yAxis.setAttribute("y2", String(chartHeight));
-      yAxis.setAttribute("stroke", "#666");
-      g.appendChild(yAxis);
-
-      // X-axis
-      const xAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      xAxis.setAttribute("x1", "0");
-      xAxis.setAttribute("y1", String(chartHeight));
-      xAxis.setAttribute("x2", String(chartWidth));
-      xAxis.setAttribute("y2", String(chartHeight));
-      xAxis.setAttribute("stroke", "#666");
-      g.appendChild(xAxis);
-
-      svg.appendChild(g);
+    // Calculate collective attitude
+    const getAttitude = (rowId: number, alternativeId: number): number => {
+      let filtered = props.arguments;
+      
+      if (props.analysisPer === "stakeholder") {
+        // rows = stakeholders, columns = alternatives
+        filtered = filtered.filter(
+          arg => arg.stakeholder === rowId && arg.alternative === alternativeId
+        );
+      } else {
+        // rows = criteria, columns = alternatives
+        filtered = filtered.filter(
+          arg => arg.criterion === rowId && arg.alternative === alternativeId
+        );
+      }
+      
+      if (filtered.length === 0) return 0.5;
+      
+      // Use the formula-based attitude: (favorable + 1) / (total + 2)
+      const favorable = filtered.filter(arg => arg.favorable).length;
+      const total = filtered.length;
+      
+      return (favorable + 1) / (total + 2);
     };
 
-    onMounted(() => {
-      renderChart();
-    });
+    // Get cell background color based on attitude value
+    const getCellColor = (attitude: number): string => {
+      if (attitude === 0) return "#ffffff";
+      if (attitude < 0.35) return "#f44336"; // Red
+      if (attitude < 0.50) return "#ff9800"; // Orange
+      if (attitude < 0.60) return "#ffc107"; // Amber
+      return "#4caf50"; // Green
+    };
 
-    watch(() => props.arguments, () => {
-      renderChart();
-    }, { deep: true });
+    const exportToPDF = () => {
+      // TODO: Implement PDF export
+      console.log("Export to PDF");
+    };
 
     return {
-      chartRef,
-      width,
-      height,
+      alternatives,
+      rows,
+      rowLabel,
+      getAttitude,
+      getCellColor,
+      exportToPDF,
     };
   },
 });
@@ -138,8 +147,54 @@ export default defineComponent({
 <style scoped>
 .alternatives-comparison {
   width: 100%;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+
+.heatmap-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.heatmap-table th,
+.heatmap-table td {
+  border: 1px solid #ddd;
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.criteria-header {
+  background-color: #f5f5f5;
+  font-weight: 600;
+  text-align: left !important;
+  width: 300px;
+}
+
+.alternative-header {
+  background-color: #f5f5f5;
+  font-weight: 600;
+  min-width: 200px;
+}
+
+.criterion-name {
+  font-weight: 500;
+  text-align: left !important;
+  background-color: #fafafa;
+}
+
+.attitude-cell {
+  font-weight: 600;
+  font-size: 16px;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.export-section {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  padding: 10px 0;
 }
 </style>

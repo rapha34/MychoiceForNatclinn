@@ -35,7 +35,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
     <!-- Header -->
     <div class="header-section">
       <v-container style="max-width: 1600px;">
-        <Header />
+        <Header :chartSelectedChart="selectedChart" />
       </v-container>
     </div>
 
@@ -113,18 +113,18 @@ knowledge of the CeCILL-C license and that you accept its terms.
               <!-- 3. Circle Chart of Argument Repartition -->
               <div v-show="selectedChart === 'pie-chart'" class="chart-container">
                 <v-card-title class="text-h5 d-flex align-center pa-6 pb-0">
-                  <v-icon icon="mdi-chart-pie" class="mr-2" color="primary" />
+                  <v-icon icon="mdi-chart-bubble" class="mr-2" color="primary" />
                   Circle Chart of Argument Repartition
                 </v-card-title>
                 <v-card-text class="pa-6">
-                  <PieChart
+                  <CircleChart
                     :arguments="filteredItems"
-                    :selectedAlternative="state.chartFilters?.selectedAlternative"
-                    :analysisPer="state.chartFilters?.analysisPer"
-                    :selectedCriterion="state.chartFilters?.selectedCriterion"
-                    :alternativesMap="state.data?.alternatives || null"
                     :criterionsMap="state.data?.criterions || null"
+                    :selectedCriterion="state.chartFilters?.selectedCriterion"
+                    :analysisPer="state.chartFilters?.analysisPer"
                     :stakeholdersMap="state.data?.stakeholders || null"
+                    :selectedAlternative="state.chartFilters?.selectedAlternative"
+                    :alternativesMap="state.data?.alternatives || null"
                   />
                 </v-card-text>
               </div>
@@ -136,18 +136,28 @@ knowledge of the CeCILL-C license and that you accept its terms.
                   Comparison of Alternatives
                 </v-card-title>
                 <v-card-text class="pa-6">
-                  <AlternativesComparison :arguments="filteredItems" />
+                  <AlternativesComparison
+                    :arguments="filteredItems"
+                    :criterionsMap="state.data?.criterions || null"
+                    :alternativesMap="state.data?.alternatives || null"
+                    :stakeholdersMap="state.data?.stakeholders || null"
+                    :analysisPer="state.chartFilters?.analysisPer"
+                  />
                 </v-card-text>
               </div>
 
-              <!-- 5. Cross-tab: Criteria x Stakeholders -->
+              <!-- 5. Circle chart of argument repartition -->
               <div v-show="selectedChart === 'crosstab'" class="chart-container">
                 <v-card-title class="text-h5 d-flex align-center pa-6 pb-0">
                   <v-icon icon="mdi-table" class="mr-2" color="primary" />
                   Cross-tab: Criteria x Stakeholders
                 </v-card-title>
                 <v-card-text class="pa-6">
-                  <CrosstabChart :arguments="filteredItems" />
+                  <CrosstabChart 
+                    :arguments="filteredItemsForCrosstab"
+                    :criterionsMap="state.data?.criterions || null"
+                    :stakeholdersMap="state.data?.stakeholders || null"
+                  />
                 </v-card-text>
               </div>
             </v-card>
@@ -163,11 +173,12 @@ import { defineComponent, computed, ref } from "vue";
 import Header from "@/components/Header.vue";
 import ArgumentCount from "@/components/Charts/ArgumentCount.vue";
 import BarChart from "@/components/Charts/BarChart.vue";
-import PieChart from "@/components/Charts/PieChart.vue";
+import CircleChart from "@/components/Charts/CircleChart.vue";
 import AlternativesComparison from "@/components/Charts/AlternativesComparison.vue";
 import CrosstabChart from "@/components/Charts/CrosstabChart.vue";
 import {
   state,
+  getAllItems,
   getFilteredItems,
 } from "@/store";
 
@@ -183,7 +194,7 @@ export default defineComponent({
     Header,
     ArgumentCount,
     BarChart,
-    PieChart,
+    CircleChart,
     AlternativesComparison,
     CrosstabChart,
   },
@@ -193,18 +204,40 @@ export default defineComponent({
     const charts: ChartOption[] = [
       { id: "argument-count", label: "Argument Count", icon: "mdi-counter" },
       { id: "bar-chart", label: "Bar Chart", icon: "mdi-chart-bar" },
-      { id: "pie-chart", label: "Circle Chart", icon: "mdi-chart-pie" },
+      { id: "pie-chart", label: "Circle Chart", icon: "mdi-chart-bubble" },
       { id: "alternatives-comparison", label: "Alternatives Comparison", icon: "mdi-compare" },
-      { id: "crosstab", label: "Criteria x Stakeholders", icon: "mdi-table" },
+      { id: "crosstab", label: "Cross-tab: Criteria x Stakeholders", icon: "mdi-table" },
     ];
 
-    const filteredItems = computed(() => getFilteredItems());
+    const filteredItems = computed(() => {
+      return getFilteredItems();
+    });
+
+    // Filtered items for crosstab chart (needs alternative filtering)
+    const filteredItemsForCrosstab = computed(() => {
+      let items = getFilteredItems();
+      
+      // Filter by selected alternative if one is selected
+      const selectedAlt = state.chartFilters?.selectedAlternative;
+      if (selectedAlt && state.data?.alternatives) {
+        // Find the alternative by name
+        const alternativesMap = state.data.alternatives;
+        const alternative = Object.values(alternativesMap).find(alt => alt.name === selectedAlt);
+        if (alternative) {
+          // @ts-ignore
+          items = items.filter(item => item.alternative === alternative.id);
+        }
+      }
+      
+      return items;
+    });
 
     return {
       state,
       selectedChart,
       charts,
       filteredItems,
+      filteredItemsForCrosstab,
     };
   },
 });

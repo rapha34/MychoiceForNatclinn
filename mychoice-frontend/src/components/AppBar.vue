@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar elevation="0" color="secondary" theme="dark">
+  <v-app-bar elevation="0" color="secondary" theme="dark" height="56">
     <!-- Menu burger -->
     <v-app-bar-nav-icon @click.stop="state.drawer = !state.drawer" />
 
@@ -71,34 +71,32 @@ const isProjectRoute = computed(() => route.path.includes('/project'))
 <style scoped>
 .mychoice-logo-container {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, calc(-50% + 14px)); /* <- ajout du décalage */
-  height: 100%;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none; /* Pour ne pas bloquer les clics */
+  padding-top: 12px;
 }
 
 .logo-mychoice img {
-  height: 40px;
+  height: 32px;
   pointer-events: auto; /* Pour rendre le lien actif malgré pointer-events: none sur le conteneur */
 }
 
 /* Logo INRAE taille adaptable */
 .logo-inrae {
-  height: 32px;
+  height: 24px;
 }
 
 /* Responsive */
 @media (max-width: 600px) {
   .logo-mychoice img {
-    height: 30px;
+    height: 26px;
   }
 
   .logo-inrae {
-    height: 24px;
+    height: 20px;
   }
 }
 </style>
