@@ -62,9 +62,10 @@ import router from "@/router";
 
 export const getIcoApiUrl = () => {
   const proxyUrl = process.env.BASE_URL + "api/";
+  const productionApiUrl = process.env.VUE_APP_API_URL || proxyUrl;
   return process.env.NODE_ENV === "development"
     ? proxyUrl
-    : process.env.VUE_APP_API_URL;
+    : productionApiUrl;
 };
 
 export const fetchIcoData = async (projectId: string) => {
